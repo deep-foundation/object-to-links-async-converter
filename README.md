@@ -4,3 +4,7 @@ https://www.npmjs.com/package/@freephoenix888/object-to-links-async-converter
 
 # Feedback
 Feel free to open issues to write there about bugs, improvement requests, questions
+
+# FAQ
+
+## How to use?
