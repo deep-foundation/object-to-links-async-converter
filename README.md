@@ -1,5 +1,5 @@
 # About
-This is `@freephoenix888/object-to-links-converter` package for deep  
+This is `@freephoenix888/object-to-links-async-converter` package for deep  
 https://www.npmjs.com/package/@freephoenix888/object-to-links-async-converter
 
 # Feedback
