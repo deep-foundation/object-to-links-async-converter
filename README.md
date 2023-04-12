@@ -1,6 +1,8 @@
+# object-to-links-async-converter
+[NPM](https://www.npmjs.com/package/@freephoenix888/object-to-links-async-converter)
+
 # About
-This is `@freephoenix888/object-to-links-async-converter` package for deep  
-https://www.npmjs.com/package/@freephoenix888/object-to-links-async-converter
+This package is used to convert object values to links for specific types you are going to choose on your own
 
 # Feedback
 Feel free to open issues to write there about bugs, improvement requests, questions
@@ -8,6 +10,25 @@ Feel free to open issues to write there about bugs, improvement requests, questi
 # FAQ
 
 ## How to use?
+1. Install the package
+2. Give permissions to the package
+```ts
+const joinTypeLinkId = await deep.id("@deep-foundation/core", "Join");
+const packageLinkId = await deep.id("@freephoenix888/object-to-links-async-converter");
+await deep.insert([
+  {
+    type_id: joinTypeLinkId,
+    from_id: packageLinkId,
+    to_id: await deep.id('deep', 'users', 'packages'),
+  },
+  {
+    type_id: joinTypeLinkId,
+    from_id: packageLinkId,
+    to_id: await deep.id('deep', 'admin'),
+  },
+])
+```
+3. Insert `HandleUpdate` which points from handler from this package to the type that is going to be handler (links of your type will be processed by this package to convert their object values to links)
 ```ts
 const linkWithObjectValueTypeLinkId = ; // Type which instances will trigger update handler to convert object value to links
 const ownerLinkId = ;
