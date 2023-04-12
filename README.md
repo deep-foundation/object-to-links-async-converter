@@ -10,7 +10,7 @@ Feel free to open issues to write there about bugs, improvement requests, questi
 ## How to use?
 ```ts
 const linkWithObjectValueTypeLinkId = ; // Type which instances will trigger update handler to convert object value to links
-conost ownerLinkId = ;
+const ownerLinkId = ;
 await deep.serial({
   operations: [
     ({
