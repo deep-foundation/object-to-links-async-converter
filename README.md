@@ -57,3 +57,5 @@ await deep.serial({
 ![image](https://user-images.githubusercontent.com/66206278/230576157-5bcfd0fa-4689-42b8-8ef0-badd7f5397ba.png)  
 String/Number/Object values are converted to loop-links which points from and to the same link. Boolean links point from the link to the ["@freephoenix888/boolean", "True"] or ["@freephoenix888/boolean", "False"]  
  
+## Limitations
+If you delete field in your object value - link associated with that field will not be deleted. We will add this feature as soon as logger package will be ready!
