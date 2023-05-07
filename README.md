@@ -28,10 +28,48 @@ await deep.insert([
   },
 ])
 ```
-3. Insert `HandleUpdate` which points from handler from this package to the type that is going to be handler (links of your type will be processed by this package to convert their object values to links)
+3. Create a `TestType` type link with `Object` value.
+
+```js
+const ownerLinkId = deep.linkId;
+
+const result = await deep.serial({
+  operations: [
+    {
+      table: 'links',
+      type: 'insert',
+      objects: {
+        type_id: await deep.id("@deep-foundation/core", "Type"),
+        out: {
+          data: {
+            type_id: await deep.id("@deep-foundation/core", "Value"),
+            to_id: await deep.id("@deep-foundation/core", "Object"),
+            in: {
+              data: {
+                type_id: await deep.id("@deep-foundation/core", "Contain"),
+                from_id: ownerLinkId,
+                string: { data: { value: "testTypeValue" } },
+              },
+            },
+          },
+        },
+        in: {
+          data: {
+            type_id: await deep.id("@deep-foundation/core", "Contain"),
+            from_id: ownerLinkId,
+            string: { data: { value: "TestType" } },
+          },
+        },
+      },
+    },
+  ],
+});
+
+const linkWithObjectValueTypeLinkId = result.data[0].id;
+```
+
+4. Insert `HandleUpdate` which points from handler from this package to the type that is going to be handled (links of your type will be processed by this package to convert their object values to links)
 ```ts
-const linkWithObjectValueTypeLinkId = ; // Type which instances will trigger update handler to convert object value to links
-const ownerLinkId = ;
 await deep.serial({
   operations: [
     ({
