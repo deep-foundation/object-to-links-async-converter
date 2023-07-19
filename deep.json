@@ -1,0 +1,130 @@
+{
+  "package": {
+    "name": "@freephoenix888/object-to-links-async-converter",
+    "version": "0.0.10"
+  },
+  "data": [
+    {
+      "package": {
+        "dependencyId": 0,
+        "containValue": "SyncTextFile"
+      },
+      "id": 1
+    },
+    {
+      "package": {
+        "dependencyId": 0,
+        "containValue": "Type"
+      },
+      "id": 2
+    },
+    {
+      "package": {
+        "dependencyId": 0,
+        "containValue": "Any"
+      },
+      "id": 3
+    },
+    {
+      "package": {
+        "dependencyId": 0,
+        "containValue": "Value"
+      },
+      "id": 4
+    },
+    {
+      "package": {
+        "dependencyId": 0,
+        "containValue": "Object"
+      },
+      "id": 5
+    },
+    {
+      "package": {
+        "dependencyId": 1,
+        "containValue": "Boolean"
+      },
+      "id": 6
+    },
+    {
+      "package": {
+        "dependencyId": 0,
+        "containValue": "String"
+      },
+      "id": 7
+    },
+    {
+      "package": {
+        "dependencyId": 0,
+        "containValue": "Handler"
+      },
+      "id": 8
+    },
+    {
+      "package": {
+        "dependencyId": 0,
+        "containValue": "dockerSupportsJs"
+      },
+      "id": 9
+    },
+    {
+      "id": "UpdateHandlerCode",
+      "type": 1,
+      "value": {
+        "value": "async ({\n  require,\n  deep,\n  data: { newLink: linkWithObjectValue, triggeredByLinkId },\n}) => {\n  const util = require('util');\n  const containTypeLinkId = await deep.id('@deep-foundation/core', 'Contain');\n  try {\n    await deep.id('@freephoenix888/boolean');\n  } catch (error) {\n    throw new Error(`@freephoenix888/boolean package must be installed`);\n  }\n  const trueTypeLinkId = await deep.id('@freephoenix888/boolean', 'True');\n  const falseTypeLinkId = await deep.id('@freephoenix888/boolean', 'False');\n  let serialOperations = [];\n  const obj = linkWithObjectValue.value.value;\n  const containerLinkOfLinkWithObjectValue =\n    await getPackageLinkOfLinkWithObjectValue();\n  const config = await getConfig();\n  const parentTypeName = await getParentTypeName({\n    containerLinkOfLinkWithObjectValue,\n    linkWithObjectValue,\n  });\n  for (const [key, value] of Object.entries(obj)) {\n    console.log({ key, value });\n    let typeLinkId;\n    console.log('Before getTypeName');\n    const typeName = await getTypeName({ parentTypeName, memberName: key });\n    console.log(\n      `deep.id(${containerLinkOfLinkWithObjectValue.id}, ${typeName})`\n    );\n\n    try {\n      typeLinkId = await deep.id(\n        containerLinkOfLinkWithObjectValue.id,\n        typeName\n      );\n    } catch (error) {\n      continue;\n    }\n    const typeOfValue = typeof value;\n    const {\n      data: [link],\n    } = await deep.select({\n      type_id: typeLinkId,\n      from_id: linkWithObjectValue.id,\n      to_id: linkWithObjectValue.id,\n    });\n    if (\n      typeOfValue === 'string' ||\n      typeOfValue === 'number' ||\n      typeOfValue === 'object'\n    ) {\n      if (!link) {\n        serialOperations.push({\n          table: 'links',\n          type: 'insert',\n          objects: [\n            {\n              type_id: typeLinkId,\n              from_id: linkWithObjectValue.id,\n              to_id: linkWithObjectValue.id,\n              [typeOfValue]: {\n                data: {\n                  value: value,\n                },\n              },\n              in: {\n                data: [\n                  {\n                    type_id: containTypeLinkId,\n                    from_id: linkWithObjectValue.id,\n                  },\n                ],\n              },\n            },\n          ],\n        });\n      } else {\n        serialOperations.push({\n          table: typeof value + 's',\n          type: 'update',\n          exp: {\n            link_id: link.id,\n          },\n          value: {\n            value: value,\n          },\n        });\n      }\n    } else if (typeof value === 'boolean') {\n      // TODO: use update when the feature will be released\n      serialOperations.push({\n        table: 'links',\n        type: 'delete',\n        exp: {\n          type_id: typeLinkId,\n          from_id: linkWithObjectValue.id,\n        },\n      });\n      serialOperations.push({\n        table: 'links',\n        type: 'insert',\n        objects: {\n          type_id: typeLinkId,\n          from_id: linkWithObjectValue.id,\n          to_id: value ? trueTypeLinkId : falseTypeLinkId,\n          in: {\n            data: {\n              type_id: containTypeLinkId,\n              from_id: linkWithObjectValue.id,\n            },\n          },\n        },\n      });\n    }\n  }\n\n  // const linksOfremovedPropertiesDeleteQuery = {\n  //   up: {\n  //     tree_id: {\n  //       _eq: await deep.id(\"@deep-foundation/core\", \"containTree\")\n  //     },\n  //     parent: {\n  //       type_id: containTypeLinkId,\n  //       to: {\n  //         from_id: linkWithObjectValue.id,\n  //         type: {\n  //           in: {\n  //             type_id: containTypeLinkId,\n  //             string: {\n  //               value: {\n  //                 _nin: [\"Contain\", ...Object.keys(obj)]\n  //               }\n  //             }\n  //           }\n  //         }\n  //       }\n  //     }\n  //   }\n  // }\n\n  // serialOperations.push({\n  //   table: 'links',\n  //   type: 'delete',\n  //   exp: linksOfremovedPropertiesDeleteQuery\n  // });\n\n  console.log(util.inspect(serialOperations, { depth: 15 }));\n  const serialResult = await deep.serial({\n    operations: serialOperations,\n  });\n  console.log('serialResult', util.inspect(serialResult, { depth: 15 }));\n\n  async function getPackageLinkOfLinkWithObjectValue() {\n    const packageLinkOfLinkWithObjectValueSelectData = {\n      type_id: {\n        _in: [\n          await deep.id('@deep-foundation/core', 'Package'),\n          await deep.id('@deep-foundation/core', 'User'),\n        ],\n      },\n      out: {\n        type_id: containTypeLinkId,\n        to_id: linkWithObjectValue.type_id,\n      },\n    };\n    const {\n      data: [packageLinkOfLinkWithObjectValue],\n    } = await deep.select(packageLinkOfLinkWithObjectValueSelectData);\n    if (!packageLinkOfLinkWithObjectValue) {\n      throw new Error(\n        `Unable to find package that contains type ##${linkWithObjectValue.type_id} of ##${linkWithObjectValue.id}`\n      );\n    }\n    return packageLinkOfLinkWithObjectValue;\n  }\n\n  async function getDefaultObjectMemberNameToTypeNameConverterFunction() {\n    const { data } = await deep.select({\n      id: await deep.id(\n        deep.linkId,\n        'FirstLetterUppercaseObjectMemberNameToTypeNameConverterFunction'\n      ),\n    });\n    return new Function('params', `return (${data[0].value.value})(params);`);\n  }\n\n  async function getObjectMemberNameToTypeNameConverterFunction() {\n    let objectMemberNameToTypeNameConverterFunctionString;\n    const { data } = await deep.select({\n      type_id: {\n        _id: [\n          '@freephoenix888/object-to-links-async-converter',\n          'ObjectMemberNameToTypeNameConverterFunction',\n        ],\n      },\n      in: {\n        type_id: {\n          _id: [\n            '@freephoenix888/object-to-links-async-converter',\n            'UsesObjectMemberNameToTypeNameConverterFunction',\n          ],\n        },\n        from_id: triggeredByLinkId,\n      },\n    });\n    if (!data[0]) {\n      return await getDefaultObjectMemberNameToTypeNameConverterFunction();\n    }\n    if (!data[0].value?.value) {\n      throw new Error(`${data[0].id} must have a value`);\n    }\n    objectMemberNameToTypeNameConverterFunctionString = data[0].value.value;\n    return new Function(\n      'params',\n      `return(${objectMemberNameToTypeNameConverterFunctionString})(params);`\n    );\n  }\n\n  async function getTypeName({ parentTypeName, memberName }) {\n    try {\n      const objectMemberNameToTypeNameConverterFunction =\n        await getObjectMemberNameToTypeNameConverterFunction();\n      return await objectMemberNameToTypeNameConverterFunction({\n        parentTypeName: config.addTypeNameToPropertyName\n          ? parentTypeName\n          : undefined,\n        memberName,\n      });\n    } catch (error) {\n      throw new Error(\n        `Failed to get type name for memberName ${memberName}. ${error.message}`\n      );\n    }\n  }\n\n  async function getConfig() {\n    const {\n      data: [customConfigLink],\n    } = await deep.select({\n      type_id: {\n        _id: [deep.linkId, 'Config'],\n      },\n      in: {\n        type_id: containTypeLinkId,\n        from_id: containerLinkOfLinkWithObjectValue.id,\n      },\n    });\n    const customConfig = customConfigLink?.value?.value;\n    return {\n      addTypeNameToPropertyName:\n        customConfig?.addTypeNameToPropertyName ?? false,\n    };\n  }\n\n  async function getParentTypeName({\n    containerLinkOfLinkWithObjectValue,\n    linkWithObjectValue,\n  }) {\n    const selectData = {\n      type_id: {\n        _id: ['@deep-foundation/core', 'Contain'],\n      },\n      from_id: containerLinkOfLinkWithObjectValue.id,\n      to_id: linkWithObjectValue.type_id,\n    };\n    const {\n      data: [containLink],\n    } = await deep.select(selectData);\n    if (!containLink) {\n      throw new Error(\n        `Select with data ${JSON.stringify(selectData)} returned empty result`\n      );\n    }\n    if (!containLink.value?.value) {\n      throw new Error(`${containLink.id} does not have value`);\n    }\n    return containLink.value.value;\n  }\n};\n"
+      }
+    },
+    {
+      "id": "Config",
+      "type": 2,
+      "from": 3,
+      "to": 3
+    },
+    {
+      "id": "TypeOfValueOfConfig",
+      "type": 4,
+      "from": "Config",
+      "to": 5
+    },
+    {
+      "id": "@freephoenix888/booleanDependency",
+      "type": 2,
+      "from": 6,
+      "to": 6
+    },
+    {
+      "id": "ObjectMemberNameToTypeNameConverterFunction",
+      "type": 2
+    },
+    {
+      "id": "FirstLetterUppercaseObjectMemberNameToTypeNameConverterFunction",
+      "type": "ObjectMemberNameToTypeNameConverterFunction",
+      "value": {
+        "value": "({ memberName, parentTypeName = '' }) => {\n  return (\n    parentTypeName.charAt(0).toUpperCase() +\n    parentTypeName.slice(1) +\n    (memberName.charAt(0).toUpperCase() + memberName.slice(1))\n  );\n}\n"
+      }
+    },
+    {
+      "id": "ObjectMemberNameToTypeNameConverterFunctionValueType",
+      "type": 4,
+      "from": "ObjectMemberNameToTypeNameConverterFunction",
+      "to": 7
+    },
+    {
+      "id": "UpdateHandler",
+      "type": 8,
+      "from": 9,
+      "to": "UpdateHandlerCode"
+    }
+  ],
+  "errors": [],
+  "dependencies": [
+    {
+      "name": "@deep-foundation/core",
+      "version": "0.0.2"
+    },
+    {
+      "name": "@freephoenix888/boolean",
+      "version": "0.0.1"
+    }
+  ]
+}

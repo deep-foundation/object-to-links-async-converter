@@ -1,7 +1,8 @@
 {
   "name": "@freephoenix888/object-to-links-async-converter",
-  "keywords": [],
-  "version": "0.0.2",
+  "keywords": [
+    "deep-package"
+  ],
   "description": "",
   "repository": {
     "type": "git",
@@ -19,8 +20,11 @@
     "/dist",
     "./deep.json"
   ],
+  "version": "0.0.10",
   "dependencies": {
-    "@deep-foundation/core": "^0.0.2"
+    "@deep-foundation/core": "^0.0.2",
+    "@deep-foundation/tsx": "^0.0.2",
+    "@freephoenix888/boolean": "^0.0.1"
   },
   "devDependencies": {
     "@atao60/fse-cli": "^0.1.7",
