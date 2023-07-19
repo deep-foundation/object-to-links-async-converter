@@ -1,15 +1,11 @@
-# object-to-links-async-converter
-[NPM](https://www.npmjs.com/package/@freephoenix888/object-to-links-async-converter)
+[![npm](https://img.shields.io/npm/v/@freephoenix888/object-to-links-async-converter.svg)](https://www.npmjs.com/package/@freephoenix888/object-to-links-async-converter) 
+[![Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/FreePhoenix888/object-to-links-async-converter) 
 
-# About
-This package is used to convert object values to links for specific types you are going to choose on your own
+Converts object values to links.
 
-# Feedback
-Feel free to open issues to write there about bugs, improvement requests, questions
+**In development**
 
-# FAQ
-
-## How to use?
+# Usage
 1. Install the package
 2. Give permissions to the package
 ```ts
@@ -97,3 +93,6 @@ String/Number/Object values are converted to loop-links which points from and to
  
 ## Limitations
 If you delete field in your object value - link associated with that field will not be deleted. We will add this feature as soon as logger package will be ready!
+
+# Feedback
+Feel free to open issues to write there about bugs, improvement requests, questions
