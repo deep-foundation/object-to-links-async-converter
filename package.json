@@ -12,7 +12,8 @@
     "build": "fse remove dist && tsc",
     "npm-pull": "npm-pull",
     "npm-release": "npm-release",
-    "npm-install": "npm-install"
+    "npm-install": "npm-install",
+    "generate-package-class": "generate-package-class"
   },
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
