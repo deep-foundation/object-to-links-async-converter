@@ -224,10 +224,6 @@ async ({
     const log = getNamespacedLogger({ namespace: main.name });
     const containTypeLinkId = await deep.id('@deep-foundation/core', 'Contain');
     log({ containTypeLinkId });
-    const typeTypeLinkId = await deep.id('@deep-foundation/core', 'Type');
-    log({ typeTypeLinkId });
-    const valueTypeLinkId = await deep.id('@deep-foundation/core', 'Value');
-    log({ valueTypeLinkId });
     const trueTypeLinkId = await deep.id(
       '@freephoenix888/boolean',
       'True'
@@ -238,11 +234,8 @@ async ({
       'False'
     );
     log({ falseTypeLinkId });
-    const treeIncludeFromCurrentTypeLinkId = await deep.id(
-      '@deep-foundation/core',
-      'TreeIncludeFromCurrent'
-    );
-    log({ treeIncludeFromCurrentTypeLinkId });
+    const resultTypeLinkId = await deep.id(deep.linkId!, "Result");
+    log({ resultTypeLinkId });
 
     const {
       data: [linkWithObjectValue],
