@@ -193,7 +193,6 @@ async ({
 
     serialOperations.push(containInsertSerialOperation);
     log({ serialOperations });
-    // TODO: Add operations for members
     return serialOperations;
   }
 
