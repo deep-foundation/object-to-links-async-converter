@@ -187,7 +187,8 @@ async ({
         parentLinkId: linkId,
         value: objectValue,
         falseTypeLinkId: options.falseTypeLinkId,
-        trueTypeLinkId: options.trueTypeLinkId
+        trueTypeLinkId: options.trueTypeLinkId,
+        reservedLinkIds
       });
     }
 
@@ -206,6 +207,8 @@ async ({
   } & {
     trueTypeLinkId: number;
     falseTypeLinkId: number;
+  } & {
+    reservedLinkIds: Array<number>;
   }
 
   async function getInsertSerialOperationsForAnyValue(options: GetInsertSerialOperationsForAnyValueOptions) { 
