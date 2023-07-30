@@ -324,7 +324,10 @@ async ({
     });
     log({ serialResult });
 
-    return serialResult;
+    return {
+      resultLinkId,
+      serialResult
+    };
   }
 
   // function getLinksToReserveCount(options: { obj: Record<string, any> }) {
