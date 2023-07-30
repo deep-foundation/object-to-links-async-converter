@@ -1,6 +1,7 @@
 import {
   DeepClient,
   SerialOperation,
+  Table,
 } from '@deep-foundation/deeplinks/imports/client';
 import { BoolExpLink } from '@deep-foundation/deeplinks/imports/client_types';
 import { Link } from '@deep-foundation/deeplinks/imports/minilinks';
@@ -27,6 +28,54 @@ async ({
       error,
       logs,
     };
+  }
+
+  type GetInsertSerialOperationsForPrimitiveOptions = GetInsertSerialOperationsForAnyValueOptions
+
+  async function getInsertSerialOperationsForPrimitiveValue(options: GetInsertSerialOperationsForPrimitiveOptions) {
+    const serialOperations: Array<SerialOperation> = [];
+    const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId } = options;
+    const log = await getNamespacedLogger({
+      namespace: getInsertSerialOperationsForStringValue.name,
+    });
+    const typeOfValue = typeof value;
+    if(typeOfValue !== 'string' && typeOfValue !== 'number') {
+      throw new Error(`Value ${value} is not a primitive value`);
+    }
+    const linkInsertSerialOperation = createSerialOperation({
+      type: 'insert',
+      table: 'links',
+      objects: {
+        id: linkId,
+        ...(parentLinkId && { from_id: parentLinkId, to_id: parentLinkId }),
+        type_id: // TODO
+      }
+    })
+    log({ linkInsertSerialOperation });
+    serialOperations.push(linkInsertSerialOperation);
+    const stringValueInsertSerialOperation = createSerialOperation({
+      type: 'insert',
+      table: `${typeOfValue}s`,
+      objects: {
+        link_id: linkId,
+        value: value
+      }
+    })
+    log({ stringValueInsertSerialOperation });
+    serialOperations.push(stringValueInsertSerialOperation);
+    const containInsertSerialOperation = createSerialOperation({
+      type: 'insert',
+      table: 'links',
+      objects: {
+        id: containLinkId,
+        from_id: containerLinkId,
+        to_id: linkId
+      }
+    })
+    log({ containInsertSerialOperation });
+    serialOperations.push(containInsertSerialOperation);
+    log({ serialOperations });
+    return serialOperations;
   }
 
   type GetInsertSerialOperationsForStringOptions = GetInsertSerialOperationsForAnyValueOptions & {
@@ -218,7 +267,7 @@ async ({
       linkId,
       name,
       parentLinkId,
-      value
+      value,
     });
     log({ serialOperations });
 
