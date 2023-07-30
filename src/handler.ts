@@ -376,28 +376,6 @@ async ({
     return count;
   }
 
-  interface Config {
-    addParentPropertyNameToChildName: boolean;
-  }
-
-  async function getConfigLink(options: { linkWithObjectValue: Link<number> }) {
-    const { linkWithObjectValue } = options;
-    const selectData = {
-      id: parseItLink.from_id,
-    };
-    const {
-      data: [link],
-    } = await deep.select(selectData);
-    if (!link) {
-      throw new Error(
-        `Unable to find link that contains ##${
-          linkWithObjectValue.type_id
-        } by using query ${JSON.stringify(selectData)}`
-      );
-    }
-    return link;
-  }
-
   function getNamespacedLogger({
     namespace,
     depth = DEFAULT_LOG_DEPTH,
