@@ -252,11 +252,6 @@ async ({
     const obj = linkWithObjectValue.value.value;
     log({ obj });
 
-    const config = await getConfig({
-      linkWithObjectValue,
-    });
-    log({ config });
-
     const linksToReserveCount = getLinksToReserveCount({ value: obj });
     log({ linksToReserveCount });
     const reservedLinkIds = await deep.reserve(
@@ -337,18 +332,6 @@ async ({
 
   interface Config {
     addParentPropertyNameToChildName: boolean;
-  }
-
-  async function getConfig(options: {
-    linkWithObjectValue: Link<number>;
-  }): Promise<Config> {
-    const { linkWithObjectValue } = options;
-    const customConfig = (await getConfigLink({ linkWithObjectValue })).value
-      ?.value;
-    return {
-      addParentPropertyNameToChildName:
-        customConfig?.addParentPropertyNameToChildName ?? false,
-    };
   }
 
   async function getConfigLink(options: { linkWithObjectValue: Link<number> }) {
