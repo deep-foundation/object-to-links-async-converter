@@ -3,7 +3,6 @@ import {
   SerialOperation,
   Table,
 } from '@deep-foundation/deeplinks/imports/client';
-import { BoolExpLink } from '@deep-foundation/deeplinks/imports/client_types';
 import { Link } from '@deep-foundation/deeplinks/imports/minilinks';
 
 async ({
@@ -14,7 +13,6 @@ async ({
   data: { newLink: Link<number>, triggeredByLinkId: number};
 }) => {
   const util = await import('util');
-  const {capitalCase} = await import('case-anything');
   const {createSerialOperation} = await import('@deep-foundation/deeplinks/imports/gql/index')
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
