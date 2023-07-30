@@ -7,7 +7,7 @@ import { Link } from '@deep-foundation/deeplinks/imports/minilinks';
 
 async ({
   deep,
-  data: { newLink: convertLink ,triggeredByLinkId},
+  data: { newLink: parseItLink ,triggeredByLinkId},
 }: {
   deep: DeepClient;
   data: { newLink: Link<number>, triggeredByLinkId: number};
@@ -257,7 +257,7 @@ async ({
     const {
       data: [linkWithObjectValue],
     } = await deep.select({
-      id: convertLink.to_id,
+      id: parseItLink.to_id,
     });
     log({ linkWithObjectValue });
     if (!linkWithObjectValue.value?.value) {
@@ -283,14 +283,40 @@ async ({
           1) // Contain for Tree
     );
     log({ reservedLinkIds });
-    const serialOperations = await getInsertSerialOperationsForAnyValue({
-      containerLinkId,
+
+      const resultLinkId = reservedLinkIds.pop()!;
+      const rootObjectLinkId = reservedLinkIds.pop()!;
+
+    let serialOperations = await getInsertSerialOperationsForAnyValue({
+      containerLinkId: resultLinkId,
       containLinkId: reservedLinkIds.pop()!,
-      linkId: reservedLinkIds.pop()!,
+      linkId: rootObjectLinkId,
       name,
       parentLinkId: undefined,
       value: obj,
     });
+    serialOperations = [
+      ...serialOperations,
+      createSerialOperation({
+        type: 'insert',
+        table: 'links',
+        objects: {
+          id: resultLinkId,
+          type_id: resultTypeLinkId,
+          from_id: linkWithObjectValue.id,
+          to_id: rootObjectLinkId,
+        }
+      }),
+      createSerialOperation({
+        type: 'insert',
+        table: 'links',
+        objects: {
+          type_id: containTypeLinkId,
+          from_id: linkWithObjectValue.id,
+          to_id: resultLinkId,
+        }
+      })
+    ]
     log({ serialOperations });
 
     const serialResult = await deep.serial({
@@ -354,7 +380,7 @@ async ({
   async function getConfigLink(options: { linkWithObjectValue: Link<number> }) {
     const { linkWithObjectValue } = options;
     const selectData = {
-      id: convertLink.from_id,
+      id: parseItLink.from_id,
     };
     const {
       data: [link],
