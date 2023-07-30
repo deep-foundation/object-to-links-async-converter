@@ -135,6 +135,8 @@ async ({
 
   type GetInsertSerialOperationsForObject = GetInsertSerialOperationsForAnyValueOptions & {
     value: object;
+  } & {
+    reservedLinkIds: Array<number>;
   }
 
   async function getInsertSerialOperationsForObject(options: GetInsertSerialOperationsForObject) {
@@ -174,6 +176,21 @@ async ({
       }
     })
     log({ containInsertSerialOperation });
+
+    const {reservedLinkIds} = options;
+    for (const [objectKey, objectValue] of Object.entries(value)) {
+      await getInsertSerialOperationsForAnyValue({
+        containerLinkId: linkId,
+        containLinkId: reservedLinkIds.pop()!,
+        linkId: reservedLinkIds.pop()!,
+        name: objectKey,
+        parentLinkId: linkId,
+        value: objectValue,
+        falseTypeLinkId: options.falseTypeLinkId,
+        trueTypeLinkId: options.trueTypeLinkId
+      });
+    }
+
     serialOperations.push(containInsertSerialOperation);
     log({ serialOperations });
     // TODO: Add operations for members
