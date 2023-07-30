@@ -38,7 +38,7 @@ async ({
   async function getInsertSerialOperationsForStringOrNumberValue(options: GetInsertSerialOperationsForStringOrNumberOptions) {
     const serialOperations: Array<SerialOperation> = [];
     const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId } = options;
-    const log = await getNamespacedLogger({
+    const log = getNamespacedLogger({
       namespace: getInsertSerialOperationsForStringValue.name,
     });
     const linkInsertSerialOperation = createSerialOperation({
@@ -103,7 +103,7 @@ async ({
   async function getInsertSerialOperationsForBooleanValue(options: GetInsertSerialOperationsForBooleanOptions) {
     const serialOperations: Array<SerialOperation> = [];
     const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId,falseTypeLinkId,trueTypeLinkId } = options;
-    const log = await getNamespacedLogger({
+    const log = getNamespacedLogger({
       namespace: getInsertSerialOperationsForStringValue.name,
     });
     const linkInsertSerialOperation = createSerialOperation({
@@ -140,7 +140,7 @@ async ({
   async function getInsertSerialOperationsForObject(options: GetInsertSerialOperationsForObject) {
     const serialOperations: Array<SerialOperation> = [];
     const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId } = options;
-    const log = await getNamespacedLogger({
+    const log = getNamespacedLogger({
       namespace: getInsertSerialOperationsForStringValue.name,
     });
     const linkInsertSerialOperation = createSerialOperation({
@@ -221,7 +221,7 @@ async ({
 
 
   async function main() {
-    const log = await getNamespacedLogger({ namespace: main.name });
+    const log = getNamespacedLogger({ namespace: main.name });
     const containTypeLinkId = await deep.id('@deep-foundation/core', 'Contain');
     log({ containTypeLinkId });
     const typeTypeLinkId = await deep.id('@deep-foundation/core', 'Type');
