@@ -291,7 +291,7 @@ async ({
       containerLinkId: resultLinkId,
       containLinkId: reservedLinkIds.pop()!,
       linkId: rootObjectLinkId,
-      name,
+      name: // TODO,
       parentLinkId: undefined,
       value: obj,
     });
