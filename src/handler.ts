@@ -8,12 +8,13 @@ import { Link } from '@deep-foundation/deeplinks/imports/minilinks';
 
 async ({
   deep,
-  data: { newLink: convertLink },
+  data: { newLink: convertLink ,triggeredByLinkId},
 }: {
   deep: DeepClient;
-  data: { newLink: Link<number> };
+  data: { newLink: Link<number>, triggeredByLinkId: number};
 }) => {
   const util = await import('util');
+  const {capitalCase} = await import('case-anything');
   const {createSerialOperation} = await import('@deep-foundation/deeplinks/imports/gql/index')
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
@@ -30,18 +31,16 @@ async ({
     };
   }
 
-  type GetInsertSerialOperationsForPrimitiveOptions = GetInsertSerialOperationsForAnyValueOptions
+  type GetInsertSerialOperationsForStringOrNumberOptions = GetInsertSerialOperationsForAnyValueOptions & {
+    value: string|number;
+  }
 
-  async function getInsertSerialOperationsForPrimitiveValue(options: GetInsertSerialOperationsForPrimitiveOptions) {
+  async function getInsertSerialOperationsForStringOrNumberValue(options: GetInsertSerialOperationsForStringOrNumberOptions) {
     const serialOperations: Array<SerialOperation> = [];
     const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId } = options;
     const log = await getNamespacedLogger({
       namespace: getInsertSerialOperationsForStringValue.name,
     });
-    const typeOfValue = typeof value;
-    if(typeOfValue !== 'string' && typeOfValue !== 'number') {
-      throw new Error(`Value ${value} is not a primitive value`);
-    }
     const linkInsertSerialOperation = createSerialOperation({
       type: 'insert',
       table: 'links',
@@ -55,7 +54,7 @@ async ({
     serialOperations.push(linkInsertSerialOperation);
     const stringValueInsertSerialOperation = createSerialOperation({
       type: 'insert',
-      table: `${typeOfValue}s`,
+      table: `${typeof value}s` as Table<'insert'>,
       objects: {
         link_id: linkId,
         value: value
@@ -83,8 +82,27 @@ async ({
   }
 
   async function getInsertSerialOperationsForStringValue(options: GetInsertSerialOperationsForStringOptions) {
+    return getInsertSerialOperationsForStringOrNumberValue(options);
+  }
+
+  type GetInsertSerialOperationsForNumberOptions = GetInsertSerialOperationsForAnyValueOptions & {
+    value: number;
+  }
+
+  async function getInsertSerialOperationsForNumberValue(options: GetInsertSerialOperationsForNumberOptions) {
+    return getInsertSerialOperationsForStringOrNumberValue(options);
+  }
+
+  type GetInsertSerialOperationsForBooleanOptions = GetInsertSerialOperationsForAnyValueOptions & {
+    value: boolean;
+  } & {
+    trueTypeLinkId: number;
+    falseTypeLinkId: number;
+  }
+
+  async function getInsertSerialOperationsForBooleanValue(options: GetInsertSerialOperationsForBooleanOptions) {
     const serialOperations: Array<SerialOperation> = [];
-    const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId } = options;
+    const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId,falseTypeLinkId,trueTypeLinkId } = options;
     const log = await getNamespacedLogger({
       namespace: getInsertSerialOperationsForStringValue.name,
     });
@@ -93,22 +111,13 @@ async ({
       table: 'links',
       objects: {
         id: linkId,
-        ...(parentLinkId && { from_id: parentLinkId, to_id: parentLinkId }),
+        ...(parentLinkId && { from_id: parentLinkId }),
+        to_id: value ? trueTypeLinkId : falseTypeLinkId,
         type_id: // TODO
       }
     })
     log({ linkInsertSerialOperation });
     serialOperations.push(linkInsertSerialOperation);
-    const stringValueInsertSerialOperation = createSerialOperation({
-      type: 'insert',
-      table: 'strings',
-      objects: {
-        link_id: linkId,
-        value: value
-      }
-    })
-    log({ stringValueInsertSerialOperation });
-    serialOperations.push(stringValueInsertSerialOperation);
     const containInsertSerialOperation = createSerialOperation({
       type: 'insert',
       table: 'links',
@@ -171,13 +180,16 @@ async ({
     return serialOperations;
   }
 
-  interface GetInsertSerialOperationsForAnyValueOptions {
+  type GetInsertSerialOperationsForAnyValueOptions = {
     value: string|number|object|boolean;
-    parentLinkId: number;
+    parentLinkId: number|undefined;
     containLinkId: number;
     containerLinkId: number;
     name: string;
     linkId: number;
+  } & {
+    trueTypeLinkId: number;
+    falseTypeLinkId: number;
   }
 
   async function getInsertSerialOperationsForAnyValue(options: GetInsertSerialOperationsForAnyValueOptions) { 
@@ -195,7 +207,7 @@ async ({
     } else if (typeof value === 'boolean') {
       return await getInsertSerialOperationsForBooleanValue({
         ...options,
-        value
+        value,
       })
     } else if (typeof value === 'object') {
       return await getInsertSerialOperationsForObject({
@@ -216,11 +228,16 @@ async ({
     log({ typeTypeLinkId });
     const valueTypeLinkId = await deep.id('@deep-foundation/core', 'Value');
     log({ valueTypeLinkId });
-    const booleanTypeLinkId = await deep.id(
+    const trueTypeLinkId = await deep.id(
       '@freephoenix888/boolean',
-      'Boolean'
+      'True'
     );
-    log({ booleanTypeLinkId });
+    log({ trueTypeLinkId });
+    const falseTypeLinkId = await deep.id(
+      '@freephoenix888/boolean',
+      'False'
+    );
+    log({ falseTypeLinkId });
     const treeIncludeFromCurrentTypeLinkId = await deep.id(
       '@deep-foundation/core',
       'TreeIncludeFromCurrent'
@@ -247,7 +264,7 @@ async ({
     });
     log({ config });
 
-    const linksToReserveCount = getLinksToReserveCount({ obj });
+    const linksToReserveCount = getLinksToReserveCount({ value: obj });
     log({ linksToReserveCount });
     const reservedLinkIds = await deep.reserve(
       linksToReserveCount *
@@ -263,11 +280,11 @@ async ({
     log({ reservedLinkIds });
     const serialOperations = await getInsertSerialOperationsForAnyValue({
       containerLinkId,
-      containLinkId,
-      linkId,
+      containLinkId: reservedLinkIds.pop()!,
+      linkId: reservedLinkIds.pop()!,
       name,
-      parentLinkId,
-      value,
+      parentLinkId: undefined,
+      value: obj,
     });
     log({ serialOperations });
 
@@ -279,17 +296,49 @@ async ({
     return serialResult;
   }
 
-  function getLinksToReserveCount(options: { obj: Record<string, any> }) {
-    const { obj } = options;
-    let count = Object.keys(obj).length;
-    for (const value of Object.values(obj)) {
-      if (!value) continue;
-      if (typeof value === 'object') {
-        count += getLinksToReserveCount({ obj: value });
-      } else if (Array.isArray(value) && value.length > 0) {
-        count += getLinksToReserveCount({ obj: value[0] });
+  // function getLinksToReserveCount(options: { obj: Record<string, any> }) {
+  //   const { obj } = options;
+  //   let count = Object.keys(obj).length;
+  //   for (const value of Object.values(obj)) {
+  //     if (!value) continue;
+  //     if (typeof value === 'object') {
+  //       count += getLinksToReserveCount({ obj: value });
+  //     } else if (Array.isArray(value) && value.length > 0) {
+  //       if(typeof value[0] === 'object') {
+  //         count += (getLinksToReserveCount({ obj: value[0] }) * value.length);
+  //       };
+  //       count += value.length;
+  //     }
+  //   }
+  //   return count;
+  // }
+
+  function getLinksToReserveCount(options: { value: string|number|boolean|object }): number {
+    const { value } = options;
+    const log = getNamespacedLogger({ namespace: getLinksToReserveCount.name });
+    log({options})
+    let count = 0;
+    const typeOfValue = typeof value;
+    log({ typeOfValue })
+    if(typeOfValue === 'string') {
+      count = 2;
+    } else if (typeOfValue === 'number') {
+      count = 2;
+    } else if (typeOfValue === 'boolean') {
+      count = 2;
+    } else if (Array.isArray(value)) {
+      const array = value as Array<any>;
+      for (const arrayValue of array) {
+        if(!arrayValue) return count;
+        count += getLinksToReserveCount({ value: arrayValue });
       }
-    }
+    } else if (typeOfValue === 'object') {
+      for (const [objectKey, objectValue] of Object.entries(value)) {
+        if(!value) return count;
+        count += getLinksToReserveCount({ value: objectValue });
+      }
+    } 
+    log({ count })
     return count;
   }
 
@@ -327,7 +376,7 @@ async ({
     return link;
   }
 
-  async function getNamespacedLogger({
+  function getNamespacedLogger({
     namespace,
     depth = DEFAULT_LOG_DEPTH,
   }: {
@@ -339,4 +388,18 @@ async ({
       logs.push(`${namespace}: ${message}`);
     };
   }
+
+  // async function updateMinilinks() {
+  //   const {data: links} = await deep.select({
+  //     up: {
+  //       tree_id: {
+  //         _id: ["@deep-foundation/core", "containTree"]
+  //       },
+  //       parent_id: {
+  //         _id: []
+  //       }
+  //     }
+  //   });
+  //   deep.minilinks.apply(links);
+  // }
 };
