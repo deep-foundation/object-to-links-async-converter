@@ -381,23 +381,6 @@ async ({
     };
   }
 
-  // function getLinksToReserveCount(options: { obj: Record<string, any> }) {
-  //   const { obj } = options;
-  //   let count = Object.keys(obj).length;
-  //   for (const value of Object.values(obj)) {
-  //     if (!value) continue;
-  //     if (typeof value === 'object') {
-  //       count += getLinksToReserveCount({ obj: value });
-  //     } else if (Array.isArray(value) && value.length > 0) {
-  //       if(typeof value[0] === 'object') {
-  //         count += (getLinksToReserveCount({ obj: value[0] }) * value.length);
-  //       };
-  //       count += value.length;
-  //     }
-  //   }
-  //   return count;
-  // }
-
   function getLinksToReserveCount(options: { value: string|number|boolean|object }): number {
     const { value } = options;
     const log = getNamespacedLogger({ namespace: getLinksToReserveCount.name });
