@@ -423,17 +423,4 @@ async ({
     };
   }
 
-  // async function updateMinilinks() {
-  //   const {data: links} = await deep.select({
-  //     up: {
-  //       tree_id: {
-  //         _id: ["@deep-foundation/core", "containTree"]
-  //       },
-  //       parent_id: {
-  //         _id: []
-  //       }
-  //     }
-  //   });
-  //   deep.minilinks.apply(links);
-  // }
 };
