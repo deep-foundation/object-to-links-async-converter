@@ -71,6 +71,16 @@ async ({
     })
     log({ containInsertSerialOperation });
     serialOperations.push(containInsertSerialOperation);
+    const stringValueForContainInsertSerialOperation = createSerialOperation({
+      type: 'insert',
+      table: 'strings',
+      objects: {
+        link_id: containLinkId,
+        value: name
+      }
+    })
+    log({stringValueForContainInsertSerialOperation})
+    serialOperations.push(stringValueForContainInsertSerialOperation)
     log({ serialOperations });
     return serialOperations;
   }
@@ -127,6 +137,17 @@ async ({
     })
     log({ containInsertSerialOperation });
     serialOperations.push(containInsertSerialOperation);
+    serialOperations.push(containInsertSerialOperation);
+    const stringValueForContainInsertSerialOperation = createSerialOperation({
+      type: 'insert',
+      table: 'strings',
+      objects: {
+        link_id: containLinkId,
+        value: name
+      }
+    })
+    log({stringValueForContainInsertSerialOperation})
+    serialOperations.push(stringValueForContainInsertSerialOperation)
     log({ serialOperations });
     return serialOperations;
   }
@@ -174,6 +195,17 @@ async ({
       }
     })
     log({ containInsertSerialOperation });
+    serialOperations.push(containInsertSerialOperation);
+    const stringValueForContainInsertSerialOperation = createSerialOperation({
+      type: 'insert',
+      table: 'strings',
+      objects: {
+        link_id: containLinkId,
+        value: name
+      }
+    })
+    log({stringValueForContainInsertSerialOperation})
+    serialOperations.push(stringValueForContainInsertSerialOperation)
 
     const {reservedLinkIds} = options;
     for (const [objectKey, objectValue] of Object.entries(value)) {
