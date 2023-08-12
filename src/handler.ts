@@ -29,56 +29,6 @@ async ({
     };
   }
 
-  type GetInsertSerialOperationsForStringOrNumberOptions = GetInsertSerialOperationsForAnyValueOptions & {
-    value: string|number;
-  }
-
-  
-
-  type GetInsertSerialOperationsForStringOptions = GetInsertSerialOperationsForAnyValueOptions & {
-    value: string;
-  }
-
-  type GetInsertSerialOperationsForNumberOptions = GetInsertSerialOperationsForAnyValueOptions & {
-    value: number;
-  }
-
-  type GetInsertSerialOperationsForBooleanOptions = GetInsertSerialOperationsForAnyValueOptions & {
-    value: boolean;
-  } & {
-    trueTypeLinkId: number;
-    falseTypeLinkId: number;
-  }
-
-  
-
-  type GetInsertSerialOperationsForObject = GetInsertSerialOperationsForAnyValueOptions & {
-    value: object;
-    getInsertSerialOperationsForAnyValue?: typeof defaults.getInsertSerialOperationsForAnyValue;
-  } & {
-    reservedLinkIds: Array<number>;
-  }
-
-  
-
-  type GetInsertSerialOperationsForAnyValueOptions = {
-    value: string|number|object|boolean;
-    parentLinkId: number|undefined;
-    containLinkId: number;
-    containerLinkId: number;
-    name: string;
-    linkId: number;
-    getInsertSerialOperationsForObject?: typeof defaults.getInsertSerialOperationsForObject;
-    getInsertSerialOperationsForStringValue?: typeof defaults.getInsertSerialOperationsForStringValue;
-    getInsertSerialOperationsForNumberValue?: typeof defaults.getInsertSerialOperationsForNumberValue;
-    getInsertSerialOperationsForBooleanValue?: typeof defaults.getInsertSerialOperationsForBooleanValue;
-  } & {
-    trueTypeLinkId: number;
-    falseTypeLinkId: number;
-  } & {
-    reservedLinkIds: Array<number>;
-  }
-
   const defaults = {
     getInsertSerialOperationsForStringValue: async function getInsertSerialOperationsForStringValue(options: GetInsertSerialOperationsForStringOptions) {
       return this.getInsertSerialOperationsForStringOrNumberValue(options);
@@ -423,4 +373,48 @@ async ({
     };
   }
 
+  type GetInsertSerialOperationsForStringOrNumberOptions = GetInsertSerialOperationsForAnyValueOptions & {
+    value: string|number;
+  } 
+
+  type GetInsertSerialOperationsForStringOptions = GetInsertSerialOperationsForAnyValueOptions & {
+    value: string;
+  }
+
+  type GetInsertSerialOperationsForNumberOptions = GetInsertSerialOperationsForAnyValueOptions & {
+    value: number;
+  }
+
+  type GetInsertSerialOperationsForBooleanOptions = GetInsertSerialOperationsForAnyValueOptions & {
+    value: boolean;
+  } & {
+    trueTypeLinkId: number;
+    falseTypeLinkId: number;
+  }  
+
+  type GetInsertSerialOperationsForObject = GetInsertSerialOperationsForAnyValueOptions & {
+    value: object;
+    getInsertSerialOperationsForAnyValue?: typeof defaults.getInsertSerialOperationsForAnyValue;
+  } & {
+    reservedLinkIds: Array<number>;
+  }  
+
+  type GetInsertSerialOperationsForAnyValueOptions = {
+    value: string|number|object|boolean;
+    parentLinkId: number|undefined;
+    containLinkId: number;
+    containerLinkId: number;
+    name: string;
+    linkId: number;
+    getInsertSerialOperationsForObject?: typeof defaults.getInsertSerialOperationsForObject;
+    getInsertSerialOperationsForStringValue?: typeof defaults.getInsertSerialOperationsForStringValue;
+    getInsertSerialOperationsForNumberValue?: typeof defaults.getInsertSerialOperationsForNumberValue;
+    getInsertSerialOperationsForBooleanValue?: typeof defaults.getInsertSerialOperationsForBooleanValue;
+  } & {
+    trueTypeLinkId: number;
+    falseTypeLinkId: number;
+  } & {
+    reservedLinkIds: Array<number>;
+  }
 };
+
