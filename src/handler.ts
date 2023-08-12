@@ -213,7 +213,7 @@ async ({
         containerLinkId: linkId,
         containLinkId: reservedLinkIds.pop()!,
         linkId: reservedLinkIds.pop()!,
-        name: objectKey,
+        name: `${name}${objectKey}`,
         parentLinkId: linkId,
         value: objectValue,
         falseTypeLinkId: options.falseTypeLinkId,
