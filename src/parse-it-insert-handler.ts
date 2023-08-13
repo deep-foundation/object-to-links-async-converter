@@ -18,7 +18,7 @@ async ({
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
   const defaults = getDefaults();
-  const options = await getOptions();
+  const options = await getOptions({rootObjectLinkId: parseItLink.to_id!});
   const packageContainingTypes = options.packageContainingTypes;
   try {
     const result = await main();
@@ -33,9 +33,10 @@ async ({
     };
   }
 
-  async function getOptions(): Promise<Options> {
+  async function getOptions(options: GetOptionsOptions): Promise<Options> {
     return {
-      packageContainingTypes: await getPackageContainingTypes()
+      packageContainingTypes: await getPackageContainingTypes(),
+      rootObjectTypeLinkId: await getRootObjectTypeLinkId({linkId: options.rootObjectLinkId}),
     }
   }
 
@@ -47,6 +48,19 @@ async ({
     })
     log({packageContainingTypes})
     return packageContainingTypes;
+  }
+
+  async function getRootObjectTypeLinkId(options: {linkId: number}) {
+    const log = getNamespacedLogger({namespace: getRootObjectTypeLinkId.name})
+    log({options})
+    const selectData: BoolExpLink = {
+      type_id: await deep.id(deep.linkId!, "Type"),
+      from_id: options.linkId
+    };
+    log({selectData})
+    const {data: [rootObjectType]} = await deep.select(selectData)
+    log({rootObjectType})
+    return rootObjectType.to_id ?? await deep.id(deep.linkId!, "Object");
   }
 
   function getDefaults () {
@@ -314,7 +328,7 @@ async ({
       containerLinkId: resultLinkId,
       containLinkId: reservedLinkIds.pop()!,
       linkId: rootObjectLinkId,
-      name: undefined,  // TODO
+      name: options.rootObjectTypeLinkId, 
       parentLinkId: undefined,
       value: obj,
     });
@@ -440,7 +454,12 @@ async ({
   }
 
   interface Options {
-    packageContainingTypes: Link<number>
+    packageContainingTypes: Link<number>,
+    rootObjectTypeLinkId: number;
+  }
+
+  interface GetOptionsOptions {
+    rootObjectLinkId: number;
   }
 };
 
