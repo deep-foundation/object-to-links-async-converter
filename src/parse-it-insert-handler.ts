@@ -124,7 +124,6 @@ async ({
         })
         log({ containInsertSerialOperation });
         serialOperations.push(containInsertSerialOperation);
-        serialOperations.push(containInsertSerialOperation);
         if(name) {
           const stringValueForContainInsertSerialOperation = createSerialOperation({
             type: 'insert',
