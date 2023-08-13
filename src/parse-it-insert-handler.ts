@@ -18,7 +18,8 @@ async ({
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
   const defaults = getDefaults();
-  const packageIdContainingTypes = options.packageIdContainingTypes;
+  const options = await getOptions();
+  const packageContainingTypes = options.packageContainingTypes;
   try {
     const result = await main();
     return {
@@ -30,6 +31,22 @@ async ({
       error,
       logs,
     };
+  }
+
+  async function getOptions(): Promise<Options> {
+    return {
+      packageContainingTypes: await getPackageContainingTypes()
+    }
+  }
+
+  async function getPackageContainingTypes(): Promise<Options['packageContainingTypes']> {
+    const log = getNamespacedLogger({namespace: getPackageContainingTypes.name})
+    const {data: [packageContainingTypes]} = await deep.select({
+      from_id: parseItLink.to_id,
+      type_id: await deep.id(deep.linkId!, "PackageContainingTypes"),
+    })
+    log({packageContainingTypes})
+    return packageContainingTypes;
   }
 
   function getDefaults () {
@@ -53,7 +70,7 @@ async ({
             id: linkId,
             ...(parentLinkId && { from_id: parentLinkId }),
             to_id: value ? trueTypeLinkId : falseTypeLinkId,
-            type_id: await deep.id(packageIdContainingTypes, name)
+            type_id: await deep.id(packageContainingTypes.id, name)
           }
         })
         log({ linkInsertSerialOperation });
@@ -95,7 +112,7 @@ async ({
           objects: {
             id: linkId,
             ...(parentLinkId && { from_id: parentLinkId, to_id: parentLinkId }),
-            type_id: await deep.id(packageIdContainingTypes, name)
+            type_id: await deep.id(packageContainingTypes.id, name)
           }
         })
         log({ linkInsertSerialOperation });
@@ -146,7 +163,7 @@ async ({
           objects: {
             id: linkId,
             ...(parentLinkId && { from_id: parentLinkId, to_id: parentLinkId }),
-            type_id: await deep.id(packageIdContainingTypes, name)
+            type_id: await deep.id(packageContainingTypes.id, name)
           }
         })
         log({ linkInsertSerialOperation });
@@ -420,6 +437,10 @@ async ({
     falseTypeLinkId: number;
   } & {
     reservedLinkIds: Array<number>;
+  }
+
+  interface Options {
+    packageContainingTypes: Link<number>
   }
 };
 
