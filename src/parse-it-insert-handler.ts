@@ -84,7 +84,7 @@ async ({
     log({selectData})
     const {data: [rootObjectType]} = await deep.select(selectData)
     log({rootObjectType})
-    return rootObjectType.to_id ?? await deep.id(deep.linkId!, "Object");
+    return rootObjectType.to_id ?? await deep.id(deep.linkId!, "Result");
   }
 
   function getDefaults () {
