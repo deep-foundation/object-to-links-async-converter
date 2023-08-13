@@ -244,6 +244,10 @@ async ({
         }
         const { reservedLinkIds } = options;
         for (const [objectKey, objectValue] of Object.entries(value)) {
+          const typeId = deep.idLocal(packageContainingTypes.id, objectKey);
+          if(!typeId) {
+            throw new Error(`Could not find type id for ${objectKey}. Path for idLocal: ${[packageContainingTypes.id,objectKey]}`);
+          }
           await (options.getInsertSerialOperationsForAnyValue ?? this.getInsertSerialOperationsForAnyValue)({
             containerLinkId: linkId,
             containLinkId: reservedLinkIds.pop()!,
@@ -254,7 +258,7 @@ async ({
             falseTypeLinkId: options.falseTypeLinkId,
             trueTypeLinkId: options.trueTypeLinkId,
             reservedLinkIds,
-            typeId: await deep.id(packageContainingTypes.id, objectKey)
+            typeId 
           });
         }
 
@@ -430,6 +434,21 @@ async ({
     return count;
   }
 
+  async function updateMinilinks(options: UpdateMinilinksOptions) {
+    const log = getNamespacedLogger({ namespace: updateMinilinks.name });
+    log({ options });
+    const {data: links} = await deep.select({
+      up: {
+        tree_id: {
+          _id: ["@deep-foundation/core", "containTree"]
+        },
+        parent_id: options.packageIdContainingTypes
+      }
+    })
+    log({links})
+    deep.minilinks.apply(links)
+  }
+
   function getNamespacedLogger({
     namespace,
     depth = DEFAULT_LOG_DEPTH,
@@ -500,6 +519,10 @@ async ({
 
   interface GetGetInsertSerialOperationsForAnyValueOptions {
     rootObjectLinkId: number;
+  }
+
+  interface UpdateMinilinksOptions {
+    packageIdContainingTypes: number,
   }
 };
 
