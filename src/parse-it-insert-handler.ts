@@ -3,6 +3,7 @@ import {
   SerialOperation,
   Table,
 } from '@deep-foundation/deeplinks/imports/client';
+import { BoolExpLink } from '@deep-foundation/deeplinks/imports/client_types';
 import { Link } from '@deep-foundation/deeplinks/imports/minilinks';
 
 async ({
@@ -17,6 +18,7 @@ async ({
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
   const defaults = getDefaults();
+  const packageIdContainingTypes = options.packageIdContainingTypes;
   try {
     const result = await main();
     return {
@@ -51,7 +53,7 @@ async ({
             id: linkId,
             ...(parentLinkId && { from_id: parentLinkId }),
             to_id: value ? trueTypeLinkId : falseTypeLinkId,
-            type_id: // TODO
+            type_id: await deep.id(packageIdContainingTypes, name)
           }
         })
         log({ linkInsertSerialOperation });
@@ -93,7 +95,7 @@ async ({
           objects: {
             id: linkId,
             ...(parentLinkId && { from_id: parentLinkId, to_id: parentLinkId }),
-            type_id: // TODO
+            type_id: await deep.id(packageIdContainingTypes, name)
           }
         })
         log({ linkInsertSerialOperation });
@@ -144,7 +146,7 @@ async ({
           objects: {
             id: linkId,
             ...(parentLinkId && { from_id: parentLinkId, to_id: parentLinkId }),
-            type_id: // TODO
+            type_id: await deep.id(packageIdContainingTypes, name)
           }
         })
         log({ linkInsertSerialOperation });
