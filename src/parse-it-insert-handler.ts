@@ -357,19 +357,25 @@ async ({
     const resultLinkId = reservedLinkIds.pop()!;
     const rootObjectLinkId = reservedLinkIds.pop()!;
 
-    // TODO:  If there is (ParsedLink.to_id -HasResult> Result) then we need to update, not create links
-    let serialOperations = await (options.getInsertSerialOperationsForAnyValue ?? defaults.getInsertSerialOperationsForAnyValue)({
-      containerLinkId: resultLinkId,
-      containLinkId: reservedLinkIds.pop()!,
-      linkId: rootObjectLinkId,
-      name: undefined,
-      typeId: options.rootObjectTypeLinkId,
-      parentLinkId: undefined,
-      value: obj,
-      trueTypeLinkId,
-      falseTypeLinkId,
-      reservedLinkIds
-    });
+    let serialOperations: Array<SerialOperation> = [];
+
+    const resultLink = await getResultLink({rootObjectLinkId})
+    if(!resultLink) {
+      serialOperations = await (options.getInsertSerialOperationsForAnyValue ?? defaults.getInsertSerialOperationsForAnyValue)({
+        containerLinkId: resultLinkId,
+        containLinkId: reservedLinkIds.pop()!,
+        linkId: rootObjectLinkId,
+        name: undefined,
+        typeId: options.rootObjectTypeLinkId,
+        parentLinkId: undefined,
+        value: obj,
+        trueTypeLinkId,
+        falseTypeLinkId,
+        reservedLinkIds
+      });
+    } else {
+      // TODO: Update links
+    }
     serialOperations = [
       ...serialOperations,
       createSerialOperation({
@@ -449,6 +455,20 @@ async ({
     deep.minilinks.apply(links)
   }
 
+  async function getResultLink(options: GetResultLinkOptions) {
+    const log = getNamespacedLogger({ namespace: getResultLink.name });
+    log({options})
+    const {data: [link]} = await deep.select({
+      type_id: await deep.id(deep.linkId!, "Result"),
+      in: {
+        type_id: await deep.id(deep.linkId!, "HasResult"),
+        from_id: options.rootObjectLinkId
+      }
+    })
+    log({link})
+    return link
+  }
+
   function getNamespacedLogger({
     namespace,
     depth = DEFAULT_LOG_DEPTH,
@@ -523,6 +543,10 @@ async ({
 
   interface UpdateMinilinksOptions {
     packageIdContainingTypes: number,
+  }
+
+  interface GetResultLinkOptions {
+    rootObjectLinkId: number;
   }
 };
 
