@@ -353,6 +353,7 @@ async ({
       const resultLinkId = reservedLinkIds.pop()!;
       const rootObjectLinkId = reservedLinkIds.pop()!;
 
+      // TODO:  If there is (ParsedLink.to_id -HasResult> Result) then we need to update, not create links
     let serialOperations = await (options.getInsertSerialOperationsForAnyValue ?? defaults.getInsertSerialOperationsForAnyValue)({
       containerLinkId: resultLinkId,
       containLinkId: reservedLinkIds.pop()!,
