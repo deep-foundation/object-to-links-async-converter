@@ -249,7 +249,8 @@ async ({
             value: objectValue,
             falseTypeLinkId: options.falseTypeLinkId,
             trueTypeLinkId: options.trueTypeLinkId,
-            reservedLinkIds
+            reservedLinkIds,
+            typeId: await deep.id(packageContainingTypes.id, name)
           });
         }
     
@@ -352,7 +353,8 @@ async ({
       containerLinkId: resultLinkId,
       containLinkId: reservedLinkIds.pop()!,
       linkId: rootObjectLinkId,
-      name: options.rootObjectTypeLinkId, 
+      name: undefined,
+      typeId: options.rootObjectTypeLinkId, 
       parentLinkId: undefined,
       value: obj,
     });
@@ -466,6 +468,7 @@ async ({
     containerLinkId: number;
     name: string;
     linkId: number;
+    typeId: number;
     getInsertSerialOperationsForObject?: typeof defaults.getInsertSerialOperationsForObject;
     getInsertSerialOperationsForStringValue?: typeof defaults.getInsertSerialOperationsForStringValue;
     getInsertSerialOperationsForNumberValue?: typeof defaults.getInsertSerialOperationsForNumberValue;
