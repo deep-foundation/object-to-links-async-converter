@@ -34,10 +34,34 @@ async ({
   }
 
   async function getOptions(options: GetOptionsOptions): Promise<Options> {
+    const {rootObjectLinkId} = options;
     return {
       packageContainingTypes: await getPackageContainingTypes(),
-      rootObjectTypeLinkId: await getRootObjectTypeLinkId({linkId: options.rootObjectLinkId}),
+      rootObjectTypeLinkId: await getRootObjectTypeLinkId({linkId: rootObjectLinkId}),
+      getInsertSerialOperationsForAnyValue: await getGetInsertSerialOperationsForAnyValue({rootObjectLinkId: rootObjectLinkId}),
     }
+  }
+
+  async function getGetInsertSerialOperationsForAnyValue(options: GetGetInsertSerialOperationsForAnyValueOptions): Promise<Options['getInsertSerialOperationsForAnyValue']> {
+    const log = getNamespacedLogger({namespace: getGetInsertSerialOperationsForAnyValue.name})
+    const selectData: BoolExpLink = {
+      type_id: await deep.id(deep.linkId!, "GetInsertSerialOperationsForAnyValue"),
+      from_id: options.rootObjectLinkId
+    }
+    log({selectData})
+    const {data: [link]} = await deep.select(selectData)
+    log({link})
+    if(!link) {
+      return defaults.getInsertSerialOperationsForAnyValue
+    } 
+    const getInsertSerialOperationsForAnyValue = !link.value?.value
+    log({getInsertSerialOperationsForAnyValue})
+    if(!getInsertSerialOperationsForAnyValue) {
+      throw new Error(`${link.id} does not have a value`)
+    }
+    // TODO Implement when deep.execute will be ready?
+    // @ts-ignore
+    return getInsertSerialOperationsForAnyValue
   }
 
   async function getPackageContainingTypes(): Promise<Options['packageContainingTypes']> {
@@ -456,9 +480,14 @@ async ({
   interface Options {
     packageContainingTypes: Link<number>,
     rootObjectTypeLinkId: number;
+    getInsertSerialOperationsForAnyValue: typeof defaults.getInsertSerialOperationsForAnyValue;
   }
 
   interface GetOptionsOptions {
+    rootObjectLinkId: number;
+  }
+
+  interface GetGetInsertSerialOperationsForAnyValueOptions {
     rootObjectLinkId: number;
   }
 };
