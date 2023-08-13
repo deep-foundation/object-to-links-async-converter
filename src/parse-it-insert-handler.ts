@@ -16,6 +16,7 @@ async ({
   const {createSerialOperation} = await import('@deep-foundation/deeplinks/imports/gql/index')
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
+  const defaults = getDefaults();
   try {
     const result = await main();
     return {
@@ -29,205 +30,207 @@ async ({
     };
   }
 
-  const defaults = {
-    getInsertSerialOperationsForStringValue: async function getInsertSerialOperationsForStringValue(options: GetInsertSerialOperationsForStringOptions) {
-      return this.getInsertSerialOperationsForStringOrNumberValue(options);
-    },
-    getInsertSerialOperationsForNumberValue: async function getInsertSerialOperationsForNumberValue(options: GetInsertSerialOperationsForNumberOptions) {
-      return this.getInsertSerialOperationsForStringOrNumberValue(options);
-    },
-    getInsertSerialOperationsForBooleanValue: async function getInsertSerialOperationsForBooleanValue(options: GetInsertSerialOperationsForBooleanOptions) {
-      const serialOperations: Array<SerialOperation> = [];
-      const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId,falseTypeLinkId,trueTypeLinkId } = options;
-      const log = getNamespacedLogger({
-        namespace: this.getInsertSerialOperationsForStringValue.name,
-      });
-      const linkInsertSerialOperation = createSerialOperation({
-        type: 'insert',
-        table: 'links',
-        objects: {
-          id: linkId,
-          ...(parentLinkId && { from_id: parentLinkId }),
-          to_id: value ? trueTypeLinkId : falseTypeLinkId,
-          type_id: // TODO
-        }
-      })
-      log({ linkInsertSerialOperation });
-      serialOperations.push(linkInsertSerialOperation);
-      const containInsertSerialOperation = createSerialOperation({
-        type: 'insert',
-        table: 'links',
-        objects: {
-          id: containLinkId,
-          from_id: containerLinkId,
-          to_id: linkId
-        }
-      })
-      log({ containInsertSerialOperation });
-      serialOperations.push(containInsertSerialOperation);
-      serialOperations.push(containInsertSerialOperation);
-      const stringValueForContainInsertSerialOperation = createSerialOperation({
-        type: 'insert',
-        table: 'strings',
-        objects: {
-          link_id: containLinkId,
-          value: name
-        }
-      })
-      log({stringValueForContainInsertSerialOperation})
-      serialOperations.push(stringValueForContainInsertSerialOperation)
-      log({ serialOperations });
-      return serialOperations;
-    },
-    getInsertSerialOperationsForStringOrNumberValue: async function getInsertSerialOperationsForStringOrNumberValue(options: GetInsertSerialOperationsForStringOrNumberOptions) {
-      const serialOperations: Array<SerialOperation> = [];
-      const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId } = options;
-      const log = getNamespacedLogger({
-        namespace: this.getInsertSerialOperationsForStringValue.name,
-      });
-      const linkInsertSerialOperation = createSerialOperation({
-        type: 'insert',
-        table: 'links',
-        objects: {
-          id: linkId,
-          ...(parentLinkId && { from_id: parentLinkId, to_id: parentLinkId }),
-          type_id: // TODO
-        }
-      })
-      log({ linkInsertSerialOperation });
-      serialOperations.push(linkInsertSerialOperation);
-      const stringValueInsertSerialOperation = createSerialOperation({
-        type: 'insert',
-        table: `${typeof value}s` as Table<'insert'>,
-        objects: {
-          link_id: linkId,
-          value: value
-        }
-      })
-      log({ stringValueInsertSerialOperation });
-      serialOperations.push(stringValueInsertSerialOperation);
-      const containInsertSerialOperation = createSerialOperation({
-        type: 'insert',
-        table: 'links',
-        objects: {
-          id: containLinkId,
-          from_id: containerLinkId,
-          to_id: linkId
-        }
-      })
-      log({ containInsertSerialOperation });
-      serialOperations.push(containInsertSerialOperation);
-      const stringValueForContainInsertSerialOperation = createSerialOperation({
-        type: 'insert',
-        table: 'strings',
-        objects: {
-          link_id: containLinkId,
-          value: name
-        }
-      })
-      log({stringValueForContainInsertSerialOperation})
-      serialOperations.push(stringValueForContainInsertSerialOperation)
-      log({ serialOperations });
-      return serialOperations;
-    },
-    getInsertSerialOperationsForObject: async function getInsertSerialOperationsForObject(options: GetInsertSerialOperationsForObject) {
-      const serialOperations: Array<SerialOperation> = [];
-      const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId } = options;
-      const log = getNamespacedLogger({
-        namespace: this.getInsertSerialOperationsForStringValue.name,
-      });
-      const linkInsertSerialOperation = createSerialOperation({
-        type: 'insert',
-        table: 'links',
-        objects: {
-          id: linkId,
-          ...(parentLinkId && { from_id: parentLinkId, to_id: parentLinkId }),
-          type_id: // TODO
-        }
-      })
-      log({ linkInsertSerialOperation });
-      serialOperations.push(linkInsertSerialOperation);
-      const objectValueInsertSerialOperation = createSerialOperation({
-        type: 'insert',
-        table: 'objects',
-        objects: {
-          link_id: linkId,
-          value: value
-        }
-      })
-      log({ objectValueInsertSerialOperation });
-      serialOperations.push(objectValueInsertSerialOperation);
-      const containInsertSerialOperation = createSerialOperation({
-        type: 'insert',
-        table: 'links',
-        objects: {
-          id: containLinkId,
-          from_id: containerLinkId,
-          to_id: linkId
-        }
-      })
-      log({ containInsertSerialOperation });
-      serialOperations.push(containInsertSerialOperation);
-      const stringValueForContainInsertSerialOperation = createSerialOperation({
-        type: 'insert',
-        table: 'strings',
-        objects: {
-          link_id: containLinkId,
-          value: name
-        }
-      })
-      log({stringValueForContainInsertSerialOperation})
-      serialOperations.push(stringValueForContainInsertSerialOperation)
-  
-      const {reservedLinkIds} = options;
-      for (const [objectKey, objectValue] of Object.entries(value)) {
-        await (options.getInsertSerialOperationsForAnyValue ?? this.getInsertSerialOperationsForAnyValue)({
-          containerLinkId: linkId,
-          containLinkId: reservedLinkIds.pop()!,
-          linkId: reservedLinkIds.pop()!,
-          name: `${name}${objectKey}`,
-          parentLinkId: linkId,
-          value: objectValue,
-          falseTypeLinkId: options.falseTypeLinkId,
-          trueTypeLinkId: options.trueTypeLinkId,
-          reservedLinkIds
+  function getDefaults () {
+    return {
+      getInsertSerialOperationsForStringValue: async function getInsertSerialOperationsForStringValue(options: GetInsertSerialOperationsForStringOptions) {
+        return this.getInsertSerialOperationsForStringOrNumberValue(options);
+      },
+      getInsertSerialOperationsForNumberValue: async function getInsertSerialOperationsForNumberValue(options: GetInsertSerialOperationsForNumberOptions) {
+        return this.getInsertSerialOperationsForStringOrNumberValue(options);
+      },
+      getInsertSerialOperationsForBooleanValue: async function getInsertSerialOperationsForBooleanValue(options: GetInsertSerialOperationsForBooleanOptions) {
+        const serialOperations: Array<SerialOperation> = [];
+        const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId,falseTypeLinkId,trueTypeLinkId } = options;
+        const log = getNamespacedLogger({
+          namespace: this.getInsertSerialOperationsForStringValue.name,
         });
-      }
-  
-      serialOperations.push(containInsertSerialOperation);
-      log({ serialOperations });
-      return serialOperations;
-    },
-    getInsertSerialOperationsForAnyValue: async function getInsertSerialOperationsForAnyValue(options: GetInsertSerialOperationsForAnyValueOptions) {
-      const value = options.value;
-      const type = typeof value;
+        const linkInsertSerialOperation = createSerialOperation({
+          type: 'insert',
+          table: 'links',
+          objects: {
+            id: linkId,
+            ...(parentLinkId && { from_id: parentLinkId }),
+            to_id: value ? trueTypeLinkId : falseTypeLinkId,
+            type_id: // TODO
+          }
+        })
+        log({ linkInsertSerialOperation });
+        serialOperations.push(linkInsertSerialOperation);
+        const containInsertSerialOperation = createSerialOperation({
+          type: 'insert',
+          table: 'links',
+          objects: {
+            id: containLinkId,
+            from_id: containerLinkId,
+            to_id: linkId
+          }
+        })
+        log({ containInsertSerialOperation });
+        serialOperations.push(containInsertSerialOperation);
+        serialOperations.push(containInsertSerialOperation);
+        const stringValueForContainInsertSerialOperation = createSerialOperation({
+          type: 'insert',
+          table: 'strings',
+          objects: {
+            link_id: containLinkId,
+            value: name
+          }
+        })
+        log({stringValueForContainInsertSerialOperation})
+        serialOperations.push(stringValueForContainInsertSerialOperation)
+        log({ serialOperations });
+        return serialOperations;
+      },
+      getInsertSerialOperationsForStringOrNumberValue: async function getInsertSerialOperationsForStringOrNumberValue(options: GetInsertSerialOperationsForStringOrNumberOptions) {
+        const serialOperations: Array<SerialOperation> = [];
+        const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId } = options;
+        const log = getNamespacedLogger({
+          namespace: this.getInsertSerialOperationsForStringValue.name,
+        });
+        const linkInsertSerialOperation = createSerialOperation({
+          type: 'insert',
+          table: 'links',
+          objects: {
+            id: linkId,
+            ...(parentLinkId && { from_id: parentLinkId, to_id: parentLinkId }),
+            type_id: // TODO
+          }
+        })
+        log({ linkInsertSerialOperation });
+        serialOperations.push(linkInsertSerialOperation);
+        const stringValueInsertSerialOperation = createSerialOperation({
+          type: 'insert',
+          table: `${typeof value}s` as Table<'insert'>,
+          objects: {
+            link_id: linkId,
+            value: value
+          }
+        })
+        log({ stringValueInsertSerialOperation });
+        serialOperations.push(stringValueInsertSerialOperation);
+        const containInsertSerialOperation = createSerialOperation({
+          type: 'insert',
+          table: 'links',
+          objects: {
+            id: containLinkId,
+            from_id: containerLinkId,
+            to_id: linkId
+          }
+        })
+        log({ containInsertSerialOperation });
+        serialOperations.push(containInsertSerialOperation);
+        const stringValueForContainInsertSerialOperation = createSerialOperation({
+          type: 'insert',
+          table: 'strings',
+          objects: {
+            link_id: containLinkId,
+            value: name
+          }
+        })
+        log({stringValueForContainInsertSerialOperation})
+        serialOperations.push(stringValueForContainInsertSerialOperation)
+        log({ serialOperations });
+        return serialOperations;
+      },
+      getInsertSerialOperationsForObject: async function getInsertSerialOperationsForObject(options: GetInsertSerialOperationsForObject) {
+        const serialOperations: Array<SerialOperation> = [];
+        const { name, value, linkId,  parentLinkId, containLinkId,containerLinkId } = options;
+        const log = getNamespacedLogger({
+          namespace: this.getInsertSerialOperationsForStringValue.name,
+        });
+        const linkInsertSerialOperation = createSerialOperation({
+          type: 'insert',
+          table: 'links',
+          objects: {
+            id: linkId,
+            ...(parentLinkId && { from_id: parentLinkId, to_id: parentLinkId }),
+            type_id: // TODO
+          }
+        })
+        log({ linkInsertSerialOperation });
+        serialOperations.push(linkInsertSerialOperation);
+        const objectValueInsertSerialOperation = createSerialOperation({
+          type: 'insert',
+          table: 'objects',
+          objects: {
+            link_id: linkId,
+            value: value
+          }
+        })
+        log({ objectValueInsertSerialOperation });
+        serialOperations.push(objectValueInsertSerialOperation);
+        const containInsertSerialOperation = createSerialOperation({
+          type: 'insert',
+          table: 'links',
+          objects: {
+            id: containLinkId,
+            from_id: containerLinkId,
+            to_id: linkId
+          }
+        })
+        log({ containInsertSerialOperation });
+        serialOperations.push(containInsertSerialOperation);
+        const stringValueForContainInsertSerialOperation = createSerialOperation({
+          type: 'insert',
+          table: 'strings',
+          objects: {
+            link_id: containLinkId,
+            value: name
+          }
+        })
+        log({stringValueForContainInsertSerialOperation})
+        serialOperations.push(stringValueForContainInsertSerialOperation)
     
-      const getHandler = ({ handlerOption, defaultHandler }: { handlerOption: Function|undefined, defaultHandler: Function }) => {
-        return handlerOption ?? defaultHandler;
-      };
+        const {reservedLinkIds} = options;
+        for (const [objectKey, objectValue] of Object.entries(value)) {
+          await (options.getInsertSerialOperationsForAnyValue ?? this.getInsertSerialOperationsForAnyValue)({
+            containerLinkId: linkId,
+            containLinkId: reservedLinkIds.pop()!,
+            linkId: reservedLinkIds.pop()!,
+            name: `${name}${objectKey}`,
+            parentLinkId: linkId,
+            value: objectValue,
+            falseTypeLinkId: options.falseTypeLinkId,
+            trueTypeLinkId: options.trueTypeLinkId,
+            reservedLinkIds
+          });
+        }
     
-      if (type === 'string') {
-        return await getHandler({ handlerOption: options.getInsertSerialOperationsForStringValue, defaultHandler: this.getInsertSerialOperationsForStringValue })({
-          ...options,
-          value
-        });
-      } else if (type === 'number') {
-        return await getHandler({ handlerOption: options.getInsertSerialOperationsForNumberValue, defaultHandler: this.getInsertSerialOperationsForNumberValue })({
-          ...options,
-          value
-        });
-      } else if (type === 'boolean') {
-        return await getHandler({ handlerOption: options.getInsertSerialOperationsForBooleanValue, defaultHandler: this.getInsertSerialOperationsForBooleanValue })({
-          ...options,
-          value
-        });
-      } else if (type === 'object') {
-        return await getHandler({ handlerOption: options.getInsertSerialOperationsForObject, defaultHandler: this.getInsertSerialOperationsForObject })({
-          ...options,
-          value
-        });
-      } else {
-        throw new Error(`Unknown type of value ${value}: ${type}. Only string, number, boolean, and object are supported`);
+        serialOperations.push(containInsertSerialOperation);
+        log({ serialOperations });
+        return serialOperations;
+      },
+      getInsertSerialOperationsForAnyValue: async function getInsertSerialOperationsForAnyValue(options: GetInsertSerialOperationsForAnyValueOptions) {
+        const value = options.value;
+        const type = typeof value;
+      
+        const getHandler = ({ handlerOption, defaultHandler }: { handlerOption: Function|undefined, defaultHandler: Function }) => {
+          return handlerOption ?? defaultHandler;
+        };
+      
+        if (type === 'string') {
+          return await getHandler({ handlerOption: options.getInsertSerialOperationsForStringValue, defaultHandler: this.getInsertSerialOperationsForStringValue })({
+            ...options,
+            value
+          });
+        } else if (type === 'number') {
+          return await getHandler({ handlerOption: options.getInsertSerialOperationsForNumberValue, defaultHandler: this.getInsertSerialOperationsForNumberValue })({
+            ...options,
+            value
+          });
+        } else if (type === 'boolean') {
+          return await getHandler({ handlerOption: options.getInsertSerialOperationsForBooleanValue, defaultHandler: this.getInsertSerialOperationsForBooleanValue })({
+            ...options,
+            value
+          });
+        } else if (type === 'object') {
+          return await getHandler({ handlerOption: options.getInsertSerialOperationsForObject, defaultHandler: this.getInsertSerialOperationsForObject })({
+            ...options,
+            value
+          });
+        } else {
+          throw new Error(`Unknown type of value ${value}: ${type}. Only string, number, boolean, and object are supported`);
+        }
       }
     }
   }
