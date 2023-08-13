@@ -317,7 +317,7 @@ async ({
       'False'
     );
     log({ falseTypeLinkId });
-    const resultTypeLinkId = await deep.id(deep.linkId!, "Result");
+    const resultTypeLinkId = await deep.id(deep.linkId!, "HasResult");
     log({ resultTypeLinkId });
 
     const {
