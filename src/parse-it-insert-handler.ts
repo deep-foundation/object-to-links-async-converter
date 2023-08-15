@@ -375,6 +375,25 @@ async ({
       });
     } else {
       // TODO: Update links
+      throw new Error(`Update links not implemented yet`);
+      const {data: [propertyLinkId]} = await deep.select({
+        from_id: linkId,
+        type_id: {
+          _id: [packageContainingTypes, objectKey]
+        }
+      })
+      serialOperations = await (options.getUpdateSerialOperationsForAnyValue ?? defaults.getUpdateSerialOperationsForAnyValue)({
+        containerLinkId: resultLinkId,
+        containLinkId: reservedLinkIds.pop()!,
+        linkId: rootObjectLinkId,
+        name: undefined,
+        typeId: options.rootObjectTypeLinkId,
+        parentLinkId: undefined,
+        value: obj,
+        trueTypeLinkId,
+        falseTypeLinkId,
+        reservedLinkIds
+      });
     }
     serialOperations = [
       ...serialOperations,
