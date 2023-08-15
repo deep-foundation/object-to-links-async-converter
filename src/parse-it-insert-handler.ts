@@ -309,6 +309,7 @@ async ({
 
   async function main() {
     const log = getNamespacedLogger({ namespace: main.name });
+    await updateMinilinks({packageIdContainingTypes: packageContainingTypes.id})
     const containTypeLinkId = await deep.id('@deep-foundation/core', 'Contain');
     log({ containTypeLinkId });
     const trueTypeLinkId = await deep.id(
