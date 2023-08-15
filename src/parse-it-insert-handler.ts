@@ -89,6 +89,18 @@ async ({
 
   function getDefaults() {
     return {
+      getUpdateSerialOperationsForObjectValue: async function getUpdateSerialOperationsForObjectValue(options: GetUpdateSerialOperationsForObjectValueOptions) {
+        throw new Error('Not implemented');
+        const {obj, linkId} = options;
+        for (const [key, value] of Object.entries(obj)) {
+          const {data: [propertyLinkId]} = await deep.select({
+            from_id: linkId,
+            type_id: {
+              _id: [packageContainingTypes, key]
+            }
+          })
+        }
+      },
       getInsertSerialOperationsForStringValue: async function getInsertSerialOperationsForStringValue(options: GetInsertSerialOperationsForStringOptions) {
         return this.getInsertSerialOperationsForStringOrNumberValue(options);
       },
@@ -377,12 +389,6 @@ async ({
     } else {
       // TODO: Update links
       throw new Error(`Update links not implemented yet`);
-      const {data: [propertyLinkId]} = await deep.select({
-        from_id: linkId,
-        type_id: {
-          _id: [packageContainingTypes, objectKey]
-        }
-      })
       serialOperations = await (options.getUpdateSerialOperationsForAnyValue ?? defaults.getUpdateSerialOperationsForAnyValue)({
         containerLinkId: resultLinkId,
         containLinkId: reservedLinkIds.pop()!,
