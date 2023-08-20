@@ -92,6 +92,7 @@ async ({
       getUpdateSerialOperationsForObjectValue: async function getUpdateSerialOperationsForObjectValue(options: GetUpdateSerialOperationsForObjectValueOptions) {
         throw new Error('Not implemented');
         const {obj, linkId} = options;
+        // TODO: Optimize by using MinilinksCollection
         for (const [key, value] of Object.entries(obj)) {
           const {data: [propertyLinkId]} = await deep.select({
             from_id: linkId,
