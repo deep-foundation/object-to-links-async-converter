@@ -55,16 +55,6 @@ async ({
     const resultTypeLinkId = await deep.id(deep.linkId!, "HasResult");
     log({ resultTypeLinkId });
 
-
-    const obj = linkWithObjectValue.value.value;
-    log({ obj });
-
-
-    log({ reservedLinkIds });
-
-    const resultLinkId = reservedLinkIds.pop()!;
-    const rootObjectLinkId = reservedLinkIds.pop()!;
-
     let serialOperations: Array<SerialOperation> = [];
 
     const resultLink = await getResultLink({rootObjectLinkId})
