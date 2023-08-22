@@ -149,6 +149,7 @@ const converter = await ObjectToLinksConverter.init({
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
     rootObjectLink: Link<number>;
+    packageContainingTypes: Link<number>;
     requiredPackageNames = {
       core: "@deep-foundation/core",
       boolean: "@freephoenix888/boolean",
@@ -157,6 +158,7 @@ const converter = await ObjectToLinksConverter.init({
     constructor(options: ObjectToLinksConverterOptions) {
       this.rootObjectLink = options.rootObjectLink;
       this.reservedLinkIds = options.reservedLinkIds;
+      this.packageContainingTypes = options.packageContainingTypes;
     }
 
     static async init(options: ObjectToLinksConverterInitOptions) {
@@ -174,7 +176,8 @@ const converter = await ObjectToLinksConverter.init({
       const reservedLinkIds = await deep.reserve(linkIdsToReserveCount);
       const converter = new this({
         reservedLinkIds,
-        rootObjectLink
+        rootObjectLink,
+        packageContainingTypes
       })
       await converter.addPackageContainingTypesToMinilinks({packageContainingTypes})
       return converter
@@ -461,7 +464,7 @@ const converter = await ObjectToLinksConverter.init({
       }
       const { reservedLinkIds } = options;
       for (const [objectKey, objectValue] of Object.entries(value)) {
-        const typeId = deep.idLocal(packageContainingTypes.id, objectKey);
+        const typeId = deep.idLocal(this.packageContainingTypes.id, objectKey);
         if(!typeId) {
           throw new Error(`Could not find type id for ${objectKey}. Path for idLocal: ${[packageContainingTypes.id,objectKey]}`);
         }
@@ -525,6 +528,7 @@ const converter = await ObjectToLinksConverter.init({
   interface ObjectToLinksConverterOptions {
     rootObjectLink: Link<number>;
     reservedLinkIds: Array<number>;
+    packageContainingTypes: Link<number>;
   }
 
   interface ObjectToLinksConverterInitOptions {
