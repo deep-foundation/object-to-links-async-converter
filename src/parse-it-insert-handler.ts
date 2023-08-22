@@ -59,19 +59,7 @@ async ({
     const obj = linkWithObjectValue.value.value;
     log({ obj });
 
-    const linksToReserveCount = getLinksToReserveCount({ value: obj });
-    log({ linksToReserveCount });
-    const reservedLinkIds = await deep.reserve(
-      linksToReserveCount *
-      (1 + // Type
-        1 + // Contain for type
-        1 + // Value
-        1 + // Contain for value
-        1 + // TreeIncludeFromCurrent
-        1) + // Contain for TreeIncludeFromCurrent
-      (1 + // Tree
-        1) // Contain for Tree
-    );
+
     log({ reservedLinkIds });
 
     const resultLinkId = reservedLinkIds.pop()!;
@@ -286,12 +274,18 @@ const converter = await ObjectToLinksConverter.init({
       let count = 0;
       const typeOfValue = typeof value;
       log({ typeOfValue })
+      const reservedLinksCountForOneLink = (
+        1 + // Type
+        1 + // Contain for type
+        1 + // TreeIncludeFromCurrent
+        1 // Contain for TreeIncludeFromCurrent
+      );
       if (typeOfValue === 'string') {
-        count = 2;
+        count = reservedLinksCountForOneLink;
       } else if (typeOfValue === 'number') {
-        count = 2;
+        count = reservedLinksCountForOneLink;
       } else if (typeOfValue === 'boolean') {
-        count = 2;
+        count = reservedLinksCountForOneLink;
       } else if (Array.isArray(value)) {
         const array = value as Array<any>;
         for (const arrayValue of array) {
@@ -299,6 +293,7 @@ const converter = await ObjectToLinksConverter.init({
           count += this.getLinksToReserveCount({ value: arrayValue });
         }
       } else if (typeOfValue === 'object') {
+        count += reservedLinksCountForOneLink;
         for (const [objectKey, objectValue] of Object.entries(value)) {
           if (!value) return count;
           count += this.getLinksToReserveCount({ value: objectValue });
