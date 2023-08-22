@@ -37,6 +37,6 @@
     "case-anything": "^2.1.13"
   },
   "peerDependencies": {
-    "@deep-foundation/deeplinks": "~0.0.240"
+    "@deep-foundation/deeplinks": "~0.0.280"
   }
 }
