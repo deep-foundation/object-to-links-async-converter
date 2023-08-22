@@ -169,6 +169,7 @@ const converter = await ObjectToLinksConverter.init({
       if (Object.keys(rootObjectLink.value.value).length === 0) {
         return
       }
+      await getContainTreeLinksDownToParent
       const linkIdsToReserveCount = this.getLinksToReserveCount({value: rootObjectLink.value.value});
       const reservedLinkIds = await deep.reserve(linkIdsToReserveCount);
       const converter = new this({
@@ -535,6 +536,16 @@ const converter = await ObjectToLinksConverter.init({
     }
   }
 
+  async function applyContainTreeLinksDownToParentToMinilinks(options: ApplyContainTreeLinksDownToParentToMinilinksOptions) {
+    const log = getNamespacedLogger({ namespace: applyContainTreeLinksDownToParentToMinilinks.name })
+    log({options})
+    const links = await getContainTreeLinksDownToParent(options)
+    log({links})
+    const minilinksApplyResult = options.minilinks.apply(links)
+    log({minilinksApplyResult})
+    return minilinksApplyResult
+  }
+
   async function getContainTreeLinksDownToParent(options: GetContainTreeLinksDownToLinkOptions) {
     const log = getNamespacedLogger({ namespace: getContainTreeLinksDownToParent.name })
     log({options})
@@ -550,6 +561,10 @@ const converter = await ObjectToLinksConverter.init({
     log({result})
     return result;
   }
+
+  type ApplyContainTreeLinksDownToParentToMinilinksOptions = GetContainTreeLinksDownToLinkOptions & {
+    minilinks: MinilinkCollection
+  };
 
   interface GetContainTreeLinksDownToLinkOptions {
     linkExp: BoolExpLink;
