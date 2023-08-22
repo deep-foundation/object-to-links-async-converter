@@ -164,7 +164,7 @@ const converter = await ObjectToLinksConverter.init({
       const { parseItLink, packageContainingTypes } = options;
       const {
         data: [rootObjectLink],
-      } = await deep.select({ id: rootObjectLinkId });
+      } = await deep.select({ id: parseItLink.to_id });
       log({ rootObjectLink });
       ensureLinkHasValue(rootObjectLink)
       if (Object.keys(rootObjectLink.value.value).length === 0) {
