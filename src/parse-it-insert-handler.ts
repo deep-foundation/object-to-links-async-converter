@@ -180,6 +180,8 @@ const converter = await ObjectToLinksConverter.init({
       return converter
     }
 
+
+
     private getPackageContainingTypes() {
       const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.getPackageContainingTypes.name}` })
       const selectData: BoolExpLink = {
@@ -531,6 +533,27 @@ const converter = await ObjectToLinksConverter.init({
     if (!link.value?.value) {
       throw new Error(`Link ##${link.id} does not have value`);
     }
+  }
+
+  async function getContainTreeLinksDownToParent(options: GetContainTreeLinksDownToLinkOptions) {
+    const log = getNamespacedLogger({ namespace: getContainTreeLinksDownToParent.name })
+    log({options})
+    const { linkExp, useMinilinks } = options;
+    const query: BoolExpLink = {
+      up: {
+        tree_id: useMinilinks ? deep.idLocal("@deep-foundation/core", "containTree") : await deep.id("@deep-foundation/core", "containTree"),
+        parent: linkExp
+      }
+    }
+    log({query})
+    const result = useMinilinks ? deep.minilinks.query(query) : await deep.select(query);
+    log({result})
+    return result;
+  }
+
+  interface GetContainTreeLinksDownToLinkOptions {
+    linkExp: BoolExpLink;
+    useMinilinks?: boolean;
   }
 
   interface ObjectToLinksConverterOptions {
