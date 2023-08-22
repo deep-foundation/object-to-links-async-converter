@@ -17,8 +17,6 @@ async ({
   const { createSerialOperation } = await import('@deep-foundation/deeplinks/imports/gql/index')
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
-  const rootObjectLinkId = parseItLink.to_id!;
-  const packageContainingTypes = options.packageContainingTypes;
   try {
     const result = await main();
     return {
@@ -52,6 +50,8 @@ async ({
 
   async function main() {
     const log = getNamespacedLogger({ namespace: main.name });
+    const rootObjectLinkId = parseItLink.to_id!;
+    const packageContainingTypes = options.packageContainingTypes;
     
   }
 
