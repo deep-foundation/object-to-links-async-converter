@@ -258,7 +258,7 @@ const converter = await ObjectToLinksConverter.init({
         reservedLinkIds,
         rootObjectLink
       })
-      converter.addPackageContainingTypesToMinilinks({packageContainingTypes})
+      await converter.addPackageContainingTypesToMinilinks({packageContainingTypes})
       return converter
     }
 
