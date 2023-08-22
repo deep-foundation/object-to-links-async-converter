@@ -18,7 +18,6 @@ async ({
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
   const rootObjectLinkId = parseItLink.to_id!;
-  const options = await getOptions({ rootObjectLinkId:  });
   const packageContainingTypes = options.packageContainingTypes;
   try {
     const result = await main();
@@ -33,41 +32,18 @@ async ({
     };
   }
 
-  async function getGetInsertSerialOperationsForAnyValue(options: GetGetInsertSerialOperationsForAnyValueOptions): Promise<Options['getInsertSerialOperationsForAnyValue']> {
-    const log = getNamespacedLogger({ namespace: getGetInsertSerialOperationsForAnyValue.name })
-    const selectData: BoolExpLink = {
-      type_id: await deep.id(deep.linkId!, "GetInsertSerialOperationsForAnyValue"),
-      from_id: options.rootObjectLinkId
-    }
-    log({ selectData })
-    const { data: [link] } = await deep.select(selectData)
-    log({ link })
-    if (!link) {
-      return defaults.getInsertSerialOperationsForAnyValue
-    }
-    const getInsertSerialOperationsForAnyValue = !link.value?.value
-    log({ getInsertSerialOperationsForAnyValue })
-    if (!getInsertSerialOperationsForAnyValue) {
-      throw new Error(`${link.id} does not have a value`)
-    }
-    // TODO Implement when deep.execute will be ready?
-    // @ts-ignore
-    return getInsertSerialOperationsForAnyValue
-  }
-
-
-  async function getRootObjectTypeLinkId(options: { linkId: number }) {
-    const log = getNamespacedLogger({ namespace: getRootObjectTypeLinkId.name })
-    log({ options })
-    const selectData: BoolExpLink = {
-      type_id: await deep.id(deep.linkId!, "Type"),
-      from_id: options.linkId
-    };
-    log({ selectData })
-    const { data: [rootObjectType] } = await deep.select(selectData)
-    log({ rootObjectType })
-    return rootObjectType.to_id ?? await deep.id(deep.linkId!, "Result");
-  }
+  // async function getRootObjectTypeLinkId(options: { linkId: number }) {
+  //   const log = getNamespacedLogger({ namespace: getRootObjectTypeLinkId.name })
+  //   log({ options })
+  //   const selectData: BoolExpLink = {
+  //     type_id: await deep.id(deep.linkId!, "Type"),
+  //     from_id: options.linkId
+  //   };
+  //   log({ selectData })
+  //   const { data: [rootObjectType] } = await deep.select(selectData)
+  //   log({ rootObjectType })
+  //   return rootObjectType.to_id ?? await deep.id(deep.linkId!, "Result");
+  // }
 
 
 
@@ -76,19 +52,6 @@ async ({
 
   async function main() {
     const log = getNamespacedLogger({ namespace: main.name });
-    await updateMinilinks({packageIdContainingTypes: packageContainingTypes.id})
-    const containTypeLinkId = await deep.id('@deep-foundation/core', 'Contain');
-    log({ containTypeLinkId });
-    const trueTypeLinkId = await deep.id(
-      '@freephoenix888/boolean',
-      'True'
-    );
-    log({ trueTypeLinkId });
-    const falseTypeLinkId = await deep.id(
-      '@freephoenix888/boolean',
-      'False'
-    );
-    log({ falseTypeLinkId });
     const resultTypeLinkId = await deep.id(deep.linkId!, "HasResult");
     log({ resultTypeLinkId });
 
@@ -172,21 +135,6 @@ async ({
   }
 
   
-
-  async function updateMinilinks(options: UpdateMinilinksOptions) {
-    const log = getNamespacedLogger({ namespace: updateMinilinks.name });
-    log({ options });
-    const {data: links} = await deep.select({
-      up: {
-        tree_id: {
-          _id: ["@deep-foundation/core", "containTree"]
-        },
-        parent_id: options.packageIdContainingTypes
-      }
-    })
-    log({links})
-    deep.minilinks.apply(links)
-  }
 
   async function getResultLink(options: GetResultLinkOptions) {
     const log = getNamespacedLogger({ namespace: getResultLink.name });
@@ -282,6 +230,10 @@ async ({
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
     rootObjectLink: Link<number>;
+    requiredPackageNames = {
+      core: "@deep-foundation/core",
+      boolean: "@freephoenix888/boolean",
+    }
 
     constructor(options: ObjectToLinksConverterOptions) {
       const { rootObjectLink, packageContainingTypes } = options;
