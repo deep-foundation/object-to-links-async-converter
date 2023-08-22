@@ -55,18 +55,7 @@ async ({
     const resultTypeLinkId = await deep.id(deep.linkId!, "HasResult");
     log({ resultTypeLinkId });
 
-    const {
-      data: [linkWithObjectValue],
-    } = await deep.select({
-      id: rootObjectLinkId,
-    });
-    log({ linkWithObjectValue });
-    if (!linkWithObjectValue.value?.value) {
-      throw new Error(`Link ##${linkWithObjectValue.id} does not have value`);
-    }
-    if (Object.keys(linkWithObjectValue.value.value).length === 0) {
-      throw new Error(`Object value of ##${linkWithObjectValue.id} is empty`);
-    }
+
     const obj = linkWithObjectValue.value.value;
     log({ obj });
 
@@ -227,6 +216,18 @@ async ({
     value: Record<string, any>;
     linkId: number;
   }
+
+  /**
+   * Converts object to links
+   * 
+   * @example
+```ts
+const converter = await ObjectToLinksConverter.init({
+  parseItLink,
+  packageContainingTypes
+})
+```
+   */
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
     rootObjectLink: Link<number>;
@@ -236,11 +237,29 @@ async ({
     }
 
     constructor(options: ObjectToLinksConverterOptions) {
-      const { rootObjectLink, packageContainingTypes } = options;
-      this.rootObjectLink = rootObjectLink;
+      this.rootObjectLink = options.rootObjectLink;
+      this.reservedLinkIds = options.reservedLinkIds;
+    }
+
+    static async init(options: ObjectToLinksConverterInitOptions) {
+      const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.init.name}` });
+      const { parseItLink, packageContainingTypes } = options;
+      const {
+        data: [rootObjectLink],
+      } = await deep.select({ id: rootObjectLinkId });
+      log({ rootObjectLink });
+      ensureLinkHasValue(rootObjectLink)
+      if (Object.keys(rootObjectLink.value.value).length === 0) {
+        return
+      }
       const linkIdsToReserveCount = this.getLinksToReserveCount({value: rootObjectLink.value.value});
-      this.reservedLinkIds = await deep.reserve(linkIdsToReserveCount);
-      this.addPackageContainingTypesToMinilinks({packageContainingTypes});
+      const reservedLinkIds = await deep.reserve(linkIdsToReserveCount);
+      const converter = new this({
+        reservedLinkIds,
+        rootObjectLink
+      })
+      converter.addPackageContainingTypesToMinilinks({packageContainingTypes})
+      return converter
     }
 
     async getOptions(options: GetOptionsOptions): Promise<Options> {
@@ -260,7 +279,7 @@ async ({
       return packageContainingTypes;
     }
 
-    getLinksToReserveCount(options: { value: string | number | boolean | object }): number {
+    static getLinksToReserveCount(options: { value: string | number | boolean | object }): number {
       const { value } = options;
       const log = getNamespacedLogger({ namespace: this.getLinksToReserveCount.name });
       log({ options })
@@ -571,8 +590,20 @@ async ({
       }
     }
   }
+
+  function ensureLinkHasValue(link: Link<number>) {
+    if (!link.value?.value) {
+      throw new Error(`Link ##${link.id} does not have value`);
+    }
+  }
+
   interface ObjectToLinksConverterOptions {
-    rootObjectLink: Link<number>
+    rootObjectLink: Link<number>;
+    reservedLinkIds: Array<number>;
+  }
+
+  interface ObjectToLinksConverterInitOptions {
+    parseItLink: Link<number>
     packageContainingTypes: Link<number>
   }
 
