@@ -466,7 +466,7 @@ const converter = await ObjectToLinksConverter.init({
       for (const [objectKey, objectValue] of Object.entries(value)) {
         const typeId = deep.idLocal(this.packageContainingTypes.id, objectKey);
         if(!typeId) {
-          throw new Error(`Could not find type id for ${objectKey}. Path for idLocal: ${[packageContainingTypes.id,objectKey]}`);
+          throw new Error(`Could not find type id for ${objectKey}. Path for idLocal: ${[this.packageContainingTypes.id,objectKey]}`);
         }
         await this.getInsertSerialOperationsForAnyValue({
           containerLinkId: linkId,
