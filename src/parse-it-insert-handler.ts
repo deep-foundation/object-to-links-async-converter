@@ -190,7 +190,7 @@ const converter = await ObjectToLinksConverter.init({
     async getTypesContainer(): Promise<Options['typesContainerLink']> {
       const log = getNamespacedLogger({ namespace: this.getTypesContainer.name })
       const { data: [packageContainingTypes] } = await deep.select({
-        from_id: rootObjectLinkId,
+        from_id: this.rootObjectLink.id,
         type_id: await deep.id(deep.linkId!, "PackageContainingTypes"),
       })
       log({ packageContainingTypes })
