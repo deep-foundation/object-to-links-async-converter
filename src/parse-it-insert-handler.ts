@@ -304,13 +304,6 @@ const converter = await ObjectToLinksConverter.init({
     async makeUpdateOperationsForObjectValue(options: MakeUpdateOperationsForObjectValueOptions) {
       throw new Error('Not implemented');
       const {value: obj, linkId} = options;
-      const {data: linksDownToLinkIdWithObj} = await deep.select({
-        up: {
-          tree_id: deep.idLocal("@deep-foundation/core", "containTree"),
-          parent_id: linkId
-        }
-      })
-      deep.minilinks.apply(linksDownToLinkIdWithObj);
       
       for (const [key, value] of Object.entries(obj)) {
         deep.minilinks.links.forEach(link => {
