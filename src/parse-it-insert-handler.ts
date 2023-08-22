@@ -379,7 +379,7 @@ async ({
       }
     }
     
-    async makeUpdateOperationsForObjectValue(options: GetUpdateSerialOperationsForObjectValueOptions) {
+    async makeUpdateOperationsForObjectValue(options: MakeUpdateOperationsForObjectValueOptions) {
       throw new Error('Not implemented');
       const {value: obj, linkId} = options;
       const {data: linksDownToLinkIdWithObj} = await deep.select({
@@ -624,13 +624,20 @@ async ({
     packageContainingTypes: Link<number>
   }
 
-  interface MakeUpdateOperationsForAnyValueOptions {
+  interface MakeUpdateOperationsForValueOptions<TValue extends string | number | object | boolean> {
     linkId: number;
-    value: string | number | object | boolean;
+    value: TValue;
   }
+
+  type MakeUpdateOperationsForAnyValueOptions = MakeUpdateOperationsForValueOptions<any>
+  type MakeUpdateOperationsForStringValueOptions = MakeUpdateOperationsForValueOptions<string>
+  type MakeUpdateOperationsForNumberValueOptions = MakeUpdateOperationsForValueOptions<number>
+  type MakeUpdateOperationsForBooleanValueOptions = MakeUpdateOperationsForValueOptions<boolean>
+  type MakeUpdateOperationsForObjectValueOptions = MakeUpdateOperationsForValueOptions<object>
 
   interface AddPackageContainingTypesToMinilinksOptions {
     packageContainingTypes: Link<number>
   }
+
 };
 
