@@ -52,70 +52,10 @@ async ({
 
   async function main() {
     const log = getNamespacedLogger({ namespace: main.name });
-    const resultTypeLinkId = await deep.id(deep.linkId!, "HasResult");
-    log({ resultTypeLinkId });
-
-    let serialOperations: Array<SerialOperation> = [];
-
-    const resultLink = await getResultLink({rootObjectLinkId})
-    if(!resultLink) {
-      // serialOperations = await (options.getInsertSerialOperationsForAnyValue ?? defaults.getInsertSerialOperationsForAnyValue)({
-      //   containerLinkId: resultLinkId,
-      //   containLinkId: reservedLinkIds.pop()!,
-      //   linkId: rootObjectLinkId,
-      //   name: undefined,
-      //   typeId: options.rootObjectTypeLinkId,
-      //   parentLinkId: undefined,
-      //   value: obj,
-      //   trueTypeLinkId,
-      //   falseTypeLinkId,
-      //   reservedLinkIds
-      // });
-    } else {
-      // // TODO: Update links
-      // throw new Error(`Update links not implemented yet`);
-      // serialOperations = await (options.getUpdateSerialOperationsForAnyValue ?? defaults.getUpdateSerialOperationsForAnyValue)({
-      //   containerLinkId: resultLinkId,
-      //   containLinkId: reservedLinkIds.pop()!,
-      //   linkId: rootObjectLinkId,
-      //   name: undefined,
-      //   typeId: options.rootObjectTypeLinkId,
-      //   parentLinkId: undefined,
-      //   value: obj,
-      //   trueTypeLinkId,
-      //   falseTypeLinkId,
-      //   reservedLinkIds
-      // });
-    }
     
-    log({ serialOperations });
-
-    const serialResult = await deep.serial({
-      operations: serialOperations,
-    });
-    log({ serialResult });
-
-    return {
-      resultLinkId,
-      serialResult
-    };
   }
 
   
-
-  async function getResultLink(options: GetResultLinkOptions) {
-    const log = getNamespacedLogger({ namespace: getResultLink.name });
-    log({options})
-    const {data: [link]} = await deep.select({
-      type_id: await deep.id(deep.linkId!, "Result"),
-      in: {
-        type_id: await deep.id(deep.linkId!, "HasResult"),
-        from_id: options.rootObjectLinkId
-      }
-    })
-    log({link})
-    return link
-  }
 
   function getNamespacedLogger({
     namespace,
