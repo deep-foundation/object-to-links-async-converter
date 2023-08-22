@@ -160,7 +160,7 @@ const converter = await ObjectToLinksConverter.init({
 
     static async init(options: ObjectToLinksConverterInitOptions) {
       const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.init.name}` });
-      const { parseItLink, packageContainingTypes } = options;
+      const { parseItLink } = options;
       const {
         data: [rootObjectLink],
       } = await deep.select({ id: parseItLink.to_id });
@@ -178,6 +178,17 @@ const converter = await ObjectToLinksConverter.init({
       })
       await converter.addPackageContainingTypesToMinilinks({packageContainingTypes})
       return converter
+    }
+
+    private getPackageContainingTypes() {
+      const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.getPackageContainingTypes.name}` })
+      const selectData: BoolExpLink = {
+        type_id: deep.idLocal(deep.linkId!, "PackageContainingTypes"),
+      }
+      log({ selectData })
+      const result = deep.minilinks.query(selectData)
+      log({result})
+      return result
     }
 
     async getOptions(options: GetOptionsOptions): Promise<Options> {
@@ -530,7 +541,6 @@ const converter = await ObjectToLinksConverter.init({
 
   interface ObjectToLinksConverterInitOptions {
     parseItLink: Link<number>
-    packageContainingTypes: Link<number>
   }
 
   interface MakeUpdateOperationsForValueOptions<TValue extends string | number | object | boolean> {
