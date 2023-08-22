@@ -176,6 +176,7 @@ const converter = await ObjectToLinksConverter.init({
         },
         minilinks: deep.minilinks
       })
+      const packageContainingTypes = this.getPackageContainingTypes();
       const linkIdsToReserveCount = this.getLinksToReserveCount({value: rootObjectLink.value.value});
       const reservedLinkIds = await deep.reserve(linkIdsToReserveCount);
       const converter = new this({
@@ -189,15 +190,20 @@ const converter = await ObjectToLinksConverter.init({
 
 
 
-    private getPackageContainingTypes() {
+    static getPackageContainingTypes() {
       const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.getPackageContainingTypes.name}` })
       const selectData: BoolExpLink = {
         type_id: deep.idLocal(deep.linkId!, "PackageContainingTypes"),
       }
       log({ selectData })
-      const result = deep.minilinks.query(selectData)
-      log({result})
-      return result
+      const queryResult = deep.minilinks.query(selectData)
+      log({queryResult})
+      const packageContainingTypes = queryResult[0];
+      log({ packageContainingTypes })
+      if(!packageContainingTypes) {
+        throw new Error(`Failed to find package containing types by using select data ${JSON.stringify(selectData, null, 2)}`);
+      }
+      return packageContainingTypes
     }
 
     async getOptions(options: GetOptionsOptions): Promise<Options> {
