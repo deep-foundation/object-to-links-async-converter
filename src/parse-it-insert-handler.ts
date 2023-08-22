@@ -50,9 +50,6 @@ async ({
 
   async function main() {
     const log = getNamespacedLogger({ namespace: main.name });
-    const rootObjectLinkId = parseItLink.to_id!;
-    const packageContainingTypes = options.packageContainingTypes;
-    
   }
 
   
