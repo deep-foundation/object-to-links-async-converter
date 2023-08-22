@@ -1,10 +1,11 @@
 import {
   DeepClient,
+  DeepClientResult,
   SerialOperation,
   Table,
 } from '@deep-foundation/deeplinks/imports/client';
 import { BoolExpLink } from '@deep-foundation/deeplinks/imports/client_types';
-import { Link, MinilinkCollection } from '@deep-foundation/deeplinks/imports/minilinks';
+import { Link, MinilinkCollection, MinilinksGeneratorOptions, MinilinksResult } from '@deep-foundation/deeplinks/imports/minilinks';
 
 async ({
   deep,
@@ -169,7 +170,12 @@ const converter = await ObjectToLinksConverter.init({
       if (Object.keys(rootObjectLink.value.value).length === 0) {
         return
       }
-      await getContainTreeLinksDownToParent
+      await applyContainTreeLinksDownToParentToMinilinks({
+        linkExp: {
+          id: rootObjectLink.id
+        },
+        minilinks: deep.minilinks
+      })
       const linkIdsToReserveCount = this.getLinksToReserveCount({value: rootObjectLink.value.value});
       const reservedLinkIds = await deep.reserve(linkIdsToReserveCount);
       const converter = new this({
@@ -539,9 +545,12 @@ const converter = await ObjectToLinksConverter.init({
   async function applyContainTreeLinksDownToParentToMinilinks(options: ApplyContainTreeLinksDownToParentToMinilinksOptions) {
     const log = getNamespacedLogger({ namespace: applyContainTreeLinksDownToParentToMinilinks.name })
     log({options})
-    const links = await getContainTreeLinksDownToParent(options)
+    const links = await getContainTreeLinksDownToParent({
+      linkExp: options.linkExp,
+      useMinilinks: false
+    }) as DeepClientResult<Link<number>[]>
     log({links})
-    const minilinksApplyResult = options.minilinks.apply(links)
+    const minilinksApplyResult = options.minilinks.apply(links.data)
     log({minilinksApplyResult})
     return minilinksApplyResult
   }
@@ -562,8 +571,8 @@ const converter = await ObjectToLinksConverter.init({
     return result;
   }
 
-  type ApplyContainTreeLinksDownToParentToMinilinksOptions = GetContainTreeLinksDownToLinkOptions & {
-    minilinks: MinilinkCollection
+  type ApplyContainTreeLinksDownToParentToMinilinksOptions = Omit<GetContainTreeLinksDownToLinkOptions, 'useMinilinks'> & {
+    minilinks: MinilinksResult<Link<number>>
   };
 
   interface GetContainTreeLinksDownToLinkOptions {
