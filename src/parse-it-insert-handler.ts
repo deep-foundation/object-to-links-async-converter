@@ -533,10 +533,6 @@ const converter = await ObjectToLinksConverter.init({
     async makeInsertSerialOperationsForAnyValue(options: MakeInsertSerialOperationsForAnyValueOptions) {
       const value = options.value;
 
-      const getHandler = ({ handlerOption, defaultHandler }: { handlerOption: Function | undefined, defaultHandler: Function }) => {
-        return handlerOption ?? defaultHandler;
-      };
-
       if (typeof value === 'string') {
         return await this.makeInsertSerialOperationsForStringValue({
           ...options,
