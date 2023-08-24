@@ -340,17 +340,17 @@ const converter = await ObjectToLinksConverter.init({
       //   })
       // }
     }
-    async getInsertSerialOperationsForStringValue(options: GetInsertSerialOperationsForStringOptions) {
-      return this.getInsertSerialOperationsForStringOrNumberValue(options);
+    async makeInsertSerialOperationsForStringValue(options: MakeInsertSerialOperationsForStringOptions) {
+      return this.makeInsertSerialOperationsForStringOrNumberValue(options);
     }
-    async getInsertSerialOperationsForNumberValue(options: GetInsertSerialOperationsForNumberOptions) {
-      return this.getInsertSerialOperationsForStringOrNumberValue(options);
+    async makeInsertSerialOperationsForNumberValue(options: MakeInsertSerialOperationsForNumberOptions) {
+      return this.makeInsertSerialOperationsForStringOrNumberValue(options);
     }
-    async getInsertSerialOperationsForBooleanValue(options: GetInsertSerialOperationsForBooleanOptions) {
+    async makeInsertSerialOperationsForBooleanValue(options: MakeInsertSerialOperationsForBooleanOptions) {
       const serialOperations: Array<SerialOperation> = [];
       const { typeId, name, value, linkId, parentLinkId, containLinkId, containerLinkId, falseTypeLinkId, trueTypeLinkId } = options;
       const log = getNamespacedLogger({
-        namespace: this.getInsertSerialOperationsForStringValue.name,
+        namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
       const linkInsertSerialOperation = createSerialOperation({
         type: 'insert',
@@ -390,11 +390,11 @@ const converter = await ObjectToLinksConverter.init({
       log({ serialOperations });
       return serialOperations;
     }
-    async getInsertSerialOperationsForStringOrNumberValue(options: GetInsertSerialOperationsForStringOrNumberOptions) {
+    async makeInsertSerialOperationsForStringOrNumberValue(options: MakeInsertSerialOperationsForStringOrNumberOptions) {
       const serialOperations: Array<SerialOperation> = [];
       const { typeId, name, value, linkId, parentLinkId, containLinkId, containerLinkId } = options;
       const log = getNamespacedLogger({
-        namespace: this.getInsertSerialOperationsForStringValue.name,
+        namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
       const linkInsertSerialOperation = createSerialOperation({
         type: 'insert',
@@ -443,11 +443,11 @@ const converter = await ObjectToLinksConverter.init({
       log({ serialOperations });
       return serialOperations;
     }
-    async getInsertSerialOperationsForObject(options: GetInsertSerialOperationsForObject) {
+    async makeInsertSerialOperationsForObject(options: MakeInsertSerialOperationsForObject) {
       const serialOperations: Array<SerialOperation> = [];
       const { typeId, name, value, linkId, parentLinkId, containLinkId, containerLinkId } = options;
       const log = getNamespacedLogger({
-        namespace: this.getInsertSerialOperationsForStringValue.name,
+        namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
       const linkInsertSerialOperation = createSerialOperation({
         type: 'insert',
@@ -499,7 +499,7 @@ const converter = await ObjectToLinksConverter.init({
         if(!typeId) {
           throw new Error(`Could not find type id for ${objectKey}. Path for idLocal: ${[this.packageContainingTypes.id,objectKey]}`);
         }
-        await this.getInsertSerialOperationsForAnyValue({
+        await this.makeInsertSerialOperationsForAnyValue({
           containerLinkId: linkId,
           containLinkId: reservedLinkIds.pop()!,
           linkId: reservedLinkIds.pop()!,
@@ -517,7 +517,7 @@ const converter = await ObjectToLinksConverter.init({
       log({ serialOperations });
       return serialOperations;
     }
-    async getInsertSerialOperationsForAnyValue(options: GetInsertSerialOperationsForAnyValueOptions) {
+    async makeInsertSerialOperationsForAnyValue(options: MakeInsertSerialOperationsForAnyValueOptions) {
       const value = options.value;
 
       const getHandler = ({ handlerOption, defaultHandler }: { handlerOption: Function | undefined, defaultHandler: Function }) => {
@@ -525,22 +525,22 @@ const converter = await ObjectToLinksConverter.init({
       };
 
       if (typeof value === 'string') {
-        return await this.getInsertSerialOperationsForStringValue({
+        return await this.makeInsertSerialOperationsForStringValue({
           ...options,
           value
         });
       } else if (typeof value === 'number') {
-        return await this.getInsertSerialOperationsForNumberValue({
+        return await this.makeInsertSerialOperationsForNumberValue({
           ...options,
           value
         });
       } else if (typeof value === 'boolean') {
-        return await this.getInsertSerialOperationsForBooleanValue({
+        return await this.makeInsertSerialOperationsForBooleanValue({
           ...options,
           value
         });
       } else if (typeof value === 'object') {
-        return await this.getInsertSerialOperationsForObject({
+        return await this.makeInsertSerialOperationsForObject({
           ...options,
           value
         });
@@ -626,32 +626,32 @@ const converter = await ObjectToLinksConverter.init({
     packageContainingTypes: Link<number>
   }
 
-  type GetInsertSerialOperationsForStringOrNumberOptions = GetInsertSerialOperationsForAnyValueOptions & {
+  type MakeInsertSerialOperationsForStringOrNumberOptions = MakeInsertSerialOperationsForAnyValueOptions & {
     value: string | number;
   }
 
-  type GetInsertSerialOperationsForStringOptions = GetInsertSerialOperationsForAnyValueOptions & {
+  type MakeInsertSerialOperationsForStringOptions = MakeInsertSerialOperationsForAnyValueOptions & {
     value: string;
   }
 
-  type GetInsertSerialOperationsForNumberOptions = GetInsertSerialOperationsForAnyValueOptions & {
+  type MakeInsertSerialOperationsForNumberOptions = MakeInsertSerialOperationsForAnyValueOptions & {
     value: number;
   }
 
-  type GetInsertSerialOperationsForBooleanOptions = GetInsertSerialOperationsForAnyValueOptions & {
+  type MakeInsertSerialOperationsForBooleanOptions = MakeInsertSerialOperationsForAnyValueOptions & {
     value: boolean;
   } & {
     trueTypeLinkId: number;
     falseTypeLinkId: number;
   }
 
-  type GetInsertSerialOperationsForObject = GetInsertSerialOperationsForAnyValueOptions & {
+  type MakeInsertSerialOperationsForObject = MakeInsertSerialOperationsForAnyValueOptions & {
     value: object;
   } & {
     reservedLinkIds: Array<number>;
   }
 
-  type GetInsertSerialOperationsForAnyValueOptions = {
+  type MakeInsertSerialOperationsForAnyValueOptions = {
     value: string | number | object | boolean;
     parentLinkId: number | undefined;
     containLinkId: number;
