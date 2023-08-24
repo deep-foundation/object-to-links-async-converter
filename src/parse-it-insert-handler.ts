@@ -226,17 +226,29 @@ const converter = await ObjectToLinksConverter.init({
       const { link, value } = options;
       const serialOperations: Array<SerialOperation> = [];
       const typeOfValue = this.getTypeOfValueForLink(link)
-      const table = `${typeOfValue.toLocaleLowerCase()}s` as Table<'update'>;
-      serialOperations.push(createSerialOperation({
-        type: 'update',
-        table,
-        exp: {
-          link_id: link.id
-        },
-        value: {
-          value: link
-        }
-      }))
+      if(typeOfValue === 'boolean') {
+        serialOperations.push(createSerialOperation({
+          type: 'update',
+          table: 'links',
+          exp: {
+            id: link.id
+          },
+          value: {
+            to_id: value ? await deep.id(this.requiredPackageNames.boolean, "True") : await deep.id(this.requiredPackageNames.boolean, "False")
+          }
+        }))
+      } else {
+        serialOperations.push(createSerialOperation({
+          type: 'update',
+          table: `${typeOfValue.toLocaleLowerCase()}s` as Table<'update'>,
+          exp: {
+            link_id: link.id
+          },
+          value: {
+            value: link
+          }
+        }))
+      }
       
       return serialOperations;
     }
