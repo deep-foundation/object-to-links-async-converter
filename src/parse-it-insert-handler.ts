@@ -361,51 +361,44 @@ const converter = await ObjectToLinksConverter.init({
     }
     async makeInsertSerialOperationsForBooleanValue(options: MakeInsertSerialOperationsForBooleanOptions) {
       const serialOperations: Array<SerialOperation> = [];
-      const { typeId, name, value, linkId, parentLinkId, containLinkId, containerLinkId, falseTypeLinkId, trueTypeLinkId } = options;
+      const { name, value, parentLinkId } = options;
       const log = getNamespacedLogger({
         namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
+      const typeId = deep.idLocal(this.packageContainingTypes.id, name);
+      const linkId = this.reservedLinkIds.pop()!;
+
       const linkInsertSerialOperation = createSerialOperation({
         type: 'insert',
         table: 'links',
         objects: {
           id: linkId,
-          ...(parentLinkId && { from_id: parentLinkId }),
-          to_id: value ? trueTypeLinkId : falseTypeLinkId,
-          type_id: typeId
+          type_id: typeId,
+          from_id: parentLinkId,
+          to_id: value ? deep.idLocal(this.requiredPackageNames.boolean, "True") : deep.idLocal(this.requiredPackageNames.boolean, "False"),
         }
       })
       log({ linkInsertSerialOperation });
       serialOperations.push(linkInsertSerialOperation);
+
       const containInsertSerialOperation = createSerialOperation({
         type: 'insert',
         table: 'links',
         objects: {
-          id: containLinkId,
-          from_id: containerLinkId,
+          type_id: deep.idLocal("@deep-foundation/core", "Contain"),
+          from_id: parentLinkId,
           to_id: linkId
         }
       })
       log({ containInsertSerialOperation });
       serialOperations.push(containInsertSerialOperation);
-      if (name) {
-        const stringValueForContainInsertSerialOperation = createSerialOperation({
-          type: 'insert',
-          table: 'strings',
-          objects: {
-            link_id: containLinkId,
-            value: name
-          }
-        })
-        log({ stringValueForContainInsertSerialOperation })
-        serialOperations.push(stringValueForContainInsertSerialOperation)
-      }
+
       log({ serialOperations });
       return serialOperations;
     }
     async makeInsertSerialOperationsForStringOrNumberValue(options: MakeInsertSerialOperationsForStringOrNumberOptions) {
       const serialOperations: Array<SerialOperation> = [];
-      const { typeId, name, value, linkId, parentLinkId, containLinkId, containerLinkId } = options;
+      const { name, parentLinkId } = options;
       const log = getNamespacedLogger({
         namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
@@ -649,9 +642,6 @@ const converter = await ObjectToLinksConverter.init({
 
   type MakeInsertSerialOperationsForBooleanOptions = MakeInsertSerialOperationsForAnyValueOptions & {
     value: boolean;
-  } & {
-    trueTypeLinkId: number;
-    falseTypeLinkId: number;
   }
 
   type MakeInsertSerialOperationsForObject = MakeInsertSerialOperationsForAnyValueOptions & {
@@ -661,19 +651,9 @@ const converter = await ObjectToLinksConverter.init({
   }
 
   type MakeInsertSerialOperationsForAnyValueOptions = {
-    value: string | number | object | boolean;
-    parentLinkId: number | undefined;
-    containLinkId: number;
-    containerLinkId: number;
-    name: string | undefined;
-    linkId: number;
-    typeId: number;
-  } & {
-    trueTypeLinkId: number;
-    falseTypeLinkId: number;
-  } & {
-    reservedLinkIds: Array<number>;
-  }
+    parentLinkId: number;
+    name: string;
+  } 
 
   interface Options {
     typesContainerLink: Link<number>,
