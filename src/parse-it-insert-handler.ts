@@ -268,7 +268,8 @@ const converter = await ObjectToLinksConverter.init({
         log({ propertyLink })
         if(propertyKey) {
           let propertyUpdateOperations: Array<SerialOperation> = [];
-          if(typeof value === 'object') {
+          const typeOfValue = this.getTypeOfValueForLink(link)
+          if(typeOfValue === 'object') {
             propertyUpdateOperations = await this.makeUpdateOperationsForObjectValue({
               link: propertyLink,
               value: propertyValue
