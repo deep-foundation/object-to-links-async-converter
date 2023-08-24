@@ -127,6 +127,11 @@ const converter = await ObjectToLinksConverter.init({
       return converter
     }
 
+    async convert() {
+      // TODO: Implement
+      throw new Error(`Not implemented yet`)
+    }
+
 
 
     static getPackageContainingTypes() {
