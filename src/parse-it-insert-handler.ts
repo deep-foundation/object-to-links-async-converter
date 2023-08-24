@@ -286,21 +286,6 @@ const converter = await ObjectToLinksConverter.init({
       throw new Error('Not implemented');
     }
 
-    async makeUpdateOperationsForAnyValue(options: MakeUpdateOperationsForAnyValueOptions) {
-      const log = getNamespacedLogger({ namespace: this.makeUpdateOperationsForAnyValue.name });
-      log({options})
-      const { link: linkId, value } = options;
-      if(typeof value === 'string') {
-        return await this.makeUpdateOperationsForStringValue(options);
-      } else if (typeof value === 'number') {
-        return await this.makeUpdateOperationsForNumberValue(options)
-      } else if (typeof value === 'boolean') {
-        return await this.makeUpdateOperationsForBooleanValue(options)
-      } else if (typeof value === 'object') {
-        return await this.makeUpdateOperationsForObjectValue(options)
-      }
-    }
-
     async makeUpdateOperationsForValue(options: MakeUpdateOperationsForAnyValueOptions) {
       const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.makeUpdateOperationsForValue.name}` });
       log({options})
