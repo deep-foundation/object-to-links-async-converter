@@ -313,7 +313,6 @@ const converter = await ObjectToLinksConverter.init({
           from_id: link.id
         })
         if(propertyKey) {
-          const typeName = deep.nameLocal(typeLinkId);
           const typeOfValue = this.getTypeOfValueForLink(propertyLink)
           const table = `${typeOfValue.toLocaleLowerCase()}s` as Table<'update'>;
           serialOperations.push(createSerialOperation({
