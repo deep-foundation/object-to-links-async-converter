@@ -54,7 +54,7 @@ async ({
     const objectToLinksConverter = await ObjectToLinksConverter.init({
       parseItLink
     })
-    objectToLinksConverter.convert()
+    objectToLinksConverter?.convert()
   }
 
   
@@ -98,7 +98,7 @@ const converter = await ObjectToLinksConverter.init({
       this.packageContainingTypes = options.packageContainingTypes;
     }
 
-    static async init(options: ObjectToLinksConverterInitOptions): Promise<ObjectToLinksConverter> {
+    static async init(options: ObjectToLinksConverterInitOptions): Promise<ObjectToLinksConverter|undefined> {
       const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.init.name}` });
       const { parseItLink } = options;
       const {
