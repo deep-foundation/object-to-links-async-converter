@@ -274,22 +274,9 @@ const converter = await ObjectToLinksConverter.init({
       log({minilinksApplyResult})
     }
 
-    async makeUpdateOperationsForStringValue(options: MakeUpdateOperationsForStringValueOptions) {
-      throw new Error('Not implemented');
-    }
-
-    async makeUpdateOperationsForNumberValue(options: MakeUpdateOperationsForNumberValueOptions) {
-      throw new Error('Not implemented');
-    }
-
-    async makeUpdateOperationsForBooleanValue(options: MakeUpdateOperationsForBooleanValueOptions) {
-      throw new Error('Not implemented');
-    }
-
-    async makeUpdateOperationsForValue(options: MakeUpdateOperationsForAnyValueOptions) {
-      const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.makeUpdateOperationsForValue.name}` });
-      log({options})
-      const { link, value } = options;
+    async makeUpdateOperationsForPrimitiveValue<TValue extends string|number|boolean>(link: Link<number>,value: TValue) {
+      const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.makeUpdateOperationsForPrimitiveValue.name}` });
+      log({link, value})
       const serialOperations: Array<SerialOperation> = [];
       const typeOfValue = this.getTypeOfValueForLink(link)
       const table = `${typeOfValue.toLocaleLowerCase()}s` as Table<'update'>;
@@ -303,38 +290,45 @@ const converter = await ObjectToLinksConverter.init({
           value: link
         }
       }))
-      serialOperations.push(createSerialOperation({
-        type: 'insert',
-        table: 'links',
-        objects: {
-          type_id: deep.idLocal(deep.linkId!, "ParseIt"),
-          from_id: link.id,
-          to_id: link.id
-        }
-      }))
+      
       return serialOperations;
     }
     
-    async makeUpdateOperationsForObjectValue(options: MakeUpdateOperationsForObjectValueOptions) {
+    async makeUpdateOperationsForObjectValue(link: Link<number>, value: Record<string, any>) {
       const log = getNamespacedLogger({ namespace: this.makeUpdateOperationsForObjectValue.name });
-      log({options})
-      const { value, link } = options;
+      log({ value, link })
       const serialOperations: Array<SerialOperation> = [];
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
         const typeLinkId = deep.idLocal(this.packageContainingTypes.id, propertyKey);
+        log({ typeLinkId })
         const [propertyLink] = deep.minilinks.query({
           type_id: typeLinkId,
           from_id: link.id
         })
+        log({ propertyLink })
         if(propertyKey) {
-          const propertyUpdateOperations = await this.makeUpdateOperationsForValue({
-            link: propertyLink,
-            value: propertyValue
-          })
+          let propertyUpdateOperations: Array<SerialOperation> = [];
+          if(typeof value === 'object') {
+            propertyUpdateOperations = await this.makeUpdateOperationsForObjectValue(propertyValue, propertyLink)
+          } else {
+            propertyUpdateOperations = await this.makeUpdateOperationsForPrimitiveValue(propertyLink, propertyValue)
+          }
+          log({ propertyUpdateOperations })
           serialOperations.push(...propertyUpdateOperations)
         } else {
           // TODO: Insert new property and parse it to it
         }
+        serialOperations.push(createSerialOperation({
+          type: 'insert',
+          table: 'links',
+          objects: {
+            type_id: deep.idLocal(deep.linkId!, "ParseIt"),
+            from_id: link.id,
+            to_id: link.id
+          }
+        }))
+        log({serialOperations})
+        return serialOperations
       }
 
       return serialOperations;
@@ -673,17 +667,6 @@ const converter = await ObjectToLinksConverter.init({
   interface ObjectToLinksConverterInitOptions {
     parseItLink: Link<number>
   }
-
-  interface MakeUpdateOperationsForValueOptions<TValue extends string | number | object | boolean> {
-    link: Link<number>;
-    value: TValue;
-  }
-
-  type MakeUpdateOperationsForAnyValueOptions = MakeUpdateOperationsForValueOptions<any>
-  type MakeUpdateOperationsForStringValueOptions = MakeUpdateOperationsForValueOptions<string>
-  type MakeUpdateOperationsForNumberValueOptions = MakeUpdateOperationsForValueOptions<number>
-  type MakeUpdateOperationsForBooleanValueOptions = MakeUpdateOperationsForValueOptions<boolean>
-  type MakeUpdateOperationsForObjectValueOptions = MakeUpdateOperationsForValueOptions<object>
 
   interface AddPackageContainingTypesToMinilinksOptions {
     packageContainingTypes: Link<number>
