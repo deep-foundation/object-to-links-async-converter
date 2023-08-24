@@ -209,9 +209,12 @@ const converter = await ObjectToLinksConverter.init({
       log({minilinksApplyResult})
     }
 
-    async makeUpdateOperationsForPrimitiveValue<TValue extends string|number|boolean>(link: Link<number>,value: TValue) {
+    async makeUpdateOperationsForPrimitiveValue<TValue extends string | number | boolean>(
+      options: UpdateOperationsForPrimitiveValueOptions<TValue>
+    ) {
       const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.makeUpdateOperationsForPrimitiveValue.name}` });
-      log({link, value})
+      log({ options })
+      const { link, value } = options;
       const serialOperations: Array<SerialOperation> = [];
       const typeOfValue = this.getTypeOfValueForLink(link)
       const table = `${typeOfValue.toLocaleLowerCase()}s` as Table<'update'>;
@@ -229,9 +232,10 @@ const converter = await ObjectToLinksConverter.init({
       return serialOperations;
     }
     
-    async makeUpdateOperationsForObjectValue(link: Link<number>, value: Record<string, any>) {
+    async makeUpdateOperationsForObjectValue(options: UpdateOperationsForObjectValueOptions) {
       const log = getNamespacedLogger({ namespace: this.makeUpdateOperationsForObjectValue.name });
-      log({ value, link })
+      log({ options })
+      const { link, value } = options;
       const serialOperations: Array<SerialOperation> = [];
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
         const typeLinkId = deep.idLocal(this.packageContainingTypes.id, propertyKey);
@@ -244,9 +248,15 @@ const converter = await ObjectToLinksConverter.init({
         if(propertyKey) {
           let propertyUpdateOperations: Array<SerialOperation> = [];
           if(typeof value === 'object') {
-            propertyUpdateOperations = await this.makeUpdateOperationsForObjectValue(propertyValue, propertyLink)
+            propertyUpdateOperations = await this.makeUpdateOperationsForObjectValue({
+              link: propertyLink,
+              value: propertyValue
+            })
           } else {
-            propertyUpdateOperations = await this.makeUpdateOperationsForPrimitiveValue(propertyLink, propertyValue)
+            propertyUpdateOperations = await this.makeUpdateOperationsForPrimitiveValue({
+              link: propertyLink,
+              value: propertyValue
+            })
           }
           log({ propertyUpdateOperations })
           serialOperations.push(...propertyUpdateOperations)
@@ -654,6 +664,15 @@ const converter = await ObjectToLinksConverter.init({
   interface GetOptionsOptions {
     rootObjectLinkId: number;
   }
+
+  interface UpdateOperationsForValueOptions<TValue extends string | number | boolean | object> {
+    link: Link<number>;
+    value: TValue;
+  }
+
+  type UpdateOperationsForPrimitiveValueOptions<TValue extends string | number | boolean> = UpdateOperationsForValueOptions<TValue>;
+
+  type UpdateOperationsForObjectValueOptions = UpdateOperationsForValueOptions<object>;
 
 };
 
