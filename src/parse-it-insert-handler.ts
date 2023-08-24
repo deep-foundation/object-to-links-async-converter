@@ -116,23 +116,6 @@ async ({
     rootObjectLinkId: number;
   }
 
-  interface GetGetInsertSerialOperationsForAnyValueOptions {
-    rootObjectLinkId: number;
-  }
-
-  interface UpdateMinilinksOptions {
-    packageIdContainingTypes: number,
-  }
-
-  interface GetResultLinkOptions {
-    rootObjectLinkId: number;
-  }
-
-  interface GetUpdateSerialOperationsForObjectValueOptions {
-    value: Record<string, any>;
-    linkId: number;
-  }
-
   /**
    * Converts object to links
    * 
