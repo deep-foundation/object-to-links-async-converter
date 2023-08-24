@@ -289,7 +289,7 @@ const converter = await ObjectToLinksConverter.init({
     async makeUpdateOperationsForAnyValue(options: MakeUpdateOperationsForAnyValueOptions) {
       const log = getNamespacedLogger({ namespace: this.makeUpdateOperationsForAnyValue.name });
       log({options})
-      const { linkId, value } = options;
+      const { link: linkId, value } = options;
       if(typeof value === 'string') {
         return await this.makeUpdateOperationsForStringValue(options);
       } else if (typeof value === 'number') {
@@ -303,6 +303,46 @@ const converter = await ObjectToLinksConverter.init({
     
     async makeUpdateOperationsForObjectValue(options: MakeUpdateOperationsForObjectValueOptions) {
       throw new Error('Not implemented');
+      const log = getNamespacedLogger({ namespace: this.makeUpdateOperationsForObjectValue.name });
+      log({options})
+      const { value, link } = options;
+      const serialOperations: Array<SerialOperation> = [];
+      for (const [propertyKey, propertyValue] of Object.entries(value)) {
+        const typeLinkId = deep.idLocal(this.packageContainingTypes.id, propertyKey);
+        const [propertyLink] = deep.minilinks.query({
+          type_id: typeLinkId,
+          from_id: link.id
+        })
+        if(propertyKey) {
+          const typeName = deep.nameLocal(typeLinkId);
+          const typeOfValue = this.getTypeOfValueForLink(propertyLink)
+          const table = `${typeOfValue.toLocaleLowerCase()}s` as Table<'update'>;
+          serialOperations.push(createSerialOperation({
+            type: 'update',
+            table,
+            exp: {
+              link_id: propertyLink.id
+            },
+            value: {
+              value: propertyValue
+            }
+          }))
+          serialOperations.push(createSerialOperation({
+            type: 'insert',
+            table: 'links',
+            objects: {
+              type_id: deep.idLocal(deep.linkId!, "ParseIt"),
+              from_id: propertyLink.id,
+              to_id: propertyLink.id
+            }
+          }))
+        } else {
+          // TODO: Insert new property and parse it to it
+        }
+      }
+
+      return serialOperations;
+
       // Old Complex Logic
       // const {value: obj, linkId,parentProperties} = options;
       
@@ -564,6 +604,24 @@ const converter = await ObjectToLinksConverter.init({
         throw new Error(`Unknown type of value ${value}: ${typeof value}. Only string, number, boolean, and object are supported`);
       }
     }
+
+    getTypeOfValueForLink(link: Link<number>) {
+      const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.getTypeOfValueForLink.name}` })
+      const [valueLink] = deep.minilinks.query({
+        type_id: deep.idLocal("@deep-foundation/core", "Value"),
+        from_id: link.type_id
+      })
+      log({valueLink})
+      if(!valueLink) {
+        throw new Error(`Failed to find value link for link ${link.type_id}`);
+      }
+      const typeOfValue = deep.nameLocal(valueLink.to_id!);
+      log({typeOfValue})
+      if(!typeOfValue) {
+        throw new Error(`Failed to get name of ${valueLink.to_id}`);
+      }
+      return typeOfValue
+    }
   }
 
   function ensureLinkHasValue(link: Link<number>) {
@@ -621,7 +679,7 @@ const converter = await ObjectToLinksConverter.init({
   }
 
   interface MakeUpdateOperationsForValueOptions<TValue extends string | number | object | boolean> {
-    linkId: number;
+    link: Link<number>;
     value: TValue;
   }
 
