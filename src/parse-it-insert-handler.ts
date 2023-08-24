@@ -686,9 +686,7 @@ const converter = await ObjectToLinksConverter.init({
   type MakeUpdateOperationsForStringValueOptions = MakeUpdateOperationsForValueOptions<string>
   type MakeUpdateOperationsForNumberValueOptions = MakeUpdateOperationsForValueOptions<number>
   type MakeUpdateOperationsForBooleanValueOptions = MakeUpdateOperationsForValueOptions<boolean>
-  type MakeUpdateOperationsForObjectValueOptions = MakeUpdateOperationsForValueOptions<object> & {
-    parentProperties: Array<string>;
-  }
+  type MakeUpdateOperationsForObjectValueOptions = MakeUpdateOperationsForValueOptions<object>
 
   interface AddPackageContainingTypesToMinilinksOptions {
     packageContainingTypes: Link<number>
