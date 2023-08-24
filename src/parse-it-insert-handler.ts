@@ -266,9 +266,9 @@ const converter = await ObjectToLinksConverter.init({
           from_id: link.id
         })
         log({ propertyLink })
-        if(propertyKey) {
+        if(propertyLink) {
           let propertyUpdateOperations: Array<SerialOperation> = [];
-          const typeOfValue = this.getTypeOfValueForLink(link)
+          const typeOfValue = this.getTypeOfValueForLink(propertyLink)
           if(typeOfValue === 'object') {
             propertyUpdateOperations = await this.makeUpdateOperationsForObjectValue({
               link: propertyLink,
@@ -284,6 +284,10 @@ const converter = await ObjectToLinksConverter.init({
           serialOperations.push(...propertyUpdateOperations)
         } else {
           // TODO: Insert new property and parse it to it
+          const typeOfValue = deep.nameLocal(typeLinkId)
+          if(typeOfValue === 'object') {
+            const linkId = this.reservedLinkIds.pop()!;
+          }
         }
         serialOperations.push(createSerialOperation({
           type: 'insert',
@@ -361,12 +365,10 @@ const converter = await ObjectToLinksConverter.init({
     }
     async makeInsertSerialOperationsForBooleanValue(options: MakeInsertSerialOperationsForBooleanOptions) {
       const serialOperations: Array<SerialOperation> = [];
-      const { name, value, parentLinkId } = options;
+      const { name, value, parentLinkId,linkId,typeId } = options;
       const log = getNamespacedLogger({
         namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
-      const typeId = deep.idLocal(this.packageContainingTypes.id, name);
-      const linkId = this.reservedLinkIds.pop()!;
 
       const linkInsertSerialOperation = createSerialOperation({
         type: 'insert',
@@ -398,7 +400,7 @@ const converter = await ObjectToLinksConverter.init({
     }
     async makeInsertSerialOperationsForStringOrNumberValue(options: MakeInsertSerialOperationsForStringOrNumberOptions) {
       const serialOperations: Array<SerialOperation> = [];
-      const { name, parentLinkId } = options;
+      const { name, value, parentLinkId,linkId,typeId } = options;
       const log = getNamespacedLogger({
         namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
@@ -413,6 +415,7 @@ const converter = await ObjectToLinksConverter.init({
       })
       log({ linkInsertSerialOperation });
       serialOperations.push(linkInsertSerialOperation);
+
       const stringValueInsertSerialOperation = createSerialOperation({
         type: 'insert',
         table: `${typeof value}s` as Table<'insert'>,
@@ -423,29 +426,19 @@ const converter = await ObjectToLinksConverter.init({
       })
       log({ stringValueInsertSerialOperation });
       serialOperations.push(stringValueInsertSerialOperation);
+
       const containInsertSerialOperation = createSerialOperation({
         type: 'insert',
         table: 'links',
         objects: {
-          id: containLinkId,
-          from_id: containerLinkId,
+          type_id: deep.idLocal("@deep-foundation/core", "Contain"),
+          from_id: parentLinkId,
           to_id: linkId
         }
       })
       log({ containInsertSerialOperation });
       serialOperations.push(containInsertSerialOperation);
-      if (name) {
-        const stringValueForContainInsertSerialOperation = createSerialOperation({
-          type: 'insert',
-          table: 'strings',
-          objects: {
-            link_id: containLinkId,
-            value: name
-          }
-        })
-        log({ stringValueForContainInsertSerialOperation })
-        serialOperations.push(stringValueForContainInsertSerialOperation)
-      }
+      
       log({ serialOperations });
       return serialOperations;
     }
@@ -653,6 +646,8 @@ const converter = await ObjectToLinksConverter.init({
   type MakeInsertSerialOperationsForAnyValueOptions = {
     parentLinkId: number;
     name: string;
+    typeId: number;
+    linkId: number;
   } 
 
   interface Options {
