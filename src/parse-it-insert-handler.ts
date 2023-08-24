@@ -302,7 +302,6 @@ const converter = await ObjectToLinksConverter.init({
     }
     
     async makeUpdateOperationsForObjectValue(options: MakeUpdateOperationsForObjectValueOptions) {
-      throw new Error('Not implemented');
       const log = getNamespacedLogger({ namespace: this.makeUpdateOperationsForObjectValue.name });
       log({options})
       const { value, link } = options;
