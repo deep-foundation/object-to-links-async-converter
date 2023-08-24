@@ -68,54 +68,6 @@ async ({
     };
   }
 
-  type GetInsertSerialOperationsForStringOrNumberOptions = GetInsertSerialOperationsForAnyValueOptions & {
-    value: string | number;
-  }
-
-  type GetInsertSerialOperationsForStringOptions = GetInsertSerialOperationsForAnyValueOptions & {
-    value: string;
-  }
-
-  type GetInsertSerialOperationsForNumberOptions = GetInsertSerialOperationsForAnyValueOptions & {
-    value: number;
-  }
-
-  type GetInsertSerialOperationsForBooleanOptions = GetInsertSerialOperationsForAnyValueOptions & {
-    value: boolean;
-  } & {
-    trueTypeLinkId: number;
-    falseTypeLinkId: number;
-  }
-
-  type GetInsertSerialOperationsForObject = GetInsertSerialOperationsForAnyValueOptions & {
-    value: object;
-  } & {
-    reservedLinkIds: Array<number>;
-  }
-
-  type GetInsertSerialOperationsForAnyValueOptions = {
-    value: string | number | object | boolean;
-    parentLinkId: number | undefined;
-    containLinkId: number;
-    containerLinkId: number;
-    name: string | undefined;
-    linkId: number;
-    typeId: number;
-  } & {
-    trueTypeLinkId: number;
-    falseTypeLinkId: number;
-  } & {
-    reservedLinkIds: Array<number>;
-  }
-
-  interface Options {
-    typesContainerLink: Link<number>,
-  }
-
-  interface GetOptionsOptions {
-    rootObjectLinkId: number;
-  }
-
   /**
    * Converts object to links
    * 
@@ -653,6 +605,54 @@ const converter = await ObjectToLinksConverter.init({
 
   interface AddPackageContainingTypesToMinilinksOptions {
     packageContainingTypes: Link<number>
+  }
+
+  type GetInsertSerialOperationsForStringOrNumberOptions = GetInsertSerialOperationsForAnyValueOptions & {
+    value: string | number;
+  }
+
+  type GetInsertSerialOperationsForStringOptions = GetInsertSerialOperationsForAnyValueOptions & {
+    value: string;
+  }
+
+  type GetInsertSerialOperationsForNumberOptions = GetInsertSerialOperationsForAnyValueOptions & {
+    value: number;
+  }
+
+  type GetInsertSerialOperationsForBooleanOptions = GetInsertSerialOperationsForAnyValueOptions & {
+    value: boolean;
+  } & {
+    trueTypeLinkId: number;
+    falseTypeLinkId: number;
+  }
+
+  type GetInsertSerialOperationsForObject = GetInsertSerialOperationsForAnyValueOptions & {
+    value: object;
+  } & {
+    reservedLinkIds: Array<number>;
+  }
+
+  type GetInsertSerialOperationsForAnyValueOptions = {
+    value: string | number | object | boolean;
+    parentLinkId: number | undefined;
+    containLinkId: number;
+    containerLinkId: number;
+    name: string | undefined;
+    linkId: number;
+    typeId: number;
+  } & {
+    trueTypeLinkId: number;
+    falseTypeLinkId: number;
+  } & {
+    reservedLinkIds: Array<number>;
+  }
+
+  interface Options {
+    typesContainerLink: Link<number>,
+  }
+
+  interface GetOptionsOptions {
+    rootObjectLinkId: number;
   }
 
 };
