@@ -303,27 +303,58 @@ const converter = await ObjectToLinksConverter.init({
     
     async makeUpdateOperationsForObjectValue(options: MakeUpdateOperationsForObjectValueOptions) {
       throw new Error('Not implemented');
-      const {value: obj, linkId} = options;
+      // Old Complex Logic
+      // const {value: obj, linkId,parentProperties} = options;
       
-      for (const [key, value] of Object.entries(obj)) {
-        deep.minilinks.links.forEach(link => {
-          // TODO:
-          const value = link.value?.value;
-          if(!value) return;
-          if(typeof value !== 'object') return;
-          if(!Object.keys(value).includes(key)) return;
-          const typeLinkId = deep.idLocal(key);
-          const typeName = deep.nameLocal(typeLinkId);
-          if(typeName !== key) return 
-          const propertyLinkId = deep.minilinks.query({
-            type_id: typeLinkId,
-            from_id: linkId
-          })
-          if(propertyLinkId) {
+      // const serialOperations: Array<SerialOperation> = [];
+      // for (const [key, value] of Object.entries(obj)) {
+      //   let objToFind: Record<string, any> = {}
+      //   if(parentProperties.length === 0) {
+      //     objToFind = {
+      //       [key]: value
+      //     }
+      //   } else {
+      //     objToFind = parentProperties.reduceRight((acc, prop, index) => {
+      //       return { [prop]: index === parentProperties.length - 1 ? { [key]: value } : acc };
+      //     }, {});
+      //   }
+      //   deep.minilinks.query({
+      //     object: {
+      //       value: {
+      //         _contains: objToFind
+      //       }
+      //     }
+      //   })
+      //   deep.minilinks.links.forEach(link => {
+      //     // TODO:
+      //     await deep.select({
+      //       object: {
+      //         value: {
+      //           _contains: {
+      //             name: "Phoenix",
+      //             model: "Ryzen"
+      //           }
+      //         }
+      //       }
+      //     })
+      //     const value = link.value?.value;
+      //     if(!value) return;
+      //     if(typeof value === 'object' && Object.keys(value).includes(key)) {
+      //       const newValue
+      //     };
+      //      return;
+      //     const typeLinkId = deep.idLocal(key);
+      //     const typeName = deep.nameLocal(typeLinkId);
+      //     if(typeName !== key) return 
+      //     const propertyLinkId = deep.minilinks.query({
+      //       type_id: typeLinkId,
+      //       from_id: linkId
+      //     })
+      //     if(propertyLinkId) {
             
-          }
-        })
-      }
+      //     }
+      //   })
+      // }
     }
     async getInsertSerialOperationsForStringValue(options: GetInsertSerialOperationsForStringOptions) {
       return this.getInsertSerialOperationsForStringOrNumberValue(options);
@@ -598,7 +629,9 @@ const converter = await ObjectToLinksConverter.init({
   type MakeUpdateOperationsForStringValueOptions = MakeUpdateOperationsForValueOptions<string>
   type MakeUpdateOperationsForNumberValueOptions = MakeUpdateOperationsForValueOptions<number>
   type MakeUpdateOperationsForBooleanValueOptions = MakeUpdateOperationsForValueOptions<boolean>
-  type MakeUpdateOperationsForObjectValueOptions = MakeUpdateOperationsForValueOptions<object>
+  type MakeUpdateOperationsForObjectValueOptions = MakeUpdateOperationsForValueOptions<object> & {
+    parentProperties: Array<string>;
+  }
 
   interface AddPackageContainingTypesToMinilinksOptions {
     packageContainingTypes: Link<number>
