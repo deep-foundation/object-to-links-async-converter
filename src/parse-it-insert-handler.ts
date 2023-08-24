@@ -300,6 +300,35 @@ const converter = await ObjectToLinksConverter.init({
         return await this.makeUpdateOperationsForObjectValue(options)
       }
     }
+
+    async makeUpdateOperationsForValue(options: MakeUpdateOperationsForAnyValueOptions) {
+      const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.makeUpdateOperationsForValue.name}` });
+      log({options})
+      const { link, value } = options;
+      const serialOperations: Array<SerialOperation> = [];
+      const typeOfValue = this.getTypeOfValueForLink(link)
+      const table = `${typeOfValue.toLocaleLowerCase()}s` as Table<'update'>;
+      serialOperations.push(createSerialOperation({
+        type: 'update',
+        table,
+        exp: {
+          link_id: link.id
+        },
+        value: {
+          value: link
+        }
+      }))
+      serialOperations.push(createSerialOperation({
+        type: 'insert',
+        table: 'links',
+        objects: {
+          type_id: deep.idLocal(deep.linkId!, "ParseIt"),
+          from_id: link.id,
+          to_id: link.id
+        }
+      }))
+      return serialOperations;
+    }
     
     async makeUpdateOperationsForObjectValue(options: MakeUpdateOperationsForObjectValueOptions) {
       const log = getNamespacedLogger({ namespace: this.makeUpdateOperationsForObjectValue.name });
@@ -313,27 +342,11 @@ const converter = await ObjectToLinksConverter.init({
           from_id: link.id
         })
         if(propertyKey) {
-          const typeOfValue = this.getTypeOfValueForLink(propertyLink)
-          const table = `${typeOfValue.toLocaleLowerCase()}s` as Table<'update'>;
-          serialOperations.push(createSerialOperation({
-            type: 'update',
-            table,
-            exp: {
-              link_id: propertyLink.id
-            },
-            value: {
-              value: propertyValue
-            }
-          }))
-          serialOperations.push(createSerialOperation({
-            type: 'insert',
-            table: 'links',
-            objects: {
-              type_id: deep.idLocal(deep.linkId!, "ParseIt"),
-              from_id: propertyLink.id,
-              to_id: propertyLink.id
-            }
-          }))
+          const propertyUpdateOperations = await this.makeUpdateOperationsForValue({
+            link: propertyLink,
+            value: propertyValue
+          })
+          serialOperations.push(...propertyUpdateOperations)
         } else {
           // TODO: Insert new property and parse it to it
         }
