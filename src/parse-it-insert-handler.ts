@@ -299,59 +299,6 @@ const converter = await ObjectToLinksConverter.init({
       }
 
       return serialOperations;
-
-      // Old Complex Logic
-      // const {value: obj, linkId,parentProperties} = options;
-      
-      // const serialOperations: Array<SerialOperation> = [];
-      // for (const [key, value] of Object.entries(obj)) {
-      //   let objToFind: Record<string, any> = {}
-      //   if(parentProperties.length === 0) {
-      //     objToFind = {
-      //       [key]: value
-      //     }
-      //   } else {
-      //     objToFind = parentProperties.reduceRight((acc, prop, index) => {
-      //       return { [prop]: index === parentProperties.length - 1 ? { [key]: value } : acc };
-      //     }, {});
-      //   }
-      //   deep.minilinks.query({
-      //     object: {
-      //       value: {
-      //         _contains: objToFind
-      //       }
-      //     }
-      //   })
-      //   deep.minilinks.links.forEach(link => {
-      //     // TODO:
-      //     await deep.select({
-      //       object: {
-      //         value: {
-      //           _contains: {
-      //             name: "Phoenix",
-      //             model: "Ryzen"
-      //           }
-      //         }
-      //       }
-      //     })
-      //     const value = link.value?.value;
-      //     if(!value) return;
-      //     if(typeof value === 'object' && Object.keys(value).includes(key)) {
-      //       const newValue
-      //     };
-      //      return;
-      //     const typeLinkId = deep.idLocal(key);
-      //     const typeName = deep.nameLocal(typeLinkId);
-      //     if(typeName !== key) return 
-      //     const propertyLinkId = deep.minilinks.query({
-      //       type_id: typeLinkId,
-      //       from_id: linkId
-      //     })
-      //     if(propertyLinkId) {
-            
-      //     }
-      //   })
-      // }
     }
     async makeInsertSerialOperationsForStringValue(options: MakeInsertSerialOperationsForStringOptions) {
       return this.makeInsertSerialOperationsForStringOrNumberValue(options);
