@@ -565,11 +565,16 @@ const converter = await ObjectToLinksConverter.init({
 
   async function main() {
     const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: main.name });
+    
     const objectToLinksConverter = await ObjectToLinksConverter.init({
       parseItLink
     })
     log({objectToLinksConverter})
-    objectToLinksConverter?.convert()
+
+    const convertResult = objectToLinksConverter?.convert()
+    log({convertResult})
+
+    return convertResult
   }
 
 
