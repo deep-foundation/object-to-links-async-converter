@@ -34,18 +34,66 @@ async ({
       this.packageContainingTypes = options.packageContainingTypes;
     }
 
+    static getNamespacedLogger({
+      namespace,
+      depth = DEFAULT_LOG_DEPTH,
+    }: {
+      namespace: string;
+      depth?: number;
+    }) {
+      return function (content: any) {
+        const message = util.inspect(content, { depth });
+        logs.push(`${namespace}: ${message}`);
+      };
+    }
+
+    static async applyContainTreeLinksDownToParentToMinilinks(options: ApplyContainTreeLinksDownToParentToMinilinksOptions) {
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.applyContainTreeLinksDownToParentToMinilinks.name })
+      log({options})
+      const links = await this.getContainTreeLinksDownToParent({
+        linkExp: options.linkExp,
+        useMinilinks: false
+      }) as DeepClientResult<Link<number>[]>
+      log({links})
+      const minilinksApplyResult = options.minilinks.apply(links.data)
+      log({minilinksApplyResult})
+      return minilinksApplyResult
+    }
+
+    static ensureLinkHasValue(link: Link<number>) {
+      if (!link.value?.value) {
+        throw new Error(`Link ##${link.id} does not have value`);
+      }
+    }
+
+    static async getContainTreeLinksDownToParent(options: GetContainTreeLinksDownToLinkOptions) {
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.getContainTreeLinksDownToParent.name })
+      log({options})
+      const { linkExp, useMinilinks } = options;
+      const query: BoolExpLink = {
+        up: {
+          tree_id: useMinilinks ? deep.idLocal("@deep-foundation/core", "containTree") : await deep.id("@deep-foundation/core", "containTree"),
+          parent: linkExp
+        }
+      }
+      log({query})
+      const result = useMinilinks ? deep.minilinks.query(query) : await deep.select(query);
+      log({result})
+      return result;
+    }
+
     static async init(options: ObjectToLinksConverterInitOptions): Promise<ObjectToLinksConverter|undefined> {
-      const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.init.name}` });
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.init.name}` });
       const { parseItLink } = options;
       const {
         data: [rootObjectLink],
       } = await deep.select({ id: parseItLink.to_id });
       log({ rootObjectLink });
-      ensureLinkHasValue(rootObjectLink)
+      this.ensureLinkHasValue(rootObjectLink)
       if (Object.keys(rootObjectLink.value.value).length === 0) {
         return
       }
-      await applyContainTreeLinksDownToParentToMinilinks({
+      await this.applyContainTreeLinksDownToParentToMinilinks({
         linkExp: {
           id: rootObjectLink.id
         },
@@ -71,7 +119,7 @@ async ({
 
 
     static getPackageContainingTypes() {
-      const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.getPackageContainingTypes.name}` })
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.getPackageContainingTypes.name}` })
       const selectData: BoolExpLink = {
         type_id: deep.idLocal(deep.linkId!, "PackageContainingTypes"),
       }
@@ -94,7 +142,7 @@ async ({
     }
 
     async getTypesContainer(): Promise<Options['typesContainerLink']> {
-      const log = getNamespacedLogger({ namespace: this.getTypesContainer.name })
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.getTypesContainer.name })
       const { data: [packageContainingTypes] } = await deep.select({
         from_id: this.rootObjectLink.id,
         type_id: await deep.id(deep.linkId!, "PackageContainingTypes"),
@@ -105,7 +153,7 @@ async ({
 
     static getLinksToReserveCount(options: { value: string | number | boolean | object }): number {
       const { value } = options;
-      const log = getNamespacedLogger({ namespace: this.getLinksToReserveCount.name });
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.getLinksToReserveCount.name });
       log({ options })
       let count = 0;
       const typeOfValue = typeof value;
@@ -140,7 +188,7 @@ async ({
     }
 
     async addPackageContainingTypesToMinilinks(options: AddPackageContainingTypesToMinilinksOptions) {
-      const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.addPackageContainingTypesToMinilinks.name}` });
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.addPackageContainingTypesToMinilinks.name}` });
       const { packageContainingTypes } = options;
       const selectData: BoolExpLink = {
         up: {
@@ -157,7 +205,7 @@ async ({
     async makeUpdateOperationsForPrimitiveValue<TValue extends string | number | boolean>(
       options: UpdateOperationsForPrimitiveValueOptions<TValue>
     ) {
-      const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.makeUpdateOperationsForPrimitiveValue.name}` });
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.makeUpdateOperationsForPrimitiveValue.name}` });
       log({ options })
       const { link, value } = options;
       const serialOperations: Array<SerialOperation> = [];
@@ -190,7 +238,7 @@ async ({
     }
     
     async makeUpdateOperationsForObjectValue(options: UpdateOperationsForObjectValueOptions) {
-      const log = getNamespacedLogger({ namespace: this.makeUpdateOperationsForObjectValue.name });
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.makeUpdateOperationsForObjectValue.name });
       log({ options })
       const { link, value } = options;
       const serialOperations: Array<SerialOperation> = [];
@@ -302,7 +350,7 @@ async ({
     async makeInsertSerialOperationsForBooleanValue(options: MakeInsertSerialOperationsForBooleanOptions) {
       const serialOperations: Array<SerialOperation> = [];
       const { name, value, parentLinkId,linkId,typeLinkId } = options;
-      const log = getNamespacedLogger({
+      const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
 
@@ -337,7 +385,7 @@ async ({
     async makeInsertSerialOperationsForStringOrNumberValue(options: MakeInsertSerialOperationsForStringOrNumberOptions) {
       const serialOperations: Array<SerialOperation> = [];
       const { name, value, parentLinkId,linkId,typeLinkId } = options;
-      const log = getNamespacedLogger({
+      const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
       const linkInsertSerialOperation = createSerialOperation({
@@ -381,7 +429,7 @@ async ({
     async makeInsertSerialOperationsForObject(options: MakeInsertSerialOperationsForObject) {
       const serialOperations: Array<SerialOperation> = [];
       const { typeLinkId, name, value, linkId, parentLinkId } = options;
-      const log = getNamespacedLogger({
+      const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
       const linkInsertSerialOperation = createSerialOperation({
@@ -466,7 +514,7 @@ async ({
     }
 
     getTypeOfValueForLink(link: Link<number>) {
-      const log = getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.getTypeOfValueForLink.name}` })
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.getTypeOfValueForLink.name}` })
       const [valueLink] = deep.minilinks.query({
         type_id: deep.idLocal("@deep-foundation/core", "Value"),
         from_id: link.type_id
@@ -499,7 +547,7 @@ async ({
 
 
   async function main() {
-    const log = getNamespacedLogger({ namespace: main.name });
+    const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: main.name });
     const objectToLinksConverter = await ObjectToLinksConverter.init({
       parseItLink
     })
@@ -509,18 +557,7 @@ async ({
 
   
 
-  function getNamespacedLogger({
-    namespace,
-    depth = DEFAULT_LOG_DEPTH,
-  }: {
-    namespace: string;
-    depth?: number;
-  }) {
-    return function (content: any) {
-      const message = util.inspect(content, { depth });
-      logs.push(`${namespace}: ${message}`);
-    };
-  }
+  
 
   /**
    * Converts object to links
@@ -533,42 +570,7 @@ const converter = await ObjectToLinksConverter.init({
 })
 ```
    */
-  
 
-  function ensureLinkHasValue(link: Link<number>) {
-    if (!link.value?.value) {
-      throw new Error(`Link ##${link.id} does not have value`);
-    }
-  }
-
-  async function applyContainTreeLinksDownToParentToMinilinks(options: ApplyContainTreeLinksDownToParentToMinilinksOptions) {
-    const log = getNamespacedLogger({ namespace: applyContainTreeLinksDownToParentToMinilinks.name })
-    log({options})
-    const links = await getContainTreeLinksDownToParent({
-      linkExp: options.linkExp,
-      useMinilinks: false
-    }) as DeepClientResult<Link<number>[]>
-    log({links})
-    const minilinksApplyResult = options.minilinks.apply(links.data)
-    log({minilinksApplyResult})
-    return minilinksApplyResult
-  }
-
-  async function getContainTreeLinksDownToParent(options: GetContainTreeLinksDownToLinkOptions) {
-    const log = getNamespacedLogger({ namespace: getContainTreeLinksDownToParent.name })
-    log({options})
-    const { linkExp, useMinilinks } = options;
-    const query: BoolExpLink = {
-      up: {
-        tree_id: useMinilinks ? deep.idLocal("@deep-foundation/core", "containTree") : await deep.id("@deep-foundation/core", "containTree"),
-        parent: linkExp
-      }
-    }
-    log({query})
-    const result = useMinilinks ? deep.minilinks.query(query) : await deep.select(query);
-    log({result})
-    return result;
-  }
 
   type ApplyContainTreeLinksDownToParentToMinilinksOptions = Omit<GetContainTreeLinksDownToLinkOptions, 'useMinilinks'> & {
     minilinks: MinilinksResult<Link<number>>
