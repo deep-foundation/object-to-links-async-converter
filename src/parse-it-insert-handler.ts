@@ -501,9 +501,8 @@ const converter = await ObjectToLinksConverter.init({
       log({ serialOperations });
       return serialOperations;
     }
-    async makeInsertSerialOperationsForAnyValue(options: MakeInsertSerialOperationsForAnyValueOptions) {
-      const value = options.value;
-
+    async makeInsertSerialOperationsForAnyValue<TValue extends Value>(options: MakeInsertSerialOperationsForAnyValueOptions<TValue>) {
+      const { value } = options;
       if (typeof value === 'string') {
         return await this.makeInsertSerialOperationsForStringValue({
           ...options,
@@ -606,32 +605,35 @@ const converter = await ObjectToLinksConverter.init({
     packageContainingTypes: Link<number>
   }
 
-  type MakeInsertSerialOperationsForStringOrNumberOptions = MakeInsertSerialOperationsForAnyValueOptions & {
+  type MakeInsertSerialOperationsForStringOrNumberOptions = MakeInsertSerialOperationsForAnyValueOptions<string|number> & {
     value: string | number;
   }
 
-  type MakeInsertSerialOperationsForStringOptions = MakeInsertSerialOperationsForAnyValueOptions & {
+  type MakeInsertSerialOperationsForStringOptions = MakeInsertSerialOperationsForAnyValueOptions<string> & {
     value: string;
   }
 
-  type MakeInsertSerialOperationsForNumberOptions = MakeInsertSerialOperationsForAnyValueOptions & {
+  type MakeInsertSerialOperationsForNumberOptions = MakeInsertSerialOperationsForAnyValueOptions<number> & {
     value: number;
   }
 
-  type MakeInsertSerialOperationsForBooleanOptions = MakeInsertSerialOperationsForAnyValueOptions & {
+  type MakeInsertSerialOperationsForBooleanOptions = MakeInsertSerialOperationsForAnyValueOptions<boolean> & {
     value: boolean;
   }
 
-  type MakeInsertSerialOperationsForObject = MakeInsertSerialOperationsForAnyValueOptions & {
+  type MakeInsertSerialOperationsForObject = MakeInsertSerialOperationsForAnyValueOptions<object> & {
     value: object;
   }
 
-  type MakeInsertSerialOperationsForAnyValueOptions = {
+  type MakeInsertSerialOperationsForAnyValueOptions<TValue extends Value> = {
     parentLinkId: number;
     name: string;
     typeLinkId: number;
     linkId: number;
+    value: TValue
   } 
+
+  type Value = string | number | boolean | object
 
   interface Options {
     typesContainerLink: Link<number>,
