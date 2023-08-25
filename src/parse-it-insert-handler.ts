@@ -497,23 +497,6 @@ async ({
     };
   }
 
-  // async function getRootObjectTypeLinkId(options: { linkId: number }) {
-  //   const log = getNamespacedLogger({ namespace: getRootObjectTypeLinkId.name })
-  //   log({ options })
-  //   const selectData: BoolExpLink = {
-  //     type_id: await deep.id(deep.linkId!, "Type"),
-  //     from_id: options.linkId
-  //   };
-  //   log({ selectData })
-  //   const { data: [rootObjectType] } = await deep.select(selectData)
-  //   log({ rootObjectType })
-  //   return rootObjectType.to_id ?? await deep.id(deep.linkId!, "Result");
-  // }
-
-
-
-
-
 
   async function main() {
     const log = getNamespacedLogger({ namespace: main.name });
