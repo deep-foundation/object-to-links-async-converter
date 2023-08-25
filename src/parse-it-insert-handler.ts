@@ -254,6 +254,7 @@ const converter = await ObjectToLinksConverter.init({
       log({ options })
       const { link, value } = options;
       const serialOperations: Array<SerialOperation> = [];
+      const propertyLinks: Array<Link<number>> = []
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
         const propertyTypeLinkId = deep.idLocal(this.packageContainingTypes.id, propertyKey);
         log({ typeLinkId: propertyTypeLinkId })
@@ -262,6 +263,7 @@ const converter = await ObjectToLinksConverter.init({
           from_id: link.id
         })
         log({ propertyLink })
+        propertyLinks.push(propertyLink)
         if(propertyLink) {
           let propertyUpdateOperations: Array<SerialOperation> = [];
           const typeOfValue = this.getTypeOfValueForLink(propertyLink)
@@ -288,21 +290,34 @@ const converter = await ObjectToLinksConverter.init({
           })
           serialOperations.push(...propertyInsertSerialOperations)
         }
-        serialOperations.push(createSerialOperation({
-          type: 'insert',
-          table: 'links',
-          objects: {
-            type_id: deep.idLocal(deep.linkId!, "ParseIt"),
-            from_id: link.id,
-            to_id: link.id
-          }
-        }))
+
+        const parseItInsertSerialOperations = propertyLinks.map(propertyLink => this.makeParseItInsertOperations({linkId: propertyLink.id}))
+        log({parseItInsertSerialOperations})
+        serialOperations.push(...parseItInsertSerialOperations.flat())
+
         log({serialOperations})
         return serialOperations
       }
 
       return serialOperations;
     }
+
+    makeParseItInsertOperations(options: { linkId: number }) {
+      const { linkId: linkId } = options;
+      const serialOperations: Array<SerialOperation> = [];
+      const parseItInsertSerialOperation = createSerialOperation({
+        type: 'insert',
+        table: 'links',
+        objects: {
+          type_id: deep.idLocal(deep.linkId!, "ParseIt"),
+          from_id: linkId,
+          to_id: linkId
+        }
+      })
+      serialOperations.push(parseItInsertSerialOperation);
+      return serialOperations;
+    }
+
     async makeInsertSerialOperationsForStringValue(options: MakeInsertSerialOperationsForStringOptions) {
       return this.makeInsertSerialOperationsForStringOrNumberValue(options);
     }
