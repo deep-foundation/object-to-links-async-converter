@@ -493,6 +493,7 @@ const converter = await ObjectToLinksConverter.init({
           name: propertyKey,
           parentLinkId: linkId,
           typeLinkId: deep.idLocal(this.packageContainingTypes.id, propertyKey),
+          value: propertyValue
         });
         serialOperations.push(...propertyInsertOperations)
       }
