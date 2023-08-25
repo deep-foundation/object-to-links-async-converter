@@ -483,15 +483,18 @@ const converter = await ObjectToLinksConverter.init({
       log({ containInsertSerialOperation });
       serialOperations.push(containInsertSerialOperation);
 
-      for (const [objectKey, objectValue] of Object.entries(value)) {
-        const typeLinkId = deep.idLocal(this.packageContainingTypes.id, objectKey);
+      for (const [propertyKey, propertyValue] of Object.entries(value)) {
+        const typeLinkId = deep.idLocal(this.packageContainingTypes.id, propertyKey);
         if(!typeLinkId) {
-          throw new Error(`Could not find type id for ${objectKey}. Path for idLocal: ${[this.packageContainingTypes.id,objectKey]}`);
+          throw new Error(`Could not find type id for ${propertyKey}. Path for idLocal: ${[this.packageContainingTypes.id,propertyKey]}`);
         }
-        // TODO:
-        await this.makeInsertSerialOperationsForAnyValue({
-          
+        const propertyInsertOperations = await this.makeInsertSerialOperationsForAnyValue({
+          linkId: this.reservedLinkIds.pop()!,
+          name: propertyKey,
+          parentLinkId: linkId,
+          typeLinkId: deep.idLocal(this.packageContainingTypes.id, propertyKey),
         });
+        serialOperations.push(...propertyInsertOperations)
       }
 
       serialOperations.push(containInsertSerialOperation);
