@@ -289,8 +289,9 @@ const converter = await ObjectToLinksConverter.init({
 
       const propertyLinks: Array<Link<number>> = []
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
+        log({propertyKey, propertyValue})
         const propertyTypeLinkId = deep.idLocal(this.packageContainingTypes.id, propertyKey);
-        log({ typeLinkId: propertyTypeLinkId })
+        log({ propertyTypeLinkId })
         const [propertyLink] = deep.minilinks.query({
           type_id: propertyTypeLinkId,
           from_id: link.id
@@ -300,6 +301,7 @@ const converter = await ObjectToLinksConverter.init({
         if(propertyLink) {
           let propertyUpdateOperations: Array<SerialOperation> = [];
           const typeOfValue = this.getTypeOfValueForLink(propertyLink)
+          log({typeOfValue})
           if(typeOfValue === 'object') {
             propertyUpdateOperations = await this.makeUpdateOperationsForObjectValue({
               link: propertyLink,
@@ -321,6 +323,7 @@ const converter = await ObjectToLinksConverter.init({
             typeLinkId: propertyTypeLinkId,
             value: propertyValue
           })
+          log({ propertyInsertSerialOperations })
           serialOperations.push(...propertyInsertSerialOperations)
         }
 
@@ -336,6 +339,8 @@ const converter = await ObjectToLinksConverter.init({
     }
 
     makeParseItInsertOperations(options: MakeParseItInsertOperationsOptions) {
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.makeParseItInsertOperations.name });
+      log({options})
       const { linkId: linkId } = options;
       const serialOperations: Array<SerialOperation> = [];
       const parseItInsertSerialOperation = createSerialOperation({
@@ -347,7 +352,9 @@ const converter = await ObjectToLinksConverter.init({
           to_id: linkId
         }
       })
+      log({parseItInsertSerialOperation})
       serialOperations.push(parseItInsertSerialOperation);
+      log({serialOperations})
       return serialOperations;
     }
 
