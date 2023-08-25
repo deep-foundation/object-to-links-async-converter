@@ -503,6 +503,7 @@ async ({
     const objectToLinksConverter = await ObjectToLinksConverter.init({
       parseItLink
     })
+    log({objectToLinksConverter})
     objectToLinksConverter?.convert()
   }
 
