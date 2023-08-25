@@ -19,6 +19,18 @@ async ({
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
 
+
+    /**
+   * Converts object to links
+   * 
+   * @example
+```ts
+const converter = await ObjectToLinksConverter.init({
+  parseItLink,
+  packageContainingTypes
+})
+```
+   */
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
     rootObjectLink: Link<number>;
@@ -554,22 +566,6 @@ async ({
     log({objectToLinksConverter})
     objectToLinksConverter?.convert()
   }
-
-  
-
-  
-
-  /**
-   * Converts object to links
-   * 
-   * @example
-```ts
-const converter = await ObjectToLinksConverter.init({
-  parseItLink,
-  packageContainingTypes
-})
-```
-   */
 
 
   type ApplyContainTreeLinksDownToParentToMinilinksOptions = Omit<GetContainTreeLinksDownToLinkOptions, 'useMinilinks'> & {
