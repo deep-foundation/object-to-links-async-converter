@@ -5,7 +5,7 @@ import {
   Table,
 } from '@deep-foundation/deeplinks/imports/client';
 import { BoolExpLink } from '@deep-foundation/deeplinks/imports/client_types';
-import { Link, MinilinkCollection, MinilinksGeneratorOptions, MinilinksResult } from '@deep-foundation/deeplinks/imports/minilinks';
+import { Link, MinilinksResult } from '@deep-foundation/deeplinks/imports/minilinks';
 
 async ({
   deep,
@@ -565,7 +565,7 @@ const converter = await ObjectToLinksConverter.init({
 
   async function main() {
     const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: main.name });
-    
+
     const objectToLinksConverter = await ObjectToLinksConverter.init({
       parseItLink
     })
