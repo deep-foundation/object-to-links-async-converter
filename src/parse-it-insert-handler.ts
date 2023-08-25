@@ -18,71 +18,7 @@ async ({
   const { createSerialOperation } = await import('@deep-foundation/deeplinks/imports/gql/index')
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
-  try {
-    const result = await main();
-    return {
-      result,
-      logs,
-    };
-  } catch (error) {
-    return {
-      error,
-      logs,
-    };
-  }
 
-  // async function getRootObjectTypeLinkId(options: { linkId: number }) {
-  //   const log = getNamespacedLogger({ namespace: getRootObjectTypeLinkId.name })
-  //   log({ options })
-  //   const selectData: BoolExpLink = {
-  //     type_id: await deep.id(deep.linkId!, "Type"),
-  //     from_id: options.linkId
-  //   };
-  //   log({ selectData })
-  //   const { data: [rootObjectType] } = await deep.select(selectData)
-  //   log({ rootObjectType })
-  //   return rootObjectType.to_id ?? await deep.id(deep.linkId!, "Result");
-  // }
-
-
-
-
-
-
-  async function main() {
-    const log = getNamespacedLogger({ namespace: main.name });
-    const objectToLinksConverter = await ObjectToLinksConverter.init({
-      parseItLink
-    })
-    objectToLinksConverter?.convert()
-  }
-
-  
-
-  function getNamespacedLogger({
-    namespace,
-    depth = DEFAULT_LOG_DEPTH,
-  }: {
-    namespace: string;
-    depth?: number;
-  }) {
-    return function (content: any) {
-      const message = util.inspect(content, { depth });
-      logs.push(`${namespace}: ${message}`);
-    };
-  }
-
-  /**
-   * Converts object to links
-   * 
-   * @example
-```ts
-const converter = await ObjectToLinksConverter.init({
-  parseItLink,
-  packageContainingTypes
-})
-```
-   */
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
     rootObjectLink: Link<number>;
@@ -547,6 +483,73 @@ const converter = await ObjectToLinksConverter.init({
       return typeOfValue
     }
   }
+
+  try {
+    const result = await main();
+    return {
+      result,
+      logs,
+    };
+  } catch (error) {
+    return {
+      error,
+      logs,
+    };
+  }
+
+  // async function getRootObjectTypeLinkId(options: { linkId: number }) {
+  //   const log = getNamespacedLogger({ namespace: getRootObjectTypeLinkId.name })
+  //   log({ options })
+  //   const selectData: BoolExpLink = {
+  //     type_id: await deep.id(deep.linkId!, "Type"),
+  //     from_id: options.linkId
+  //   };
+  //   log({ selectData })
+  //   const { data: [rootObjectType] } = await deep.select(selectData)
+  //   log({ rootObjectType })
+  //   return rootObjectType.to_id ?? await deep.id(deep.linkId!, "Result");
+  // }
+
+
+
+
+
+
+  async function main() {
+    const log = getNamespacedLogger({ namespace: main.name });
+    const objectToLinksConverter = await ObjectToLinksConverter.init({
+      parseItLink
+    })
+    objectToLinksConverter?.convert()
+  }
+
+  
+
+  function getNamespacedLogger({
+    namespace,
+    depth = DEFAULT_LOG_DEPTH,
+  }: {
+    namespace: string;
+    depth?: number;
+  }) {
+    return function (content: any) {
+      const message = util.inspect(content, { depth });
+      logs.push(`${namespace}: ${message}`);
+    };
+  }
+
+  /**
+   * Converts object to links
+   * 
+   * @example
+```ts
+const converter = await ObjectToLinksConverter.init({
+  parseItLink,
+  packageContainingTypes
+})
+```
+   */
+  
 
   function ensureLinkHasValue(link: Link<number>) {
     if (!link.value?.value) {
