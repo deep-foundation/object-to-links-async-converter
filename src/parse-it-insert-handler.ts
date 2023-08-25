@@ -302,7 +302,7 @@ const converter = await ObjectToLinksConverter.init({
       return serialOperations;
     }
 
-    makeParseItInsertOperations(options: { linkId: number }) {
+    makeParseItInsertOperations(options: MakeParseItInsertOperationsOptions) {
       const { linkId: linkId } = options;
       const serialOperations: Array<SerialOperation> = [];
       const parseItInsertSerialOperation = createSerialOperation({
@@ -603,5 +603,6 @@ const converter = await ObjectToLinksConverter.init({
 
   type UpdateOperationsForObjectValueOptions = UpdateOperationsForValueOptions<object>;
 
+  interface MakeParseItInsertOperationsOptions { linkId: number }
 };
 
