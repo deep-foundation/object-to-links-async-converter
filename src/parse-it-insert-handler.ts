@@ -9,7 +9,7 @@ import { Link, MinilinksResult } from '@deep-foundation/deeplinks/imports/minili
 
 async ({
   deep,
-  data: { newLink: parseItLink, triggeredByLinkId },
+  data: { newLink: parseItLink },
 }: {
   deep: DeepClient;
   data: { newLink: Link<number>, triggeredByLinkId: number };
