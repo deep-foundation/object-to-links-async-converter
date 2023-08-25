@@ -124,12 +124,24 @@ const converter = await ObjectToLinksConverter.init({
     }
 
     async convert() {
-      // TODO: Implement
-      throw new Error(`Not implemented yet`)
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.convert.name });
+
       const obj = this.rootObjectLink.value.value;
-      for (const [propertyKey, propertyValue] of obj) {
-        this.make
-      }
+      log({obj})
+
+      const operations = await this.makeUpdateOperationsForObjectValue({
+        link: this.rootObjectLink,
+        value: obj,
+        isRootObject: true
+      })
+      log({operations})
+
+      const serialResult = await deep.serial({
+        operations
+      })
+      log({serialResult})
+
+      return serialResult;
     }
 
 
@@ -256,21 +268,24 @@ const converter = await ObjectToLinksConverter.init({
     async makeUpdateOperationsForObjectValue(options: UpdateOperationsForObjectValueOptions) {
       const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.makeUpdateOperationsForObjectValue.name });
       log({ options })
-      const { link, value } = options;
+      const { link, value, isRootObject } = options;
       const serialOperations: Array<SerialOperation> = [];
 
-      const linkUpdateOperation = createSerialOperation({
-        type: 'update',
-        table: 'objects',
-        exp: {
-          link_id: link.id
-        },
-        value: {
-          value: value
-        }
-      })
+      if(!isRootObject) {
+        const linkUpdateOperation = createSerialOperation({
+          type: 'update',
+          table: 'objects',
+          exp: {
+            link_id: link.id
+          },
+          value: {
+            value: value
+          }
+        })
+        log({linkUpdateOperation})
+        serialOperations.push(linkUpdateOperation)
+      }
 
-      serialOperations.push(linkUpdateOperation)
 
       const propertyLinks: Array<Link<number>> = []
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
@@ -619,7 +634,9 @@ const converter = await ObjectToLinksConverter.init({
 
   type UpdateOperationsForPrimitiveValueOptions<TValue extends string | number | boolean> = UpdateOperationsForValueOptions<TValue>;
 
-  type UpdateOperationsForObjectValueOptions = UpdateOperationsForValueOptions<object>;
+  type UpdateOperationsForObjectValueOptions = UpdateOperationsForValueOptions<object> & {
+    isRootObject?: boolean;
+  };
 
   interface MakeParseItInsertOperationsOptions { linkId: number }
 };
