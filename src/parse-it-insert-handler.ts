@@ -55,7 +55,7 @@ const converter = await ObjectToLinksConverter.init({
     }) {
       return function (content: any) {
         const message = util.inspect(content, { depth });
-        logs.push(`${namespace}: ${message}`);
+        logs.push(`${ObjectToLinksConverter.name}:${namespace}: ${message}`);
       };
     }
 
@@ -95,7 +95,7 @@ const converter = await ObjectToLinksConverter.init({
     }
 
     static async init(options: ObjectToLinksConverterInitOptions): Promise<ObjectToLinksConverter|undefined> {
-      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.init.name}` });
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.init.name}` });
       const { parseItLink } = options;
       const {
         data: [rootObjectLink],
@@ -147,7 +147,7 @@ const converter = await ObjectToLinksConverter.init({
 
 
     static getPackageContainingTypes() {
-      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.getPackageContainingTypes.name}` })
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.getPackageContainingTypes.name}` })
       const selectData: BoolExpLink = {
         type_id: deep.idLocal(deep.linkId!, "PackageContainingTypes"),
       }
@@ -216,7 +216,7 @@ const converter = await ObjectToLinksConverter.init({
     }
 
     async addPackageContainingTypesToMinilinks(options: AddPackageContainingTypesToMinilinksOptions) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.addPackageContainingTypesToMinilinks.name}` });
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.addPackageContainingTypesToMinilinks.name}` });
       const { packageContainingTypes } = options;
       const selectData: BoolExpLink = {
         up: {
@@ -233,7 +233,7 @@ const converter = await ObjectToLinksConverter.init({
     async makeUpdateOperationsForPrimitiveValue<TValue extends string | number | boolean>(
       options: UpdateOperationsForPrimitiveValueOptions<TValue>
     ) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.makeUpdateOperationsForPrimitiveValue.name}` });
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.makeUpdateOperationsForPrimitiveValue.name}` });
       log({ options })
       const { link, value } = options;
       const serialOperations: Array<SerialOperation> = [];
@@ -531,7 +531,7 @@ const converter = await ObjectToLinksConverter.init({
     }
 
     getTypeOfValueForLink(link: Link<number>) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${ObjectToLinksConverter.name}:${this.getTypeOfValueForLink.name}` })
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.getTypeOfValueForLink.name}` })
       const [valueLink] = deep.minilinks.query({
         type_id: deep.idLocal("@deep-foundation/core", "Value"),
         from_id: link.type_id
