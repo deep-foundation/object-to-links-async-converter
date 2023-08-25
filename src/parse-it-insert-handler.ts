@@ -126,6 +126,10 @@ const converter = await ObjectToLinksConverter.init({
     async convert() {
       // TODO: Implement
       throw new Error(`Not implemented yet`)
+      const obj = this.rootObjectLink.value.value;
+      for (const [propertyKey, propertyValue] of obj) {
+        this.make
+      }
     }
 
 
@@ -254,6 +258,20 @@ const converter = await ObjectToLinksConverter.init({
       log({ options })
       const { link, value } = options;
       const serialOperations: Array<SerialOperation> = [];
+
+      const linkUpdateOperation = createSerialOperation({
+        type: 'update',
+        table: 'objects',
+        exp: {
+          link_id: link.id
+        },
+        value: {
+          value: value
+        }
+      })
+
+      serialOperations.push(linkUpdateOperation)
+
       const propertyLinks: Array<Link<number>> = []
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
         const propertyTypeLinkId = deep.idLocal(this.packageContainingTypes.id, propertyKey);
