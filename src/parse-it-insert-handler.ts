@@ -255,10 +255,10 @@ const converter = await ObjectToLinksConverter.init({
       const { link, value } = options;
       const serialOperations: Array<SerialOperation> = [];
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
-        const typeLinkId = deep.idLocal(this.packageContainingTypes.id, propertyKey);
-        log({ typeLinkId })
+        const propertyTypeLinkId = deep.idLocal(this.packageContainingTypes.id, propertyKey);
+        log({ typeLinkId: propertyTypeLinkId })
         const [propertyLink] = deep.minilinks.query({
-          type_id: typeLinkId,
+          type_id: propertyTypeLinkId,
           from_id: link.id
         })
         log({ propertyLink })
@@ -279,11 +279,14 @@ const converter = await ObjectToLinksConverter.init({
           log({ propertyUpdateOperations })
           serialOperations.push(...propertyUpdateOperations)
         } else {
-          // TODO: Insert new property and parse it to it
-          const typeOfValue = deep.nameLocal(typeLinkId)
-          if(typeOfValue === 'object') {
-            const linkId = this.reservedLinkIds.pop()!;
-          }
+          const propertyInsertSerialOperations = await this.makeInsertSerialOperationsForAnyValue({
+            linkId: this.reservedLinkIds.pop()!,
+            name: propertyKey,
+            parentLinkId: link.id,
+            typeLinkId: propertyTypeLinkId,
+            value: propertyValue
+          })
+          serialOperations.push(...propertyInsertSerialOperations)
         }
         serialOperations.push(createSerialOperation({
           type: 'insert',
