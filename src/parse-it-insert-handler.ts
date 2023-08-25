@@ -194,9 +194,9 @@ const converter = await ObjectToLinksConverter.init({
         }
       } else if (typeOfValue === 'object') {
         count += reservedLinksCountForOneLink;
-        for (const [objectKey, objectValue] of Object.entries(value)) {
+        for (const [propertyKey, propertyValue] of Object.entries(value)) {
           if (!value) return count;
-          count += this.getLinksToReserveCount({ value: objectValue });
+          count += this.getLinksToReserveCount({ value: propertyValue });
         }
       }
       log({ count })
