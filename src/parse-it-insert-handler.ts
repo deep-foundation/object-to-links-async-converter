@@ -25,9 +25,11 @@ async ({
    * 
    * @example
 ```ts
-const converter = await ObjectToLinksConverter.init({
-  parseItLink,
-  packageContainingTypes
+const objectToLinksConverter = await ObjectToLinksConverter.init({
+  parseItLink
+})
+const result = objectToLinksConverter?.convert({
+  parseItLink
 })
 ```
    */
