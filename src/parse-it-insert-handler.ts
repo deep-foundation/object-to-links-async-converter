@@ -190,9 +190,7 @@ const result = objectToLinksConverter?.convert({
       log({ typeOfValue })
       const reservedLinksCountForOneLink = (
         1 + // Type
-        1 + // Contain for type
-        1 + // TreeIncludeFromCurrent
-        1 // Contain for TreeIncludeFromCurrent
+        1 // Contain for type
       );
       if (typeOfValue === 'string') {
         count = reservedLinksCountForOneLink;
