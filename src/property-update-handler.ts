@@ -53,9 +53,13 @@ async ({
         })
       })
       log({ serialOperations })
-      await deep.serial({
+
+      const serialResult = await deep.serial({
         operations: serialOperations
       })
+      log({serialResult})
+
+      return serialResult
     }
     getTypeOfValueForLink(link: Link<number>) {
       const log = PropertyUpdateHandler.getNamespacedLogger({ namespace: `${this.getTypeOfValueForLink.name}` })
