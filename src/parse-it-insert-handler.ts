@@ -544,6 +544,7 @@ const result = objectToLinksConverter?.convert({
         type: 'insert',
         table: 'links',
         objects: {
+          // TODO: Add Property link and tree
           type_id: deep.idLocal(deep.linkId!, "Property"),
           from_id: parentLinkId,
           to_id: linkId
