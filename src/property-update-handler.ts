@@ -20,6 +20,42 @@ async ({
   const DEFAULT_LOG_DEPTH = 3;
 
   class PropertyUpdateHandler {
+    async handleUpdate() {
+      const log = PropertyUpdateHandler.getNamespacedLogger({ namespace: this.handleUpdate.name });
+    const linkName = await deep.name(newLink);
+    if(!linkName) {
+      throw new Error(`Failed to get name of link ${newLink.id}`)
+    }
+    // TODO: Ensure this select works as intended
+    const {data: treeLinksUp} = await deep.select({
+      down: {
+        tree_id: {
+          _id: [deep.linkId, "Tree"]
+        },
+        link_id: newLink.id
+      }
+    })
+    log({treeLinksUp})
+    // TODO: Think about should we update root object and insert ParseIt? How to prevent infinite cycle in this situation?
+    const serialOperations: Array<SerialOperation> = treeLinksUp.map(link => {
+      return createSerialOperation({
+        type: 'update',
+        // TODO: Do not update links table. We should update values table
+        table: 'links',
+        exp: {
+          id: link.id,
+        },
+        value: {
+          ...link.value?.value,
+          [camelCase(linkName)]: newLink.value?.value
+        }
+      })
+    })
+    log({serialOperations})
+    await deep.serial({
+      operations: serialOperations
+    })
+    }
     getTypeOfValueForLink(link: Link<number>) {
       const log = PropertyUpdateHandler.getNamespacedLogger({ namespace: `${this.getTypeOfValueForLink.name}` })
       const [valueLink] = deep.minilinks.query({
@@ -67,39 +103,6 @@ async ({
    
   async function main() {
     const log = PropertyUpdateHandler.getNamespacedLogger({ namespace: main.name });
-    const linkName = await deep.name(newLink);
-    if(!linkName) {
-      throw new Error(`Failed to get name of link ${newLink.id}`)
-    }
-    // TODO: Ensure this select works as intended
-    const {data: treeLinksUp} = await deep.select({
-      down: {
-        tree_id: {
-          _id: [deep.linkId, "Tree"]
-        },
-        link_id: newLink.id
-      }
-    })
-    log({treeLinksUp})
-    // TODO: Think about should we update root object and insert ParseIt? How to prevent infinite cycle in this situation?
-    const serialOperations: Array<SerialOperation> = treeLinksUp.map(link => {
-      return createSerialOperation({
-        type: 'update',
-        // TODO: Do not update links table. We should update values table
-        table: 'links',
-        exp: {
-          id: link.id,
-        },
-        value: {
-          ...link.value?.value,
-          [camelCase(linkName)]: newLink.value?.value
-        }
-      })
-    })
-    log({serialOperations})
-    await deep.serial({
-      operations: serialOperations
-    })
   }
 
  
