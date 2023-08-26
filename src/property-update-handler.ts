@@ -36,12 +36,13 @@ async ({
         }
       })
       log({ treeLinksUp })
+      const typeOfValue = this.getTypeOfValueForLink(newLink)
+      const table = `${typeOfValue}s` as Table<'update'>
       // TODO: Think about should we update root object and insert ParseIt? How to prevent infinite cycle in this situation?
       const serialOperations: Array<SerialOperation> = treeLinksUp.map(link => {
         return createSerialOperation({
           type: 'update',
-          // TODO: Do not update links table. We should update values table
-          table: 'links',
+          table,
           exp: {
             id: link.id,
           },
