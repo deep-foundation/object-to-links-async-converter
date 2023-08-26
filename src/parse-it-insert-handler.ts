@@ -96,6 +96,9 @@ const result = objectToLinksConverter?.convert({
       return result;
     }
 
+    /**
+     * Undefined is returned of root object is empty
+     */
     static async init(options: ObjectToLinksConverterInitOptions): Promise<ObjectToLinksConverter|undefined> {
       const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.init.name}` });
       const { parseItLink } = options;
