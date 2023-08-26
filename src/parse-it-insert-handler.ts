@@ -318,7 +318,6 @@ const result = objectToLinksConverter?.convert({
         } else {
           const propertyInsertSerialOperations = await this.makeInsertSerialOperationsForAnyValue({
             linkId: this.reservedLinkIds.pop()!,
-            name: propertyKey,
             parentLinkId: link.id,
             typeLinkId: propertyTypeLinkId,
             value: propertyValue
@@ -366,7 +365,7 @@ const result = objectToLinksConverter?.convert({
     }
     async makeInsertSerialOperationsForBooleanValue(options: MakeInsertSerialOperationsForBooleanOptions) {
       const serialOperations: Array<SerialOperation> = [];
-      const { name, value, parentLinkId,linkId,typeLinkId } = options;
+      const { value, parentLinkId,linkId,typeLinkId } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
@@ -401,7 +400,7 @@ const result = objectToLinksConverter?.convert({
     }
     async makeInsertSerialOperationsForStringOrNumberValue(options: MakeInsertSerialOperationsForStringOrNumberOptions) {
       const serialOperations: Array<SerialOperation> = [];
-      const { name, value, parentLinkId,linkId,typeLinkId } = options;
+      const { value, parentLinkId,linkId,typeLinkId } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
@@ -446,7 +445,7 @@ const result = objectToLinksConverter?.convert({
     }
     async makeInsertSerialOperationsForObject(options: MakeInsertSerialOperationsForObject) {
       const serialOperations: Array<SerialOperation> = [];
-      const { typeLinkId, name, value, linkId, parentLinkId } = options;
+      const { typeLinkId, value, linkId, parentLinkId } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.makeInsertSerialOperationsForStringValue.name,
       });
@@ -492,7 +491,6 @@ const result = objectToLinksConverter?.convert({
         }
         const propertyInsertOperations = await this.makeInsertSerialOperationsForAnyValue({
           linkId: this.reservedLinkIds.pop()!,
-          name: propertyKey,
           parentLinkId: linkId,
           typeLinkId: deep.idLocal(this.typesContainer.id, propertyKey),
           value: propertyValue
@@ -624,7 +622,6 @@ const result = objectToLinksConverter?.convert({
 
   type MakeInsertSerialOperationsForAnyValueOptions<TValue extends Value> = {
     parentLinkId: number;
-    name: string;
     typeLinkId: number;
     linkId: number;
     value: TValue
