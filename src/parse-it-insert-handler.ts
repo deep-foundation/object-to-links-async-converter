@@ -442,7 +442,7 @@ const result = objectToLinksConverter?.convert({
       })
       log({ containInsertSerialOperation });
       serialOperations.push(containInsertSerialOperation);
-      
+     
       log({ serialOperations });
       return serialOperations;
     }
@@ -506,30 +506,53 @@ const result = objectToLinksConverter?.convert({
       return serialOperations;
     }
     async makeInsertSerialOperationsForAnyValue<TValue extends Value>(options: MakeInsertSerialOperationsForAnyValueOptions<TValue>) {
-      const { value } = options;
+      const { value, parentLinkId,linkId } = options;
+      const log = ObjectToLinksConverter.getNamespacedLogger({
+        namespace: this.makeInsertSerialOperationsForAnyValue.name,
+      });
+
+      const serialOperations: Array<SerialOperation> = [];
       if (typeof value === 'string') {
-        return await this.makeInsertSerialOperationsForStringValue({
+        const innerSerialOperations = await this.makeInsertSerialOperationsForStringValue({
           ...options,
           value
         });
+        serialOperations.push(...innerSerialOperations)
       } else if (typeof value === 'number') {
-        return await this.makeInsertSerialOperationsForNumberValue({
+        const innerSerialOperations = await this.makeInsertSerialOperationsForNumberValue({
           ...options,
           value
         });
+        serialOperations.push(...innerSerialOperations)
       } else if (typeof value === 'boolean') {
-        return await this.makeInsertSerialOperationsForBooleanValue({
+        const innerSerialOperations = await this.makeInsertSerialOperationsForBooleanValue({
           ...options,
           value
         });
+        serialOperations.push(...innerSerialOperations)
       } else if (typeof value === 'object') {
-        return await this.makeInsertSerialOperationsForObject({
+        const innerSerialOperations = await this.makeInsertSerialOperationsForObject({
           ...options,
           value
         });
+        serialOperations.push(...innerSerialOperations)
       } else {
         throw new Error(`Unknown type of value ${value}: ${typeof value}. Only string, number, boolean, and object are supported`);
       }
+
+      const propertyInsertSerialOperation = createSerialOperation({
+        type: 'insert',
+        table: 'links',
+        objects: {
+          type_id: deep.idLocal(deep.linkId!, "Property"),
+          from_id: parentLinkId,
+          to_id: linkId
+        }
+      })
+      log({ propertyInsertSerialOperation });
+      serialOperations.push(propertyInsertSerialOperation);
+
+      return serialOperations
     }
 
     getTypeOfValueForLink(link: Link<number>) {
