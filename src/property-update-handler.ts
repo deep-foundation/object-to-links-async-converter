@@ -18,6 +18,40 @@ async ({
   const {createSerialOperation} = await import('@deep-foundation/deeplinks/imports/gql/index')
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
+
+  class PropertyUpdateHandler {
+    getTypeOfValueForLink(link: Link<number>) {
+      const log = PropertyUpdateHandler.getNamespacedLogger({ namespace: `${this.getTypeOfValueForLink.name}` })
+      const [valueLink] = deep.minilinks.query({
+        type_id: deep.idLocal("@deep-foundation/core", "Value"),
+        from_id: link.type_id
+      })
+      log({valueLink})
+      if(!valueLink) {
+        throw new Error(`Failed to find value link for link ${link.type_id}`);
+      }
+      const typeOfValue = deep.nameLocal(valueLink.to_id!);
+      log({typeOfValue})
+      if(!typeOfValue) {
+        throw new Error(`Failed to get name of ${valueLink.to_id}`);
+      }
+      return typeOfValue
+    }
+
+    static getNamespacedLogger({
+      namespace,
+      depth = DEFAULT_LOG_DEPTH,
+    }: {
+      namespace: string;
+      depth?: number;
+    }) {
+      return function (content: any) {
+        const message = util.inspect(content, { depth });
+        logs.push(`${PropertyUpdateHandler.name}:${namespace}: ${message}`);
+      };
+    }
+  }
+
   try {
     const result = await main();
     return {
@@ -32,9 +66,11 @@ async ({
   }
    
   async function main() {
-    const log = getNamespacedLogger({ namespace: main.name });
-    const containTypeLinkId = await deep.id("@deep-foundation/core", "Contain");
-    const linkName = await getLinkName({containTypeLinkId,link: newLink});
+    const log = PropertyUpdateHandler.getNamespacedLogger({ namespace: main.name });
+    const linkName = await deep.name(newLink);
+    if(!linkName) {
+      throw new Error(`Failed to get name of link ${newLink.id}`)
+    }
     // TODO: Ensure this select works as intended
     const {data: treeLinksUp} = await deep.select({
       down: {
@@ -64,39 +100,6 @@ async ({
     })
   }
 
-  async function getLinkName(options: {link: Link<number>, containTypeLinkId: number}){
-    const log = getNamespacedLogger({ namespace: getLinkName.name });
-    log({options})
-    const {link, containTypeLinkId} = options;
-    const containLinkSelectData: BoolExpLink = {
-      type_id: containTypeLinkId,
-      to_id: link.type_id,
-    };
-    log({containLinkSelectData})
-    const {data: [containLink]} = await deep.select(containLinkSelectData)
-    log({containLink})
-    if(!containLink) {
-      throw new Error(`Unable to find containLink for ${link.type_id}. Select with data ${JSON.stringify(containLinkSelectData, null, 2)} returned empty result`)
-    }
-    const linkName = containLink.value?.value;
-    log({linkName});
-    if(!linkName) {
-      throw new Error(`Contain link ${containLink.id} has no value`)
-    }
-    return linkName;
-  }
-
-  function getNamespacedLogger({
-    namespace,
-    depth = DEFAULT_LOG_DEPTH,
-  }: {
-    namespace: string;
-    depth?: number;
-  }) {
-    return function (content: any) {
-      const message = util.inspect(content, { depth });
-      logs.push(`${namespace}: ${message}`);
-    };
-  }
+ 
 };
 
