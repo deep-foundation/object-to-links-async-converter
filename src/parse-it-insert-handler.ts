@@ -36,7 +36,7 @@ const result = objectToLinksConverter?.convert({
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
     rootObjectLink: Link<number>;
-    packageContainingTypes: Link<number>;
+    typesContainer: Link<number>;
     requiredPackageNames = {
       core: "@deep-foundation/core",
       boolean: "@freephoenix888/boolean",
@@ -45,7 +45,7 @@ const result = objectToLinksConverter?.convert({
     constructor(options: ObjectToLinksConverterOptions) {
       this.rootObjectLink = options.rootObjectLink;
       this.reservedLinkIds = options.reservedLinkIds;
-      this.packageContainingTypes = options.packageContainingTypes;
+      this.typesContainer = options.typesContainer;
     }
 
     static getNamespacedLogger({
@@ -113,15 +113,15 @@ const result = objectToLinksConverter?.convert({
         },
         minilinks: deep.minilinks
       })
-      const packageContainingTypes = this.getPackageContainingTypes();
+      const typesContainer = this.getTypesContainer();
       const linkIdsToReserveCount = this.getLinksToReserveCount({value: rootObjectLink.value.value});
       const reservedLinkIds = await deep.reserve(linkIdsToReserveCount);
       const converter = new this({
         reservedLinkIds,
         rootObjectLink,
-        packageContainingTypes
+        typesContainer
       })
-      await converter.addPackageContainingTypesToMinilinks({packageContainingTypes})
+      await converter.addTypesContainerToMinilinks({typesContainer})
       return converter
     }
 
@@ -148,20 +148,20 @@ const result = objectToLinksConverter?.convert({
 
 
 
-    static getPackageContainingTypes() {
-      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.getPackageContainingTypes.name}` })
+    static getTypesContainer() {
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.getTypesContainer.name}` })
       const selectData: BoolExpLink = {
-        type_id: deep.idLocal(deep.linkId!, "PackageContainingTypes"),
+        type_id: deep.idLocal(deep.linkId!, "TypesContainer"),
       }
       log({ selectData })
       const queryResult = deep.minilinks.query(selectData)
       log({queryResult})
-      const packageContainingTypes = queryResult[0];
-      log({ packageContainingTypes })
-      if(!packageContainingTypes) {
+      const typesContainer = queryResult[0];
+      log({ typesContainer })
+      if(!typesContainer) {
         throw new Error(`Failed to find package containing types by using select data ${JSON.stringify(selectData, null, 2)}`);
       }
-      return packageContainingTypes
+      return typesContainer
     }
 
     async getOptions(options: GetOptionsOptions): Promise<Options> {
@@ -173,12 +173,12 @@ const result = objectToLinksConverter?.convert({
 
     async getTypesContainer(): Promise<Options['typesContainerLink']> {
       const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.getTypesContainer.name })
-      const { data: [packageContainingTypes] } = await deep.select({
+      const { data: [typesContainer] } = await deep.select({
         from_id: this.rootObjectLink.id,
-        type_id: await deep.id(deep.linkId!, "PackageContainingTypes"),
+        type_id: await deep.id(deep.linkId!, "TypesContainer"),
       })
-      log({ packageContainingTypes })
-      return packageContainingTypes;
+      log({ typesContainer })
+      return typesContainer;
     }
 
     static getLinksToReserveCount(options: { value: string | number | boolean | object }): number {
@@ -217,18 +217,18 @@ const result = objectToLinksConverter?.convert({
       return count;
     }
 
-    async addPackageContainingTypesToMinilinks(options: AddPackageContainingTypesToMinilinksOptions) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.addPackageContainingTypesToMinilinks.name}` });
-      const { packageContainingTypes } = options;
+    async addTypesContainerToMinilinks(options: AddTypesContainerToMinilinksOptions) {
+      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.addTypesContainerToMinilinks.name}` });
+      const { typesContainer } = options;
       const selectData: BoolExpLink = {
         up: {
           tree_id: deep.idLocal("@deep-foundation/core", "containTree"),
-          parent_id: packageContainingTypes.id
+          parent_id: typesContainer.id
         }
       }
-      const {data: linksDownToPackageContainingTypes} = await deep.select(selectData)
-      log({linksDownToPackageContainingTypes})
-      const minilinksApplyResult = deep.minilinks.apply(linksDownToPackageContainingTypes);
+      const {data: linksDownToTypesContainer} = await deep.select(selectData)
+      log({linksDownToTypesContainer})
+      const minilinksApplyResult = deep.minilinks.apply(linksDownToTypesContainer);
       log({minilinksApplyResult})
     }
 
@@ -292,7 +292,7 @@ const result = objectToLinksConverter?.convert({
       const propertyLinks: Array<Link<number>> = []
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
         log({propertyKey, propertyValue})
-        const propertyTypeLinkId = deep.idLocal(this.packageContainingTypes.id, propertyKey);
+        const propertyTypeLinkId = deep.idLocal(this.typesContainer.id, propertyKey);
         log({ propertyTypeLinkId })
         const [propertyLink] = deep.minilinks.query({
           type_id: propertyTypeLinkId,
@@ -487,15 +487,15 @@ const result = objectToLinksConverter?.convert({
       serialOperations.push(containInsertSerialOperation);
 
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
-        const typeLinkId = deep.idLocal(this.packageContainingTypes.id, propertyKey);
+        const typeLinkId = deep.idLocal(this.typesContainer.id, propertyKey);
         if(!typeLinkId) {
-          throw new Error(`Could not find type id for ${propertyKey}. Path for idLocal: ${[this.packageContainingTypes.id,propertyKey]}`);
+          throw new Error(`Could not find type id for ${propertyKey}. Path for idLocal: ${[this.typesContainer.id,propertyKey]}`);
         }
         const propertyInsertOperations = await this.makeInsertSerialOperationsForAnyValue({
           linkId: this.reservedLinkIds.pop()!,
           name: propertyKey,
           parentLinkId: linkId,
-          typeLinkId: deep.idLocal(this.packageContainingTypes.id, propertyKey),
+          typeLinkId: deep.idLocal(this.typesContainer.id, propertyKey),
           value: propertyValue
         });
         serialOperations.push(...propertyInsertOperations)
@@ -592,15 +592,15 @@ const result = objectToLinksConverter?.convert({
   interface ObjectToLinksConverterOptions {
     rootObjectLink: Link<number>;
     reservedLinkIds: Array<number>;
-    packageContainingTypes: Link<number>;
+    typesContainer: Link<number>;
   }
 
   interface ObjectToLinksConverterInitOptions {
     parseItLink: Link<number>
   }
 
-  interface AddPackageContainingTypesToMinilinksOptions {
-    packageContainingTypes: Link<number>
+  interface AddTypesContainerToMinilinksOptions {
+    typesContainer: Link<number>
   }
 
   type MakeInsertSerialOperationsForStringOrNumberOptions = MakeInsertSerialOperationsForAnyValueOptions<string|number> & {
