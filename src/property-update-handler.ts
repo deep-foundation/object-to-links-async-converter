@@ -84,6 +84,7 @@ async ({
     const serialOperations: Array<SerialOperation> = treeLinksUp.map(link => {
       return createSerialOperation({
         type: 'update',
+        // TODO: Do not update links table. We should update values table
         table: 'links',
         exp: {
           id: link.id,
