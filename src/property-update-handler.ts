@@ -108,6 +108,9 @@ async ({
 
   async function main() {
     const log = PropertyUpdateHandler.getNamespacedLogger({ namespace: main.name });
+    const result = await new PropertyUpdateHandler().handleUpdate()
+    log({ result })
+    return result
   }
 
 
