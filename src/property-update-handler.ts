@@ -2,9 +2,9 @@ import {
   DeepClient,
   SerialOperation,
   Table,
-} from '@deep-foundation/deeplinks/imports/client';
-import { BoolExpLink } from '@deep-foundation/deeplinks/imports/client_types';
-import { Link } from '@deep-foundation/deeplinks/imports/minilinks';
+} from '@deep-foundation/deeplinks/imports/client.js';
+import { BoolExpLink } from '@deep-foundation/deeplinks/imports/client_types.js';
+import { Link } from '@deep-foundation/deeplinks/imports/minilinks.js';
 
 async ({
   deep,
@@ -15,7 +15,7 @@ async ({
 }) => {
   const util = await import('util');
   const {camelCase} = await import("case-anything")
-  const {createSerialOperation} = await import('@deep-foundation/deeplinks/imports/gql/index')
+  const {createSerialOperation} = await import('@deep-foundation/deeplinks/imports/gql/index.js')
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
 
