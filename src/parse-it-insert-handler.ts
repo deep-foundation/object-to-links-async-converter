@@ -410,7 +410,8 @@ const result = objectToLinksConverter?.convert({
         table: 'links',
         objects: {
           id: linkId,
-          ...(parentLinkId && { from_id: parentLinkId, to_id: parentLinkId }),
+          from_id: parentLinkId,
+          to_id: parentLinkId,
           type_id: typeLinkId
         }
       })
