@@ -81,6 +81,7 @@ async ({
       }
     })
     log({treeLinksUp})
+    // TODO: Think about should we update root object and insert ParseIt? How to prevent infinite cycle in this situation?
     const serialOperations: Array<SerialOperation> = treeLinksUp.map(link => {
       return createSerialOperation({
         type: 'update',
