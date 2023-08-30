@@ -297,6 +297,9 @@ const result = objectToLinksConverter?.convert({
         const propertyName = pascalCase(parentPropertyNames.join('')+propertyKey);
         const propertyTypeLinkId = deep.idLocal(this.typesContainer.id, propertyName);
         log({ propertyTypeLinkId })
+        if(!propertyTypeLinkId) {
+          throw new Error(`Failed to find type id for ${propertyName}. Path for idLocal: ${[this.typesContainer.id,propertyName]}`)
+        }
         const [propertyLink] = deep.minilinks.query({
           type_id: propertyTypeLinkId,
           from_id: link.id
