@@ -295,6 +295,7 @@ const result = objectToLinksConverter?.convert({
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
         log({propertyKey, propertyValue})
         const propertyName = pascalCase(parentPropertyNames.join('')+propertyKey);
+        log({propertyName})
         const propertyTypeLinkId = deep.idLocal(this.typesContainer.id, propertyName);
         log({ propertyTypeLinkId })
         if(!propertyTypeLinkId) {
