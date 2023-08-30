@@ -6,6 +6,7 @@ import {
 } from '@deep-foundation/deeplinks/imports/client.js';
 import { BoolExpLink } from '@deep-foundation/deeplinks/imports/client_types.js';
 import { Link, MinilinksResult } from '@deep-foundation/deeplinks/imports/minilinks.js';
+import { pascalCase } from 'case-anything';
 
 async ({
   deep,
@@ -271,7 +272,7 @@ const result = objectToLinksConverter?.convert({
     async makeUpdateOperationsForObjectValue(options: UpdateOperationsForObjectValueOptions) {
       const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.makeUpdateOperationsForObjectValue.name });
       log({ options })
-      const { link, value, isRootObject } = options;
+      const { link, value, isRootObject,parentPropertyNames = [] } = options;
       const serialOperations: Array<SerialOperation> = [];
 
       if(!isRootObject) {
@@ -293,7 +294,8 @@ const result = objectToLinksConverter?.convert({
       const propertyLinks: Array<Link<number>> = []
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
         log({propertyKey, propertyValue})
-        const propertyTypeLinkId = deep.idLocal(this.typesContainer.id, propertyKey);
+        const propertyName = pascalCase(parentPropertyNames.join('')+propertyKey);
+        const propertyTypeLinkId = deep.idLocal(this.typesContainer.id, propertyName);
         log({ propertyTypeLinkId })
         const [propertyLink] = deep.minilinks.query({
           type_id: propertyTypeLinkId,
@@ -308,7 +310,8 @@ const result = objectToLinksConverter?.convert({
           if(typeOfValue === 'object') {
             propertyUpdateOperations = await this.makeUpdateOperationsForObjectValue({
               link: propertyLink,
-              value: propertyValue
+              value: propertyValue,
+              parentPropertyNames: [...parentPropertyNames, propertyKey]
             })
           } else {
             propertyUpdateOperations = await this.makeUpdateOperationsForPrimitiveValue({
@@ -671,9 +674,17 @@ const result = objectToLinksConverter?.convert({
 
   type UpdateOperationsForPrimitiveValueOptions<TValue extends string | number | boolean> = UpdateOperationsForValueOptions<TValue>;
 
-  type UpdateOperationsForObjectValueOptions = UpdateOperationsForValueOptions<object> & {
-    isRootObject?: boolean;
+  type UpdateOperationsForRootObject = UpdateOperationsForValueOptions<object> & {
+    isRootObject: true;
+    parentPropertyNames?: undefined;
   };
+  
+  type UpdateOperationsForNonRootObject = UpdateOperationsForValueOptions<object> & {
+    isRootObject?: false;
+    parentPropertyNames: Array<string>;
+  };
+  
+  type UpdateOperationsForObjectValueOptions = UpdateOperationsForRootObject | UpdateOperationsForNonRootObject;
 
   interface MakeParseItInsertOperationsOptions { linkId: number }
 };
