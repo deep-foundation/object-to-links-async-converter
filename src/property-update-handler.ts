@@ -26,7 +26,6 @@ async ({
       if (!linkName) {
         throw new Error(`Failed to get name of link ${newLink.id}`)
       }
-      // TODO: Add tree
       // TODO: Ensure this select works as intended
       const { data: treeLinksUp } = await deep.select({
         down: {
