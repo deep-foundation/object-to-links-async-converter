@@ -31,7 +31,7 @@ async ({
       const { data: treeLinksUp } = await deep.select({
         down: {
           tree_id: {
-            _id: [deep.linkId, "Tree"]
+            _id: [deep.linkId, "PropertiesTree"]
           },
           link_id: newLink.id
         }
