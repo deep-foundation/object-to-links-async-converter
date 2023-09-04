@@ -28,19 +28,6 @@ async ({
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
 
-  /**
-   * Converts object to links
-   * 
-   * @example
-```ts
-const objectToLinksConverter = await ObjectToLinksConverter.init({
-  parseItLink
-})
-const result = objectToLinksConverter?.convert({
-  parseItLink
-})
-```
-   */
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
     rootLink: Link<number>;
@@ -755,8 +742,4 @@ const result = objectToLinksConverter?.convert({
   type UpdateOperationsForObjectValueOptions =
     | UpdateOperationsForRootObject
     | UpdateOperationsForNonRootObject;
-
-  interface MakeParseItInsertOperationsOptions {
-    linkId: number;
-  }
 };
