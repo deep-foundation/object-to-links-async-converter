@@ -716,11 +716,6 @@ const result = objectToLinksConverter?.convert({
     obj: Record<string, string | number | object>;
     rootLinkId?: number;
   }
-
-  interface AddTypesContainerToMinilinksOptions {
-    typesContainer: Link<number>;
-  }
-
   type MakeInsertSerialOperationsForStringOrNumberOptions =
     MakeInsertSerialOperationsForAnyValueOptions<string | number> & {
       value: string | number;
