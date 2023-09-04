@@ -1,5 +1,6 @@
 import {
   DeepClient,
+  DeepClientInstance,
   DeepClientResult,
   SerialOperation,
   Table,
@@ -378,16 +379,14 @@ const result = objectToLinksConverter?.convert({
           log({ propertyUpdateOperations });
           serialOperations.push(...propertyUpdateOperations);
         } else {
-          const typeLinkId = deep.idLocal(
+          const idLocalArgs: Parameters<DeepClientInstance["idLocal"]> = [
             this.typesContainer.id,
             pascalCase(typeof value),
-          );
+          ];
+          const typeLinkId = deep.idLocal(...idLocalArgs);
           if (!typeLinkId) {
             throw new Error(
-              `Could not find type id for ${propertyKey}. Path for idLocal: ${[
-                this.typesContainer.id,
-                propertyKey,
-              ]}`,
+              `Failed to get type id for ${propertyKey}. Path for idLocal: ${idLocalArgs}`,
             );
           }
           const propertyInsertSerialOperations =
@@ -582,16 +581,14 @@ const result = objectToLinksConverter?.convert({
         if (!["string", "number", "boolean"].includes(typeOfValue)) {
           continue;
         }
-        const typeLinkId = deep.idLocal(
+        const idLocalArgs: Parameters<DeepClientInstance["idLocal"]> = [
           this.typesContainer.id,
           pascalCase(typeOfValue),
-        );
+        ];
+        const typeLinkId = deep.idLocal(...idLocalArgs);
         if (!typeLinkId) {
           throw new Error(
-            `Could not find type id for ${propertyKey}. Path for idLocal: ${[
-              this.typesContainer.id,
-              propertyKey,
-            ]}`,
+            `Failed to get type id for ${propertyKey}. Path for idLocal: ${idLocalArgs}`,
           );
         }
         const propertyInsertOperations =
