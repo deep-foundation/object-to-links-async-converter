@@ -1,8 +1,7 @@
-
 import {
   Package as BasePackage,
   PackageOptions as BasePackageOptions,
-} from '@deep-foundation/deeplinks/imports/package.js';
+} from "@deep-foundation/deeplinks/imports/package.js";
 
 /**
 Represents a deep package
@@ -59,16 +58,14 @@ const handleParseItInsert = package["HandleParseItInsert"].name;
 ```
 */
 export class Package extends BasePackage {
-
   constructor(param: PackageOptions) {
     super({
       ...param,
-      name: '@freephoenix888/object-to-links-async-converter',
+      name: "@freephoenix888/object-to-links-async-converter",
     });
   }
 
-
-      /**
+  /**
       @example
       #### Use id method to get the id of the @freephoenix888/booleanDependency link
       ```ts
@@ -86,8 +83,10 @@ export class Package extends BasePackage {
       const @freephoenix888/booleanDependency = await package["@freephoenix888/booleanDependency"].name;
       ```
       */
-      public "@freephoenix888/booleanDependency" = this.createEntity("@freephoenix888/booleanDependency");
-      /**
+  public "@freephoenix888/booleanDependency" = this.createEntity(
+    "@freephoenix888/booleanDependency",
+  );
+  /**
       @example
       #### Use id method to get the id of the ParseIt link
       ```ts
@@ -105,8 +104,8 @@ export class Package extends BasePackage {
       const parseIt = await package["ParseIt"].name;
       ```
       */
-      public "ParseIt" = this.createEntity("ParseIt");
-      /**
+  public "ParseIt" = this.createEntity("ParseIt");
+  /**
       @example
       #### Use id method to get the id of the ParseItInsertHandlerCode link
       ```ts
@@ -124,8 +123,10 @@ export class Package extends BasePackage {
       const parseItInsertHandlerCode = await package["ParseItInsertHandlerCode"].name;
       ```
       */
-      public "ParseItInsertHandlerCode" = this.createEntity("ParseItInsertHandlerCode");
-      /**
+  public "ParseItInsertHandlerCode" = this.createEntity(
+    "ParseItInsertHandlerCode",
+  );
+  /**
       @example
       #### Use id method to get the id of the PropertiesTree link
       ```ts
@@ -143,8 +144,8 @@ export class Package extends BasePackage {
       const propertiesTree = await package["PropertiesTree"].name;
       ```
       */
-      public "PropertiesTree" = this.createEntity("PropertiesTree");
-      /**
+  public "PropertiesTree" = this.createEntity("PropertiesTree");
+  /**
       @example
       #### Use id method to get the id of the PropertiesTreeIncludeNodeAny link
       ```ts
@@ -162,8 +163,10 @@ export class Package extends BasePackage {
       const propertiesTreeIncludeNodeAny = await package["PropertiesTreeIncludeNodeAny"].name;
       ```
       */
-      public "PropertiesTreeIncludeNodeAny" = this.createEntity("PropertiesTreeIncludeNodeAny");
-      /**
+  public "PropertiesTreeIncludeNodeAny" = this.createEntity(
+    "PropertiesTreeIncludeNodeAny",
+  );
+  /**
       @example
       #### Use id method to get the id of the Property link
       ```ts
@@ -181,8 +184,8 @@ export class Package extends BasePackage {
       const property = await package["Property"].name;
       ```
       */
-      public "Property" = this.createEntity("Property");
-      /**
+  public "Property" = this.createEntity("Property");
+  /**
       @example
       #### Use id method to get the id of the PropertiesTreeIncludeFromCurrentProperty link
       ```ts
@@ -200,8 +203,10 @@ export class Package extends BasePackage {
       const propertiesTreeIncludeFromCurrentProperty = await package["PropertiesTreeIncludeFromCurrentProperty"].name;
       ```
       */
-      public "PropertiesTreeIncludeFromCurrentProperty" = this.createEntity("PropertiesTreeIncludeFromCurrentProperty");
-      /**
+  public "PropertiesTreeIncludeFromCurrentProperty" = this.createEntity(
+    "PropertiesTreeIncludeFromCurrentProperty",
+  );
+  /**
       @example
       #### Use id method to get the id of the ParseItInsertHandler link
       ```ts
@@ -219,8 +224,8 @@ export class Package extends BasePackage {
       const parseItInsertHandler = await package["ParseItInsertHandler"].name;
       ```
       */
-      public "ParseItInsertHandler" = this.createEntity("ParseItInsertHandler");
-      /**
+  public "ParseItInsertHandler" = this.createEntity("ParseItInsertHandler");
+  /**
       @example
       #### Use id method to get the id of the HandleParseItInsert link
       ```ts
@@ -238,8 +243,7 @@ export class Package extends BasePackage {
       const handleParseItInsert = await package["HandleParseItInsert"].name;
       ```
       */
-      public "HandleParseItInsert" = this.createEntity("HandleParseItInsert");
-
+  public "HandleParseItInsert" = this.createEntity("HandleParseItInsert");
 }
 
-export type PackageOptions = Omit<BasePackageOptions, 'name'>;
+export type PackageOptions = Omit<BasePackageOptions, "name">;
