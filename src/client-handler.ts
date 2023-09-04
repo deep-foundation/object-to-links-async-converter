@@ -273,8 +273,7 @@ const result = objectToLinksConverter?.convert({
       log({ options });
       const { link, value } = options;
       const serialOperations: Array<SerialOperation> = [];
-      const typeOfValue = this.getTypeOfValueForLink(link);
-      if (typeOfValue === "boolean") {
+      if (typeof value === "boolean") {
         serialOperations.push(
           createSerialOperation({
             type: "update",
@@ -293,7 +292,9 @@ const result = objectToLinksConverter?.convert({
         serialOperations.push(
           createSerialOperation({
             type: "update",
-            table: `${typeOfValue.toLocaleLowerCase()}s` as Table<"update">,
+            table: `${typeof value
+              .toString()
+              .toLocaleLowerCase()}s` as Table<"update">,
             exp: {
               link_id: link.id,
             },
@@ -360,9 +361,7 @@ const result = objectToLinksConverter?.convert({
         propertyLinks.push(propertyLink);
         if (propertyLink) {
           let propertyUpdateOperations: Array<SerialOperation> = [];
-          const typeOfValue = this.getTypeOfValueForLink(propertyLink);
-          log({ typeOfValue });
-          if (typeOfValue === "object") {
+          if (typeof value === "object") {
             propertyUpdateOperations =
               await this.makeUpdateOperationsForObjectValue({
                 link: propertyLink,
@@ -379,11 +378,23 @@ const result = objectToLinksConverter?.convert({
           log({ propertyUpdateOperations });
           serialOperations.push(...propertyUpdateOperations);
         } else {
+          const typeLinkId = deep.idLocal(
+            this.typesContainer.id,
+            pascalCase(typeof value),
+          );
+          if (!typeLinkId) {
+            throw new Error(
+              `Could not find type id for ${propertyKey}. Path for idLocal: ${[
+                this.typesContainer.id,
+                propertyKey,
+              ]}`,
+            );
+          }
           const propertyInsertSerialOperations =
             await this.makeInsertSerialOperationsForAnyValue({
               linkId: this.reservedLinkIds.pop()!,
               parentLinkId: link.id,
-              typeLinkId: propertyTypeLinkId,
+              typeLinkId: typeLinkId,
               value: propertyValue,
             });
           log({ propertyInsertSerialOperations });
@@ -567,7 +578,14 @@ const result = objectToLinksConverter?.convert({
       serialOperations.push(containInsertSerialOperation);
 
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
-        const typeLinkId = deep.idLocal(this.typesContainer.id, propertyKey);
+        const typeOfValue = typeof propertyValue;
+        if (!["string", "number", "boolean"].includes(typeOfValue)) {
+          continue;
+        }
+        const typeLinkId = deep.idLocal(
+          this.typesContainer.id,
+          pascalCase(typeOfValue),
+        );
         if (!typeLinkId) {
           throw new Error(
             `Could not find type id for ${propertyKey}. Path for idLocal: ${[
@@ -580,7 +598,7 @@ const result = objectToLinksConverter?.convert({
           await this.makeInsertSerialOperationsForAnyValue({
             linkId: this.reservedLinkIds.pop()!,
             parentLinkId: linkId,
-            typeLinkId: deep.idLocal(this.typesContainer.id, propertyKey),
+            typeLinkId: typeLinkId,
             value: propertyValue,
           });
         serialOperations.push(...propertyInsertOperations);
@@ -646,26 +664,6 @@ const result = objectToLinksConverter?.convert({
       serialOperations.push(propertyInsertSerialOperation);
 
       return serialOperations;
-    }
-
-    getTypeOfValueForLink(link: Link<number>) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: `${this.getTypeOfValueForLink.name}`,
-      });
-      const [valueLink] = deep.minilinks.query({
-        type_id: deep.idLocal("@deep-foundation/core", "Value"),
-        from_id: link.type_id,
-      });
-      log({ valueLink });
-      if (!valueLink) {
-        throw new Error(`Failed to find value link for link ${link.type_id}`);
-      }
-      const typeOfValue = deep.nameLocal(valueLink.to_id!);
-      log({ typeOfValue });
-      if (!typeOfValue) {
-        throw new Error(`Failed to get name of ${valueLink.to_id}`);
-      }
-      return typeOfValue;
     }
   }
 
@@ -755,6 +753,7 @@ const result = objectToLinksConverter?.convert({
     parentLinkId: number;
     linkId: number;
     value: TValue;
+    typeLinkId: number;
   };
 
   type Value = string | number | boolean | object;
