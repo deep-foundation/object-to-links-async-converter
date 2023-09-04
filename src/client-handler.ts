@@ -400,39 +400,10 @@ const result = objectToLinksConverter?.convert({
           serialOperations.push(...propertyInsertSerialOperations);
         }
 
-        const parseItInsertSerialOperations = propertyLinks.map(
-          (propertyLink) =>
-            this.makeParseItInsertOperations({ linkId: propertyLink.id }),
-        );
-        log({ parseItInsertSerialOperations });
-        serialOperations.push(...parseItInsertSerialOperations.flat());
-
         log({ serialOperations });
         return serialOperations;
       }
 
-      return serialOperations;
-    }
-
-    makeParseItInsertOperations(options: MakeParseItInsertOperationsOptions) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeParseItInsertOperations.name,
-      });
-      log({ options });
-      const { linkId: linkId } = options;
-      const serialOperations: Array<SerialOperation> = [];
-      const parseItInsertSerialOperation = createSerialOperation({
-        type: "insert",
-        table: "links",
-        objects: {
-          type_id: deep.idLocal(deep.linkId!, "ParseIt"),
-          from_id: linkId,
-          to_id: linkId,
-        },
-      });
-      log({ parseItInsertSerialOperation });
-      serialOperations.push(parseItInsertSerialOperation);
-      log({ serialOperations });
       return serialOperations;
     }
 
