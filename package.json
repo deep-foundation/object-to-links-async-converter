@@ -32,12 +32,14 @@
   "dependencies": {
     "@deep-foundation/core": "^0.0.2",
     "@deep-foundation/tsx": "^0.0.5",
-    "@freephoenix888/boolean": "^0.0.1"
+    "@freephoenix888/boolean": "^0.0.1",
+    "debug": "^4.3.4"
   },
   "devDependencies": {
     "@atao60/fse-cli": "^0.1.7",
     "@deep-foundation/npm-automation": "~18.1.4",
     "@freephoenix888/recursive-object-map": "^1.0.0",
+    "@types/debug": "^4.1.8",
     "@types/fs-extra": "^11.0.1",
     "@types/jest": "^29.5.4",
     "@types/node": "^20.2.4",
