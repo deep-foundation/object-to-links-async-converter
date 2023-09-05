@@ -1,8 +1,10 @@
 import ts from "typescript";
-import { DeepClient } from "@deep-foundation/deeplinks/imports/client";
+import { DeepClientInstance } from "@deep-foundation/deeplinks/imports/client";
 
-export async function callClientHandler(options: CallClientHandlerOptions) {
-  const { linkId, deep } = options;
+export async function callClientHandler(
+  options: CallClientHandlerOptions,
+): Promise<any> {
+  const { linkId, deep, args } = options;
   const code = await deep
     .select({
       type_id: deep.idLocal("@deep-foundation/core", "SyncTextFile"),
@@ -22,12 +24,13 @@ export async function callClientHandler(options: CallClientHandlerOptions) {
     compilerOptions: { module: ts.ModuleKind.ESNext },
   }).outputText;
 
-  const modifiedJsCode = `(${jsCode})();`;
+  const modifiedJsCode = `(${jsCode})(...${JSON.stringify(args)});`;
 
-  eval(modifiedJsCode);
+  return await eval(modifiedJsCode);
 }
 
 export interface CallClientHandlerOptions {
-  deep: DeepClient;
+  deep: DeepClientInstance;
   linkId: number;
+  args: Array<any>;
 }
