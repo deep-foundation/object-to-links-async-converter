@@ -19,7 +19,7 @@ async ({
 }: {
   deep: DeepClient;
   rootLinkId: number;
-  obj: Record<string, string | number | object>;
+  obj: Obj;
 }) => {
   const util = await import("util");
   const { createSerialOperation } = await import(
@@ -671,7 +671,7 @@ async ({
   }
 
   interface ObjectToLinksConverterInitOptions {
-    obj: Record<string, string | number | object>;
+    obj: Obj;
     rootLinkId?: number;
   }
   type MakeInsertSerialOperationsForStringOrNumberOptions =
@@ -743,3 +743,7 @@ async ({
     | UpdateOperationsForRootObject
     | UpdateOperationsForNonRootObject;
 };
+
+interface Obj {
+  [key: string]: string | number | Obj | boolean;
+}
