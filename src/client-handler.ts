@@ -651,99 +651,98 @@ async ({
 
     return convertResult;
   }
-
-  type ApplyContainTreeLinksDownToParentToMinilinksOptions = Omit<
-    GetContainTreeLinksDownToLinkOptions,
-    "useMinilinks"
-  > & {
-    minilinks: MinilinksResult<Link<number>>;
-  };
-
-  interface GetContainTreeLinksDownToLinkOptions {
-    linkExp: BoolExpLink;
-    useMinilinks?: boolean;
-  }
-
-  interface ObjectToLinksConverterOptions {
-    rootLink: Link<number>;
-    reservedLinkIds: Array<number>;
-    typesContainer: Link<number>;
-  }
-
-  interface ObjectToLinksConverterInitOptions {
-    obj: Obj;
-    rootLinkId?: number;
-  }
-  type MakeInsertSerialOperationsForStringOrNumberOptions =
-    MakeInsertSerialOperationsForAnyValueOptions<string | number> & {
-      value: string | number;
-    };
-
-  type MakeInsertSerialOperationsForStringOptions =
-    MakeInsertSerialOperationsForAnyValueOptions<string> & {
-      value: string;
-    };
-
-  type MakeInsertSerialOperationsForNumberOptions =
-    MakeInsertSerialOperationsForAnyValueOptions<number> & {
-      value: number;
-    };
-
-  type MakeInsertSerialOperationsForBooleanOptions =
-    MakeInsertSerialOperationsForAnyValueOptions<boolean> & {
-      value: boolean;
-    };
-
-  type MakeInsertSerialOperationsForObject =
-    MakeInsertSerialOperationsForAnyValueOptions<object> & {
-      value: object;
-    };
-
-  type MakeInsertSerialOperationsForAnyValueOptions<TValue extends Value> = {
-    parentLinkId: number;
-    linkId: number;
-    value: TValue;
-    typeLinkId: number;
-  };
-
-  type Value = string | number | boolean | object;
-
-  interface Options {
-    typesContainerLink: Link<number>;
-  }
-
-  interface GetOptionsOptions {
-    rootLinkId: number;
-  }
-
-  interface UpdateOperationsForValueOptions<
-    TValue extends string | number | boolean | object,
-  > {
-    link: Link<number>;
-    value: TValue;
-  }
-
-  type UpdateOperationsForPrimitiveValueOptions<
-    TValue extends string | number | boolean,
-  > = UpdateOperationsForValueOptions<TValue>;
-
-  type UpdateOperationsForRootObject =
-    UpdateOperationsForValueOptions<object> & {
-      isRootObject: true;
-      parentPropertyNames?: undefined;
-    };
-
-  type UpdateOperationsForNonRootObject =
-    UpdateOperationsForValueOptions<object> & {
-      isRootObject?: false;
-      parentPropertyNames: Array<string>;
-    };
-
-  type UpdateOperationsForObjectValueOptions =
-    | UpdateOperationsForRootObject
-    | UpdateOperationsForNonRootObject;
 };
 
 interface Obj {
   [key: string]: string | number | Obj | boolean;
 }
+
+type ApplyContainTreeLinksDownToParentToMinilinksOptions = Omit<
+  GetContainTreeLinksDownToLinkOptions,
+  "useMinilinks"
+> & {
+  minilinks: MinilinksResult<Link<number>>;
+};
+
+interface GetContainTreeLinksDownToLinkOptions {
+  linkExp: BoolExpLink;
+  useMinilinks?: boolean;
+}
+
+interface ObjectToLinksConverterOptions {
+  rootLink: Link<number>;
+  reservedLinkIds: Array<number>;
+  typesContainer: Link<number>;
+}
+
+interface ObjectToLinksConverterInitOptions {
+  obj: Obj;
+  rootLinkId?: number;
+}
+type MakeInsertSerialOperationsForStringOrNumberOptions =
+  MakeInsertSerialOperationsForAnyValueOptions<string | number> & {
+    value: string | number;
+  };
+
+type MakeInsertSerialOperationsForStringOptions =
+  MakeInsertSerialOperationsForAnyValueOptions<string> & {
+    value: string;
+  };
+
+type MakeInsertSerialOperationsForNumberOptions =
+  MakeInsertSerialOperationsForAnyValueOptions<number> & {
+    value: number;
+  };
+
+type MakeInsertSerialOperationsForBooleanOptions =
+  MakeInsertSerialOperationsForAnyValueOptions<boolean> & {
+    value: boolean;
+  };
+
+type MakeInsertSerialOperationsForObject =
+  MakeInsertSerialOperationsForAnyValueOptions<object> & {
+    value: object;
+  };
+
+type MakeInsertSerialOperationsForAnyValueOptions<TValue extends Value> = {
+  parentLinkId: number;
+  linkId: number;
+  value: TValue;
+  typeLinkId: number;
+};
+
+type Value = string | number | boolean | object;
+
+interface Options {
+  typesContainerLink: Link<number>;
+}
+
+interface GetOptionsOptions {
+  rootLinkId: number;
+}
+
+interface UpdateOperationsForValueOptions<
+  TValue extends string | number | boolean | object,
+> {
+  link: Link<number>;
+  value: TValue;
+}
+
+type UpdateOperationsForPrimitiveValueOptions<
+  TValue extends string | number | boolean,
+> = UpdateOperationsForValueOptions<TValue>;
+
+type UpdateOperationsForRootObject = UpdateOperationsForValueOptions<object> & {
+  isRootObject: true;
+  parentPropertyNames?: undefined;
+};
+
+type UpdateOperationsForNonRootObject =
+  UpdateOperationsForValueOptions<object> & {
+    isRootObject?: false;
+    parentPropertyNames: Array<string>;
+  };
+
+type UpdateOperationsForObjectValueOptions =
+  | UpdateOperationsForRootObject
+  | UpdateOperationsForNonRootObject;
