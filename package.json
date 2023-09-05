@@ -28,7 +28,7 @@
     "/dist",
     "./deep.json"
   ],
-  "version": "0.0.11-dev.0",
+  "version": "0.0.11-dev.1",
   "dependencies": {
     "@deep-foundation/core": "^0.0.2",
     "@deep-foundation/tsx": "^0.0.5",

@@ -1,7 +1,7 @@
 {
   "package": {
     "name": "@freephoenix888/object-to-links-async-converter",
-    "version": "0.0.11-dev.0"
+    "version": "0.0.11-dev.1"
   },
   "data": [
     {
@@ -20,110 +20,133 @@
     },
     {
       "package": {
-        "dependencyId": 2,
-        "containValue": "TSX"
+        "dependencyId": 0,
+        "containValue": "Any"
       },
       "id": 3
     },
     {
       "package": {
-        "dependencyId": 0,
-        "containValue": "Tree"
+        "dependencyId": 2,
+        "containValue": "TSX"
       },
       "id": 4
     },
     {
       "package": {
         "dependencyId": 0,
-        "containValue": "TreeIncludeNode"
+        "containValue": "Tree"
       },
       "id": 5
     },
     {
       "package": {
         "dependencyId": 0,
-        "containValue": "Any"
+        "containValue": "TreeIncludeFromCurrent"
       },
       "id": 6
     },
     {
       "package": {
         "dependencyId": 0,
-        "containValue": "TreeIncludeFromCurrent"
+        "containValue": "Handler"
       },
       "id": 7
     },
     {
       "package": {
         "dependencyId": 0,
-        "containValue": "Handler"
+        "containValue": "dockerSupportsJs"
       },
       "id": 8
     },
     {
       "package": {
         "dependencyId": 0,
-        "containValue": "dockerSupportsJs"
+        "containValue": "HandleInsert"
       },
       "id": 9
     },
     {
-      "package": {
-        "dependencyId": 0,
-        "containValue": "HandleInsert"
-      },
-      "id": 10
-    },
-    {
-      "id": "@freephoenix888/booleanDependency",
+      "id": "dependency@freephoenix888/boolean",
       "type": 1,
       "from": 2,
       "to": 2
+    },
+    {
+      "id": "Boolean",
+      "type": 1,
+      "from": 3,
+      "to": 2
+    },
+    {
+      "id": "Object",
+      "type": 1,
+      "from": 3,
+      "to": 3
+    },
+    {
+      "id": "Number",
+      "type": 1,
+      "from": 3,
+      "to": 3
+    },
+    {
+      "id": "String",
+      "type": 1,
+      "from": 3,
+      "to": 3
     },
     {
       "id": "ParseIt",
       "type": 1
     },
     {
-      "id": "ParseItInsertHandlerCode",
-      "type": 3,
+      "id": "parseItInsertHandlerCode",
+      "type": 4,
       "value": {
         "value": "import {\r\n  DeepClient,\r\n  DeepClientResult,\r\n  SerialOperation,\r\n  Table,\r\n} from '@deep-foundation/deeplinks/imports/client.js';\r\nimport { BoolExpLink } from '@deep-foundation/deeplinks/imports/client_types.js';\r\nimport { Link, MinilinksResult } from '@deep-foundation/deeplinks/imports/minilinks.js';\r\n\r\nasync ({\r\n  deep,\r\n  data: { newLink: parseItLink },\r\n}: {\r\n  deep: DeepClient;\r\n  data: { newLink: Link<number>, triggeredByLinkId: number };\r\n}) => {\r\n  const util = await import('util');\r\n  const { createSerialOperation } = await import('@deep-foundation/deeplinks/imports/gql/index.js')\r\n  const logs: Array<any> = [];\r\n  const DEFAULT_LOG_DEPTH = 3;\r\n\r\n\r\n    /**\r\n   * Converts object to links\r\n   * \r\n   * @example\r\n```ts\r\nconst objectToLinksConverter = await ObjectToLinksConverter.init({\r\n  parseItLink\r\n})\r\nconst result = objectToLinksConverter?.convert({\r\n  parseItLink\r\n})\r\n```\r\n   */\r\n  class ObjectToLinksConverter {\r\n    reservedLinkIds: Array<number>;\r\n    rootObjectLink: Link<number>;\r\n    typesContainer: Link<number>;\r\n    requiredPackageNames = {\r\n      core: \"@deep-foundation/core\",\r\n      boolean: \"@freephoenix888/boolean\",\r\n    }\r\n\r\n    constructor(options: ObjectToLinksConverterOptions) {\r\n      this.rootObjectLink = options.rootObjectLink;\r\n      this.reservedLinkIds = options.reservedLinkIds;\r\n      this.typesContainer = options.typesContainer;\r\n    }\r\n\r\n    static getNamespacedLogger({\r\n      namespace,\r\n      depth = DEFAULT_LOG_DEPTH,\r\n    }: {\r\n      namespace: string;\r\n      depth?: number;\r\n    }) {\r\n      return function (content: any) {\r\n        const message = util.inspect(content, { depth });\r\n        logs.push(`${ObjectToLinksConverter.name}:${namespace}: ${message}`);\r\n      };\r\n    }\r\n\r\n    static async applyContainTreeLinksDownToParentToMinilinks(options: ApplyContainTreeLinksDownToParentToMinilinksOptions) {\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.applyContainTreeLinksDownToParentToMinilinks.name })\r\n      log({options})\r\n      const links = await this.getContainTreeLinksDownToParent({\r\n        linkExp: options.linkExp,\r\n        useMinilinks: false\r\n      }) as DeepClientResult<Link<number>[]>\r\n      log({links})\r\n      const minilinksApplyResult = options.minilinks.apply(links.data)\r\n      log({minilinksApplyResult})\r\n      return minilinksApplyResult\r\n    }\r\n\r\n    static ensureLinkHasValue(link: Link<number>) {\r\n      if (!link.value?.value) {\r\n        throw new Error(`Link ##${link.id} does not have value`);\r\n      }\r\n    }\r\n\r\n    static async getContainTreeLinksDownToParent(options: GetContainTreeLinksDownToLinkOptions) {\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.getContainTreeLinksDownToParent.name })\r\n      log({options})\r\n      const { linkExp, useMinilinks } = options;\r\n      const query: BoolExpLink = {\r\n        up: {\r\n          tree_id: useMinilinks ? deep.idLocal(\"@deep-foundation/core\", \"containTree\") : await deep.id(\"@deep-foundation/core\", \"containTree\"),\r\n          parent: linkExp\r\n        }\r\n      }\r\n      log({query})\r\n      const result = useMinilinks ? deep.minilinks.query(query) : await deep.select(query);\r\n      log({result})\r\n      return result;\r\n    }\r\n\r\n    /**\r\n     * Undefined is returned of root object is empty\r\n     */\r\n    static async init(options: ObjectToLinksConverterInitOptions): Promise<ObjectToLinksConverter|undefined> {\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.init.name}` });\r\n      const { parseItLink } = options;\r\n      const {\r\n        data: [rootObjectLink],\r\n      } = await deep.select({ id: parseItLink.to_id });\r\n      log({ rootObjectLink });\r\n      this.ensureLinkHasValue(rootObjectLink)\r\n      if (Object.keys(rootObjectLink.value.value).length === 0) {\r\n        return\r\n      }\r\n      await this.applyContainTreeLinksDownToParentToMinilinks({\r\n        linkExp: {\r\n          id: rootObjectLink.id\r\n        },\r\n        minilinks: deep.minilinks\r\n      })\r\n      const typesContainer = this.getTypesContainer();\r\n      const linkIdsToReserveCount = this.getLinksToReserveCount({value: rootObjectLink.value.value});\r\n      const reservedLinkIds = await deep.reserve(linkIdsToReserveCount);\r\n      const converter = new this({\r\n        reservedLinkIds,\r\n        rootObjectLink,\r\n        typesContainer\r\n      })\r\n      await converter.addTypesContainerToMinilinks({typesContainer})\r\n      return converter\r\n    }\r\n\r\n    async convert() {\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.convert.name });\r\n\r\n      const obj = this.rootObjectLink.value.value;\r\n      log({obj})\r\n\r\n      const operations = await this.makeUpdateOperationsForObjectValue({\r\n        link: this.rootObjectLink,\r\n        value: obj,\r\n        isRootObject: true\r\n      })\r\n      log({operations})\r\n\r\n      const serialResult = await deep.serial({\r\n        operations\r\n      })\r\n      log({serialResult})\r\n\r\n      return serialResult;\r\n    }\r\n\r\n\r\n\r\n    static getTypesContainer() {\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.getTypesContainer.name}` })\r\n      const selectData: BoolExpLink = {\r\n        type_id: deep.idLocal(deep.linkId!, \"TypesContainer\"),\r\n      }\r\n      log({ selectData })\r\n      const queryResult = deep.minilinks.query(selectData)\r\n      log({queryResult})\r\n      const typesContainer = queryResult[0];\r\n      log({ typesContainer })\r\n      if(!typesContainer) {\r\n        throw new Error(`Failed to find package containing types by using select data ${JSON.stringify(selectData, null, 2)}`);\r\n      }\r\n      return typesContainer\r\n    }\r\n\r\n    async getOptions(options: GetOptionsOptions): Promise<Options> {\r\n      const { rootObjectLinkId } = options;\r\n      return {\r\n        typesContainerLink: await this.getTypesContainer(),\r\n      }\r\n    }\r\n\r\n    async getTypesContainer(): Promise<Options['typesContainerLink']> {\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.getTypesContainer.name })\r\n      const { data: [typesContainer] } = await deep.select({\r\n        from_id: this.rootObjectLink.id,\r\n        type_id: await deep.id(deep.linkId!, \"TypesContainer\"),\r\n      })\r\n      log({ typesContainer })\r\n      return typesContainer;\r\n    }\r\n\r\n    static getLinksToReserveCount(options: { value: string | number | boolean | object }): number {\r\n      const { value } = options;\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.getLinksToReserveCount.name });\r\n      log({ options })\r\n      let count = 0;\r\n      const typeOfValue = typeof value;\r\n      log({ typeOfValue })\r\n      const reservedLinksCountForOneLink = (\r\n        1 + // Type\r\n        1 // Contain for type\r\n      );\r\n      if (typeOfValue === 'string') {\r\n        count = reservedLinksCountForOneLink;\r\n      } else if (typeOfValue === 'number') {\r\n        count = reservedLinksCountForOneLink;\r\n      } else if (typeOfValue === 'boolean') {\r\n        count = reservedLinksCountForOneLink;\r\n      } else if (Array.isArray(value)) {\r\n        const array = value as Array<any>;\r\n        for (const arrayValue of array) {\r\n          if (!arrayValue) return count;\r\n          count += this.getLinksToReserveCount({ value: arrayValue });\r\n        }\r\n      } else if (typeOfValue === 'object') {\r\n        count += reservedLinksCountForOneLink;\r\n        for (const [propertyKey, propertyValue] of Object.entries(value)) {\r\n          if (!value) return count;\r\n          count += this.getLinksToReserveCount({ value: propertyValue });\r\n        }\r\n      }\r\n      log({ count })\r\n      return count;\r\n    }\r\n\r\n    async addTypesContainerToMinilinks(options: AddTypesContainerToMinilinksOptions) {\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.addTypesContainerToMinilinks.name}` });\r\n      const { typesContainer } = options;\r\n      const selectData: BoolExpLink = {\r\n        up: {\r\n          tree_id: deep.idLocal(\"@deep-foundation/core\", \"containTree\"),\r\n          parent_id: typesContainer.id\r\n        }\r\n      }\r\n      const {data: linksDownToTypesContainer} = await deep.select(selectData)\r\n      log({linksDownToTypesContainer})\r\n      const minilinksApplyResult = deep.minilinks.apply(linksDownToTypesContainer);\r\n      log({minilinksApplyResult})\r\n    }\r\n\r\n    async makeUpdateOperationsForPrimitiveValue<TValue extends string | number | boolean>(\r\n      options: UpdateOperationsForPrimitiveValueOptions<TValue>\r\n    ) {\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.makeUpdateOperationsForPrimitiveValue.name}` });\r\n      log({ options })\r\n      const { link, value } = options;\r\n      const serialOperations: Array<SerialOperation> = [];\r\n      const typeOfValue = this.getTypeOfValueForLink(link)\r\n      if(typeOfValue === 'boolean') {\r\n        serialOperations.push(createSerialOperation({\r\n          type: 'update',\r\n          table: 'links',\r\n          exp: {\r\n            id: link.id\r\n          },\r\n          value: {\r\n            to_id: value ? await deep.id(this.requiredPackageNames.boolean, \"True\") : await deep.id(this.requiredPackageNames.boolean, \"False\")\r\n          }\r\n        }))\r\n      } else {\r\n        serialOperations.push(createSerialOperation({\r\n          type: 'update',\r\n          table: `${typeOfValue.toLocaleLowerCase()}s` as Table<'update'>,\r\n          exp: {\r\n            link_id: link.id\r\n          },\r\n          value: {\r\n            value: link\r\n          }\r\n        }))\r\n      }\r\n      \r\n      return serialOperations;\r\n    }\r\n    \r\n    async makeUpdateOperationsForObjectValue(options: UpdateOperationsForObjectValueOptions) {\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.makeUpdateOperationsForObjectValue.name });\r\n      log({ options })\r\n      const { link, value, isRootObject } = options;\r\n      const serialOperations: Array<SerialOperation> = [];\r\n\r\n      if(!isRootObject) {\r\n        const linkUpdateOperation = createSerialOperation({\r\n          type: 'update',\r\n          table: 'objects',\r\n          exp: {\r\n            link_id: link.id\r\n          },\r\n          value: {\r\n            value: value\r\n          }\r\n        })\r\n        log({linkUpdateOperation})\r\n        serialOperations.push(linkUpdateOperation)\r\n      }\r\n\r\n\r\n      const propertyLinks: Array<Link<number>> = []\r\n      for (const [propertyKey, propertyValue] of Object.entries(value)) {\r\n        log({propertyKey, propertyValue})\r\n        const propertyTypeLinkId = deep.idLocal(this.typesContainer.id, propertyKey);\r\n        log({ propertyTypeLinkId })\r\n        const [propertyLink] = deep.minilinks.query({\r\n          type_id: propertyTypeLinkId,\r\n          from_id: link.id\r\n        })\r\n        log({ propertyLink })\r\n        propertyLinks.push(propertyLink)\r\n        if(propertyLink) {\r\n          let propertyUpdateOperations: Array<SerialOperation> = [];\r\n          const typeOfValue = this.getTypeOfValueForLink(propertyLink)\r\n          log({typeOfValue})\r\n          if(typeOfValue === 'object') {\r\n            propertyUpdateOperations = await this.makeUpdateOperationsForObjectValue({\r\n              link: propertyLink,\r\n              value: propertyValue\r\n            })\r\n          } else {\r\n            propertyUpdateOperations = await this.makeUpdateOperationsForPrimitiveValue({\r\n              link: propertyLink,\r\n              value: propertyValue\r\n            })\r\n          }\r\n          log({ propertyUpdateOperations })\r\n          serialOperations.push(...propertyUpdateOperations)\r\n        } else {\r\n          const propertyInsertSerialOperations = await this.makeInsertSerialOperationsForAnyValue({\r\n            linkId: this.reservedLinkIds.pop()!,\r\n            parentLinkId: link.id,\r\n            typeLinkId: propertyTypeLinkId,\r\n            value: propertyValue\r\n          })\r\n          log({ propertyInsertSerialOperations })\r\n          serialOperations.push(...propertyInsertSerialOperations)\r\n        }\r\n\r\n        const parseItInsertSerialOperations = propertyLinks.map(propertyLink => this.makeParseItInsertOperations({linkId: propertyLink.id}))\r\n        log({parseItInsertSerialOperations})\r\n        serialOperations.push(...parseItInsertSerialOperations.flat())\r\n\r\n        log({serialOperations})\r\n        return serialOperations\r\n      }\r\n\r\n      return serialOperations;\r\n    }\r\n\r\n    makeParseItInsertOperations(options: MakeParseItInsertOperationsOptions) {\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: this.makeParseItInsertOperations.name });\r\n      log({options})\r\n      const { linkId: linkId } = options;\r\n      const serialOperations: Array<SerialOperation> = [];\r\n      const parseItInsertSerialOperation = createSerialOperation({\r\n        type: 'insert',\r\n        table: 'links',\r\n        objects: {\r\n          type_id: deep.idLocal(deep.linkId!, \"ParseIt\"),\r\n          from_id: linkId,\r\n          to_id: linkId\r\n        }\r\n      })\r\n      log({parseItInsertSerialOperation})\r\n      serialOperations.push(parseItInsertSerialOperation);\r\n      log({serialOperations})\r\n      return serialOperations;\r\n    }\r\n\r\n    async makeInsertSerialOperationsForStringValue(options: MakeInsertSerialOperationsForStringOptions) {\r\n      return this.makeInsertSerialOperationsForStringOrNumberValue(options);\r\n    }\r\n    async makeInsertSerialOperationsForNumberValue(options: MakeInsertSerialOperationsForNumberOptions) {\r\n      return this.makeInsertSerialOperationsForStringOrNumberValue(options);\r\n    }\r\n    async makeInsertSerialOperationsForBooleanValue(options: MakeInsertSerialOperationsForBooleanOptions) {\r\n      const serialOperations: Array<SerialOperation> = [];\r\n      const { value, parentLinkId,linkId,typeLinkId } = options;\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({\r\n        namespace: this.makeInsertSerialOperationsForStringValue.name,\r\n      });\r\n\r\n      const linkInsertSerialOperation = createSerialOperation({\r\n        type: 'insert',\r\n        table: 'links',\r\n        objects: {\r\n          id: linkId,\r\n          type_id: typeLinkId,\r\n          from_id: parentLinkId,\r\n          to_id: value ? deep.idLocal(this.requiredPackageNames.boolean, \"True\") : deep.idLocal(this.requiredPackageNames.boolean, \"False\"),\r\n        }\r\n      })\r\n      log({ linkInsertSerialOperation });\r\n      serialOperations.push(linkInsertSerialOperation);\r\n\r\n      const containInsertSerialOperation = createSerialOperation({\r\n        type: 'insert',\r\n        table: 'links',\r\n        objects: {\r\n          type_id: deep.idLocal(\"@deep-foundation/core\", \"Contain\"),\r\n          from_id: parentLinkId,\r\n          to_id: linkId\r\n        }\r\n      })\r\n      log({ containInsertSerialOperation });\r\n      serialOperations.push(containInsertSerialOperation);\r\n\r\n      log({ serialOperations });\r\n      return serialOperations;\r\n    }\r\n    async makeInsertSerialOperationsForStringOrNumberValue(options: MakeInsertSerialOperationsForStringOrNumberOptions) {\r\n      const serialOperations: Array<SerialOperation> = [];\r\n      const { value, parentLinkId,linkId,typeLinkId } = options;\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({\r\n        namespace: this.makeInsertSerialOperationsForStringValue.name,\r\n      });\r\n      const linkInsertSerialOperation = createSerialOperation({\r\n        type: 'insert',\r\n        table: 'links',\r\n        objects: {\r\n          id: linkId,\r\n          from_id: parentLinkId,\r\n          to_id: parentLinkId,\r\n          type_id: typeLinkId\r\n        }\r\n      })\r\n      log({ linkInsertSerialOperation });\r\n      serialOperations.push(linkInsertSerialOperation);\r\n\r\n      const stringValueInsertSerialOperation = createSerialOperation({\r\n        type: 'insert',\r\n        table: `${typeof value}s` as Table<'insert'>,\r\n        objects: {\r\n          link_id: linkId,\r\n          value: value\r\n        }\r\n      })\r\n      log({ stringValueInsertSerialOperation });\r\n      serialOperations.push(stringValueInsertSerialOperation);\r\n\r\n      const containInsertSerialOperation = createSerialOperation({\r\n        type: 'insert',\r\n        table: 'links',\r\n        objects: {\r\n          type_id: deep.idLocal(\"@deep-foundation/core\", \"Contain\"),\r\n          from_id: parentLinkId,\r\n          to_id: linkId\r\n        }\r\n      })\r\n      log({ containInsertSerialOperation });\r\n      serialOperations.push(containInsertSerialOperation);\r\n     \r\n      log({ serialOperations });\r\n      return serialOperations;\r\n    }\r\n    async makeInsertSerialOperationsForObject(options: MakeInsertSerialOperationsForObject) {\r\n      const serialOperations: Array<SerialOperation> = [];\r\n      const { typeLinkId, value, linkId, parentLinkId } = options;\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({\r\n        namespace: this.makeInsertSerialOperationsForStringValue.name,\r\n      });\r\n      const linkInsertSerialOperation = createSerialOperation({\r\n        type: 'insert',\r\n        table: 'links',\r\n        objects: {\r\n          id: linkId,\r\n          from_id: parentLinkId, to_id: parentLinkId,\r\n          type_id: typeLinkId\r\n        }\r\n      })\r\n      log({ linkInsertSerialOperation });\r\n      serialOperations.push(linkInsertSerialOperation);\r\n\r\n      const objectValueInsertSerialOperation = createSerialOperation({\r\n        type: 'insert',\r\n        table: 'objects',\r\n        objects: {\r\n          link_id: linkId,\r\n          value: value\r\n        }\r\n      })\r\n      log({ objectValueInsertSerialOperation });\r\n      serialOperations.push(objectValueInsertSerialOperation);\r\n\r\n      const containInsertSerialOperation = createSerialOperation({\r\n        type: 'insert',\r\n        table: 'links',\r\n        objects: {\r\n          type_id: deep.idLocal(\"@deep-foundation/core\", \"Contain\"),\r\n          from_id: parentLinkId,\r\n          to_id: linkId\r\n        }\r\n      })\r\n      log({ containInsertSerialOperation });\r\n      serialOperations.push(containInsertSerialOperation);\r\n\r\n      for (const [propertyKey, propertyValue] of Object.entries(value)) {\r\n        const typeLinkId = deep.idLocal(this.typesContainer.id, propertyKey);\r\n        if(!typeLinkId) {\r\n          throw new Error(`Could not find type id for ${propertyKey}. Path for idLocal: ${[this.typesContainer.id,propertyKey]}`);\r\n        }\r\n        const propertyInsertOperations = await this.makeInsertSerialOperationsForAnyValue({\r\n          linkId: this.reservedLinkIds.pop()!,\r\n          parentLinkId: linkId,\r\n          typeLinkId: deep.idLocal(this.typesContainer.id, propertyKey),\r\n          value: propertyValue\r\n        });\r\n        serialOperations.push(...propertyInsertOperations)\r\n      }\r\n\r\n      serialOperations.push(containInsertSerialOperation);\r\n      log({ serialOperations });\r\n      return serialOperations;\r\n    }\r\n    async makeInsertSerialOperationsForAnyValue<TValue extends Value>(options: MakeInsertSerialOperationsForAnyValueOptions<TValue>) {\r\n      const { value, parentLinkId,linkId } = options;\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({\r\n        namespace: this.makeInsertSerialOperationsForAnyValue.name,\r\n      });\r\n\r\n      const serialOperations: Array<SerialOperation> = [];\r\n      if (typeof value === 'string') {\r\n        const innerSerialOperations = await this.makeInsertSerialOperationsForStringValue({\r\n          ...options,\r\n          value\r\n        });\r\n        serialOperations.push(...innerSerialOperations)\r\n      } else if (typeof value === 'number') {\r\n        const innerSerialOperations = await this.makeInsertSerialOperationsForNumberValue({\r\n          ...options,\r\n          value\r\n        });\r\n        serialOperations.push(...innerSerialOperations)\r\n      } else if (typeof value === 'boolean') {\r\n        const innerSerialOperations = await this.makeInsertSerialOperationsForBooleanValue({\r\n          ...options,\r\n          value\r\n        });\r\n        serialOperations.push(...innerSerialOperations)\r\n      } else if (typeof value === 'object') {\r\n        const innerSerialOperations = await this.makeInsertSerialOperationsForObject({\r\n          ...options,\r\n          value\r\n        });\r\n        serialOperations.push(...innerSerialOperations)\r\n      } else {\r\n        throw new Error(`Unknown type of value ${value}: ${typeof value}. Only string, number, boolean, and object are supported`);\r\n      }\r\n\r\n      const propertyInsertSerialOperation = createSerialOperation({\r\n        type: 'insert',\r\n        table: 'links',\r\n        objects: {\r\n          // TODO: Add Property link and tree\r\n          type_id: deep.idLocal(deep.linkId!, \"Property\"),\r\n          from_id: parentLinkId,\r\n          to_id: linkId\r\n        }\r\n      })\r\n      log({ propertyInsertSerialOperation });\r\n      serialOperations.push(propertyInsertSerialOperation);\r\n\r\n      return serialOperations\r\n    }\r\n\r\n    getTypeOfValueForLink(link: Link<number>) {\r\n      const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: `${this.getTypeOfValueForLink.name}` })\r\n      const [valueLink] = deep.minilinks.query({\r\n        type_id: deep.idLocal(\"@deep-foundation/core\", \"Value\"),\r\n        from_id: link.type_id\r\n      })\r\n      log({valueLink})\r\n      if(!valueLink) {\r\n        throw new Error(`Failed to find value link for link ${link.type_id}`);\r\n      }\r\n      const typeOfValue = deep.nameLocal(valueLink.to_id!);\r\n      log({typeOfValue})\r\n      if(!typeOfValue) {\r\n        throw new Error(`Failed to get name of ${valueLink.to_id}`);\r\n      }\r\n      return typeOfValue\r\n    }\r\n  }\r\n\r\n  try {\r\n    const result = await main();\r\n    return {\r\n      result,\r\n      logs,\r\n    };\r\n  } catch (error) {\r\n    return {\r\n      error,\r\n      logs,\r\n    };\r\n  }\r\n\r\n\r\n  async function main() {\r\n    const log = ObjectToLinksConverter.getNamespacedLogger({ namespace: main.name });\r\n\r\n    const objectToLinksConverter = await ObjectToLinksConverter.init({\r\n      parseItLink\r\n    })\r\n    log({objectToLinksConverter})\r\n\r\n    const convertResult = objectToLinksConverter?.convert()\r\n    log({convertResult})\r\n\r\n    return convertResult\r\n  }\r\n\r\n\r\n  type ApplyContainTreeLinksDownToParentToMinilinksOptions = Omit<GetContainTreeLinksDownToLinkOptions, 'useMinilinks'> & {\r\n    minilinks: MinilinksResult<Link<number>>\r\n  };\r\n\r\n  interface GetContainTreeLinksDownToLinkOptions {\r\n    linkExp: BoolExpLink;\r\n    useMinilinks?: boolean;\r\n  }\r\n\r\n  interface ObjectToLinksConverterOptions {\r\n    rootObjectLink: Link<number>;\r\n    reservedLinkIds: Array<number>;\r\n    typesContainer: Link<number>;\r\n  }\r\n\r\n  interface ObjectToLinksConverterInitOptions {\r\n    parseItLink: Link<number>\r\n  }\r\n\r\n  interface AddTypesContainerToMinilinksOptions {\r\n    typesContainer: Link<number>\r\n  }\r\n\r\n  type MakeInsertSerialOperationsForStringOrNumberOptions = MakeInsertSerialOperationsForAnyValueOptions<string|number> & {\r\n    value: string | number;\r\n  }\r\n\r\n  type MakeInsertSerialOperationsForStringOptions = MakeInsertSerialOperationsForAnyValueOptions<string> & {\r\n    value: string;\r\n  }\r\n\r\n  type MakeInsertSerialOperationsForNumberOptions = MakeInsertSerialOperationsForAnyValueOptions<number> & {\r\n    value: number;\r\n  }\r\n\r\n  type MakeInsertSerialOperationsForBooleanOptions = MakeInsertSerialOperationsForAnyValueOptions<boolean> & {\r\n    value: boolean;\r\n  }\r\n\r\n  type MakeInsertSerialOperationsForObject = MakeInsertSerialOperationsForAnyValueOptions<object> & {\r\n    value: object;\r\n  }\r\n\r\n  type MakeInsertSerialOperationsForAnyValueOptions<TValue extends Value> = {\r\n    parentLinkId: number;\r\n    typeLinkId: number;\r\n    linkId: number;\r\n    value: TValue\r\n  } \r\n\r\n  type Value = string | number | boolean | object\r\n\r\n  interface Options {\r\n    typesContainerLink: Link<number>,\r\n  }\r\n\r\n  interface GetOptionsOptions {\r\n    rootObjectLinkId: number;\r\n  }\r\n\r\n  interface UpdateOperationsForValueOptions<TValue extends string | number | boolean | object> {\r\n    link: Link<number>;\r\n    value: TValue;\r\n  }\r\n\r\n  type UpdateOperationsForPrimitiveValueOptions<TValue extends string | number | boolean> = UpdateOperationsForValueOptions<TValue>;\r\n\r\n  type UpdateOperationsForObjectValueOptions = UpdateOperationsForValueOptions<object> & {\r\n    isRootObject?: boolean;\r\n  };\r\n\r\n  interface MakeParseItInsertOperationsOptions { linkId: number }\r\n};\r\n\r\n"
       }
     },
     {
-      "id": "PropertiesTree",
-      "type": 4
+      "id": "propertiesTree",
+      "type": 5
     },
     {
-      "id": "PropertiesTreeIncludeNodeAny",
-      "type": 5,
-      "from": "PropertiesTree",
-      "to": 6
+      "id": "treeIncludeFromCurrentObject",
+      "type": 6,
+      "from": "propertiesTree",
+      "to": "Object"
     },
     {
-      "id": "Property",
-      "type": 1,
-      "from": 6,
-      "to": 6
+      "id": "treeIncludeFromCurrentNumber",
+      "type": 6,
+      "from": "propertiesTree",
+      "to": "Number"
     },
     {
-      "id": "PropertiesTreeIncludeFromCurrentProperty",
+      "id": "treeIncludeFromCurrentString",
+      "type": 6,
+      "from": "propertiesTree",
+      "to": "String"
+    },
+    {
+      "id": "treeIncludeFromCurrentBoolean",
+      "type": 6,
+      "from": "propertiesTree",
+      "to": 2
+    },
+    {
+      "id": "parseItInsertHandler",
       "type": 7,
-      "from": "PropertiesTree",
-      "to": "Property"
+      "from": 8,
+      "to": "parseItInsertHandlerCode"
     },
     {
-      "id": "ParseItInsertHandler",
-      "type": 8,
-      "from": 9,
-      "to": "ParseItInsertHandlerCode"
-    },
-    {
-      "id": "HandleParseItInsert",
-      "type": 10,
+      "id": "handleParseItInsert",
+      "type": 9,
       "from": "ParseIt",
-      "to": "ParseItInsertHandler"
+      "to": "parseItInsertHandler"
     }
   ],
   "errors": [],
