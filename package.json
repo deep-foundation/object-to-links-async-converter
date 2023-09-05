@@ -19,7 +19,8 @@
     "prettier:check": "prettier . --check --ignore-unknown",
     "prettier:write": "prettier . --write --ignore-unknown",
     "prepare": "husky install",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "commit": "cz"
   },
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -42,6 +43,8 @@
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
     "case-anything": "^2.1.13",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "fs-extra": "^11.1.1",
@@ -57,5 +60,10 @@
   },
   "lint-staged": {
     "**/*": "npm run prettier:write"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
