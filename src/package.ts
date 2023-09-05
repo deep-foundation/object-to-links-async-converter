@@ -18,43 +18,58 @@ const {name: packageName} = package;
 #### Use id method to get the id of the link
 ```ts
 const package = new Package({deep});
-const @freephoenix888/booleanDependencyTypeLinkId = await package["@freephoenix888/booleanDependency"].id();
+const dependency@freephoenix888/booleanLinkId = await package["dependency@freephoenix888/boolean"].id();
+const booleanTypeLinkId = await package["Boolean"].id();
+const objectTypeLinkId = await package["Object"].id();
+const numberTypeLinkId = await package["Number"].id();
+const stringTypeLinkId = await package["String"].id();
 const parseItTypeLinkId = await package["ParseIt"].id();
-const parseItInsertHandlerCodeTypeLinkId = await package["ParseItInsertHandlerCode"].id();
-const propertiesTreeTypeLinkId = await package["PropertiesTree"].id();
-const propertiesTreeIncludeNodeAnyTypeLinkId = await package["PropertiesTreeIncludeNodeAny"].id();
-const propertyTypeLinkId = await package["Property"].id();
-const propertiesTreeIncludeFromCurrentPropertyTypeLinkId = await package["PropertiesTreeIncludeFromCurrentProperty"].id();
-const parseItInsertHandlerTypeLinkId = await package["ParseItInsertHandler"].id();
-const handleParseItInsertTypeLinkId = await package["HandleParseItInsert"].id();
+const parseItInsertHandlerCodeLinkId = await package["parseItInsertHandlerCode"].id();
+const propertiesTreeLinkId = await package["propertiesTree"].id();
+const treeIncludeFromCurrentObjectLinkId = await package["treeIncludeFromCurrentObject"].id();
+const treeIncludeFromCurrentNumberLinkId = await package["treeIncludeFromCurrentNumber"].id();
+const treeIncludeFromCurrentStringLinkId = await package["treeIncludeFromCurrentString"].id();
+const treeIncludeFromCurrentBooleanLinkId = await package["treeIncludeFromCurrentBoolean"].id();
+const parseItInsertHandlerLinkId = await package["parseItInsertHandler"].id();
+const handleParseItInsertLinkId = await package["handleParseItInsert"].id();
 ```
 
 #### Use idLocal method to get the local id of the link
 ```ts
 const package = new Package({deep});
 await package.applyMinilinks();
-const @freephoenix888/booleanDependencyTypeLinkId = package["@freephoenix888/booleanDependency"].idLocal();
+const dependency@freephoenix888/booleanLinkId = package["dependency@freephoenix888/boolean"].idLocal();
+const booleanTypeLinkId = package["Boolean"].idLocal();
+const objectTypeLinkId = package["Object"].idLocal();
+const numberTypeLinkId = package["Number"].idLocal();
+const stringTypeLinkId = package["String"].idLocal();
 const parseItTypeLinkId = package["ParseIt"].idLocal();
-const parseItInsertHandlerCodeTypeLinkId = package["ParseItInsertHandlerCode"].idLocal();
-const propertiesTreeTypeLinkId = package["PropertiesTree"].idLocal();
-const propertiesTreeIncludeNodeAnyTypeLinkId = package["PropertiesTreeIncludeNodeAny"].idLocal();
-const propertyTypeLinkId = package["Property"].idLocal();
-const propertiesTreeIncludeFromCurrentPropertyTypeLinkId = package["PropertiesTreeIncludeFromCurrentProperty"].idLocal();
-const parseItInsertHandlerTypeLinkId = package["ParseItInsertHandler"].idLocal();
-const handleParseItInsertTypeLinkId = package["HandleParseItInsert"].idLocal();
+const parseItInsertHandlerCodeLinkId = package["parseItInsertHandlerCode"].idLocal();
+const propertiesTreeLinkId = package["propertiesTree"].idLocal();
+const treeIncludeFromCurrentObjectLinkId = package["treeIncludeFromCurrentObject"].idLocal();
+const treeIncludeFromCurrentNumberLinkId = package["treeIncludeFromCurrentNumber"].idLocal();
+const treeIncludeFromCurrentStringLinkId = package["treeIncludeFromCurrentString"].idLocal();
+const treeIncludeFromCurrentBooleanLinkId = package["treeIncludeFromCurrentBoolean"].idLocal();
+const parseItInsertHandlerLinkId = package["parseItInsertHandler"].idLocal();
+const handleParseItInsertLinkId = package["handleParseItInsert"].idLocal();
 ```
 #### Use name field to get the name of the link
 ```ts
 const package = new Package({deep});
-const @freephoenix888/booleanDependency = package["@freephoenix888/booleanDependency"].name;
+const dependency@freephoenix888/boolean = package["dependency@freephoenix888/boolean"].name;
+const boolean = package["Boolean"].name;
+const object = package["Object"].name;
+const number = package["Number"].name;
+const string = package["String"].name;
 const parseIt = package["ParseIt"].name;
-const parseItInsertHandlerCode = package["ParseItInsertHandlerCode"].name;
-const propertiesTree = package["PropertiesTree"].name;
-const propertiesTreeIncludeNodeAny = package["PropertiesTreeIncludeNodeAny"].name;
-const property = package["Property"].name;
-const propertiesTreeIncludeFromCurrentProperty = package["PropertiesTreeIncludeFromCurrentProperty"].name;
-const parseItInsertHandler = package["ParseItInsertHandler"].name;
-const handleParseItInsert = package["HandleParseItInsert"].name;
+const parseItInsertHandlerCode = package["parseItInsertHandlerCode"].name;
+const propertiesTree = package["propertiesTree"].name;
+const treeIncludeFromCurrentObject = package["treeIncludeFromCurrentObject"].name;
+const treeIncludeFromCurrentNumber = package["treeIncludeFromCurrentNumber"].name;
+const treeIncludeFromCurrentString = package["treeIncludeFromCurrentString"].name;
+const treeIncludeFromCurrentBoolean = package["treeIncludeFromCurrentBoolean"].name;
+const parseItInsertHandler = package["parseItInsertHandler"].name;
+const handleParseItInsert = package["handleParseItInsert"].name;
 ```
 */
 export class Package extends BasePackage {
@@ -67,25 +82,101 @@ export class Package extends BasePackage {
 
   /**
       @example
-      #### Use id method to get the id of the @freephoenix888/booleanDependency link
+      #### Use id method to get the id of the dependency@freephoenix888/boolean link
       ```ts
       const package = new Package({deep});
-      const @freephoenix888/booleanDependencyTypeLinkId = await package["@freephoenix888/booleanDependency"].id();
+      const dependency@freephoenix888/booleanLinkId = await package["dependency@freephoenix888/boolean"].id();
       ```
-      #### Use localId method to get the local id of the @freephoenix888/booleanDependency link
+      #### Use localId method to get the local id of the dependency@freephoenix888/boolean link
       ```ts
       const package = new Package({deep});
-      const @freephoenix888/booleanDependencyTypeLinkId = await package["@freephoenix888/booleanDependency"].localId();
+      const dependency@freephoenix888/booleanLinkId = await package["dependency@freephoenix888/boolean"].localId();
       ```
-      #### Use name field to get the name of the @freephoenix888/booleanDependency link
+      #### Use name field to get the name of the dependency@freephoenix888/boolean link
       ```ts
       const package = new Package({deep});
-      const @freephoenix888/booleanDependency = await package["@freephoenix888/booleanDependency"].name;
+      const dependency@freephoenix888/boolean = await package["dependency@freephoenix888/boolean"].name;
       ```
       */
-  public "@freephoenix888/booleanDependency" = this.createEntity(
-    "@freephoenix888/booleanDependency",
+  public "dependency@freephoenix888/boolean" = this.createEntity(
+    "dependency@freephoenix888/boolean",
   );
+  /**
+      @example
+      #### Use id method to get the id of the Boolean link
+      ```ts
+      const package = new Package({deep});
+      const booleanTypeLinkId = await package["Boolean"].id();
+      ```
+      #### Use localId method to get the local id of the Boolean link
+      ```ts
+      const package = new Package({deep});
+      const booleanTypeLinkId = await package["Boolean"].localId();
+      ```
+      #### Use name field to get the name of the Boolean link
+      ```ts
+      const package = new Package({deep});
+      const boolean = await package["Boolean"].name;
+      ```
+      */
+  public "Boolean" = this.createEntity("Boolean");
+  /**
+      @example
+      #### Use id method to get the id of the Object link
+      ```ts
+      const package = new Package({deep});
+      const objectTypeLinkId = await package["Object"].id();
+      ```
+      #### Use localId method to get the local id of the Object link
+      ```ts
+      const package = new Package({deep});
+      const objectTypeLinkId = await package["Object"].localId();
+      ```
+      #### Use name field to get the name of the Object link
+      ```ts
+      const package = new Package({deep});
+      const object = await package["Object"].name;
+      ```
+      */
+  public "Object" = this.createEntity("Object");
+  /**
+      @example
+      #### Use id method to get the id of the Number link
+      ```ts
+      const package = new Package({deep});
+      const numberTypeLinkId = await package["Number"].id();
+      ```
+      #### Use localId method to get the local id of the Number link
+      ```ts
+      const package = new Package({deep});
+      const numberTypeLinkId = await package["Number"].localId();
+      ```
+      #### Use name field to get the name of the Number link
+      ```ts
+      const package = new Package({deep});
+      const number = await package["Number"].name;
+      ```
+      */
+  public "Number" = this.createEntity("Number");
+  /**
+      @example
+      #### Use id method to get the id of the String link
+      ```ts
+      const package = new Package({deep});
+      const stringTypeLinkId = await package["String"].id();
+      ```
+      #### Use localId method to get the local id of the String link
+      ```ts
+      const package = new Package({deep});
+      const stringTypeLinkId = await package["String"].localId();
+      ```
+      #### Use name field to get the name of the String link
+      ```ts
+      const package = new Package({deep});
+      const string = await package["String"].name;
+      ```
+      */
+  public "String" = this.createEntity("String");
   /**
       @example
       #### Use id method to get the id of the ParseIt link
@@ -107,143 +198,166 @@ export class Package extends BasePackage {
   public "ParseIt" = this.createEntity("ParseIt");
   /**
       @example
-      #### Use id method to get the id of the ParseItInsertHandlerCode link
+      #### Use id method to get the id of the parseItInsertHandlerCode link
       ```ts
       const package = new Package({deep});
-      const parseItInsertHandlerCodeTypeLinkId = await package["ParseItInsertHandlerCode"].id();
+      const parseItInsertHandlerCodeLinkId = await package["parseItInsertHandlerCode"].id();
       ```
-      #### Use localId method to get the local id of the ParseItInsertHandlerCode link
+      #### Use localId method to get the local id of the parseItInsertHandlerCode link
       ```ts
       const package = new Package({deep});
-      const parseItInsertHandlerCodeTypeLinkId = await package["ParseItInsertHandlerCode"].localId();
+      const parseItInsertHandlerCodeLinkId = await package["parseItInsertHandlerCode"].localId();
       ```
-      #### Use name field to get the name of the ParseItInsertHandlerCode link
+      #### Use name field to get the name of the parseItInsertHandlerCode link
       ```ts
       const package = new Package({deep});
-      const parseItInsertHandlerCode = await package["ParseItInsertHandlerCode"].name;
+      const parseItInsertHandlerCode = await package["parseItInsertHandlerCode"].name;
       ```
       */
-  public "ParseItInsertHandlerCode" = this.createEntity(
-    "ParseItInsertHandlerCode",
+  public "parseItInsertHandlerCode" = this.createEntity(
+    "parseItInsertHandlerCode",
   );
   /**
       @example
-      #### Use id method to get the id of the PropertiesTree link
+      #### Use id method to get the id of the propertiesTree link
       ```ts
       const package = new Package({deep});
-      const propertiesTreeTypeLinkId = await package["PropertiesTree"].id();
+      const propertiesTreeLinkId = await package["propertiesTree"].id();
       ```
-      #### Use localId method to get the local id of the PropertiesTree link
+      #### Use localId method to get the local id of the propertiesTree link
       ```ts
       const package = new Package({deep});
-      const propertiesTreeTypeLinkId = await package["PropertiesTree"].localId();
+      const propertiesTreeLinkId = await package["propertiesTree"].localId();
       ```
-      #### Use name field to get the name of the PropertiesTree link
+      #### Use name field to get the name of the propertiesTree link
       ```ts
       const package = new Package({deep});
-      const propertiesTree = await package["PropertiesTree"].name;
+      const propertiesTree = await package["propertiesTree"].name;
       ```
       */
-  public "PropertiesTree" = this.createEntity("PropertiesTree");
+  public "propertiesTree" = this.createEntity("propertiesTree");
   /**
       @example
-      #### Use id method to get the id of the PropertiesTreeIncludeNodeAny link
+      #### Use id method to get the id of the treeIncludeFromCurrentObject link
       ```ts
       const package = new Package({deep});
-      const propertiesTreeIncludeNodeAnyTypeLinkId = await package["PropertiesTreeIncludeNodeAny"].id();
+      const treeIncludeFromCurrentObjectLinkId = await package["treeIncludeFromCurrentObject"].id();
       ```
-      #### Use localId method to get the local id of the PropertiesTreeIncludeNodeAny link
+      #### Use localId method to get the local id of the treeIncludeFromCurrentObject link
       ```ts
       const package = new Package({deep});
-      const propertiesTreeIncludeNodeAnyTypeLinkId = await package["PropertiesTreeIncludeNodeAny"].localId();
+      const treeIncludeFromCurrentObjectLinkId = await package["treeIncludeFromCurrentObject"].localId();
       ```
-      #### Use name field to get the name of the PropertiesTreeIncludeNodeAny link
+      #### Use name field to get the name of the treeIncludeFromCurrentObject link
       ```ts
       const package = new Package({deep});
-      const propertiesTreeIncludeNodeAny = await package["PropertiesTreeIncludeNodeAny"].name;
+      const treeIncludeFromCurrentObject = await package["treeIncludeFromCurrentObject"].name;
       ```
       */
-  public "PropertiesTreeIncludeNodeAny" = this.createEntity(
-    "PropertiesTreeIncludeNodeAny",
+  public "treeIncludeFromCurrentObject" = this.createEntity(
+    "treeIncludeFromCurrentObject",
   );
   /**
       @example
-      #### Use id method to get the id of the Property link
+      #### Use id method to get the id of the treeIncludeFromCurrentNumber link
       ```ts
       const package = new Package({deep});
-      const propertyTypeLinkId = await package["Property"].id();
+      const treeIncludeFromCurrentNumberLinkId = await package["treeIncludeFromCurrentNumber"].id();
       ```
-      #### Use localId method to get the local id of the Property link
+      #### Use localId method to get the local id of the treeIncludeFromCurrentNumber link
       ```ts
       const package = new Package({deep});
-      const propertyTypeLinkId = await package["Property"].localId();
+      const treeIncludeFromCurrentNumberLinkId = await package["treeIncludeFromCurrentNumber"].localId();
       ```
-      #### Use name field to get the name of the Property link
+      #### Use name field to get the name of the treeIncludeFromCurrentNumber link
       ```ts
       const package = new Package({deep});
-      const property = await package["Property"].name;
-      ```
-      */
-  public "Property" = this.createEntity("Property");
-  /**
-      @example
-      #### Use id method to get the id of the PropertiesTreeIncludeFromCurrentProperty link
-      ```ts
-      const package = new Package({deep});
-      const propertiesTreeIncludeFromCurrentPropertyTypeLinkId = await package["PropertiesTreeIncludeFromCurrentProperty"].id();
-      ```
-      #### Use localId method to get the local id of the PropertiesTreeIncludeFromCurrentProperty link
-      ```ts
-      const package = new Package({deep});
-      const propertiesTreeIncludeFromCurrentPropertyTypeLinkId = await package["PropertiesTreeIncludeFromCurrentProperty"].localId();
-      ```
-      #### Use name field to get the name of the PropertiesTreeIncludeFromCurrentProperty link
-      ```ts
-      const package = new Package({deep});
-      const propertiesTreeIncludeFromCurrentProperty = await package["PropertiesTreeIncludeFromCurrentProperty"].name;
+      const treeIncludeFromCurrentNumber = await package["treeIncludeFromCurrentNumber"].name;
       ```
       */
-  public "PropertiesTreeIncludeFromCurrentProperty" = this.createEntity(
-    "PropertiesTreeIncludeFromCurrentProperty",
+  public "treeIncludeFromCurrentNumber" = this.createEntity(
+    "treeIncludeFromCurrentNumber",
   );
   /**
       @example
-      #### Use id method to get the id of the ParseItInsertHandler link
+      #### Use id method to get the id of the treeIncludeFromCurrentString link
       ```ts
       const package = new Package({deep});
-      const parseItInsertHandlerTypeLinkId = await package["ParseItInsertHandler"].id();
+      const treeIncludeFromCurrentStringLinkId = await package["treeIncludeFromCurrentString"].id();
       ```
-      #### Use localId method to get the local id of the ParseItInsertHandler link
+      #### Use localId method to get the local id of the treeIncludeFromCurrentString link
       ```ts
       const package = new Package({deep});
-      const parseItInsertHandlerTypeLinkId = await package["ParseItInsertHandler"].localId();
+      const treeIncludeFromCurrentStringLinkId = await package["treeIncludeFromCurrentString"].localId();
       ```
-      #### Use name field to get the name of the ParseItInsertHandler link
+      #### Use name field to get the name of the treeIncludeFromCurrentString link
       ```ts
       const package = new Package({deep});
-      const parseItInsertHandler = await package["ParseItInsertHandler"].name;
+      const treeIncludeFromCurrentString = await package["treeIncludeFromCurrentString"].name;
       ```
       */
-  public "ParseItInsertHandler" = this.createEntity("ParseItInsertHandler");
+  public "treeIncludeFromCurrentString" = this.createEntity(
+    "treeIncludeFromCurrentString",
+  );
   /**
       @example
-      #### Use id method to get the id of the HandleParseItInsert link
+      #### Use id method to get the id of the treeIncludeFromCurrentBoolean link
       ```ts
       const package = new Package({deep});
-      const handleParseItInsertTypeLinkId = await package["HandleParseItInsert"].id();
+      const treeIncludeFromCurrentBooleanLinkId = await package["treeIncludeFromCurrentBoolean"].id();
       ```
-      #### Use localId method to get the local id of the HandleParseItInsert link
+      #### Use localId method to get the local id of the treeIncludeFromCurrentBoolean link
       ```ts
       const package = new Package({deep});
-      const handleParseItInsertTypeLinkId = await package["HandleParseItInsert"].localId();
+      const treeIncludeFromCurrentBooleanLinkId = await package["treeIncludeFromCurrentBoolean"].localId();
       ```
-      #### Use name field to get the name of the HandleParseItInsert link
+      #### Use name field to get the name of the treeIncludeFromCurrentBoolean link
       ```ts
       const package = new Package({deep});
-      const handleParseItInsert = await package["HandleParseItInsert"].name;
+      const treeIncludeFromCurrentBoolean = await package["treeIncludeFromCurrentBoolean"].name;
       ```
       */
-  public "HandleParseItInsert" = this.createEntity("HandleParseItInsert");
+  public "treeIncludeFromCurrentBoolean" = this.createEntity(
+    "treeIncludeFromCurrentBoolean",
+  );
+  /**
+      @example
+      #### Use id method to get the id of the parseItInsertHandler link
+      ```ts
+      const package = new Package({deep});
+      const parseItInsertHandlerLinkId = await package["parseItInsertHandler"].id();
+      ```
+      #### Use localId method to get the local id of the parseItInsertHandler link
+      ```ts
+      const package = new Package({deep});
+      const parseItInsertHandlerLinkId = await package["parseItInsertHandler"].localId();
+      ```
+      #### Use name field to get the name of the parseItInsertHandler link
+      ```ts
+      const package = new Package({deep});
+      const parseItInsertHandler = await package["parseItInsertHandler"].name;
+      ```
+      */
+  public "parseItInsertHandler" = this.createEntity("parseItInsertHandler");
+  /**
+      @example
+      #### Use id method to get the id of the handleParseItInsert link
+      ```ts
+      const package = new Package({deep});
+      const handleParseItInsertLinkId = await package["handleParseItInsert"].id();
+      ```
+      #### Use localId method to get the local id of the handleParseItInsert link
+      ```ts
+      const package = new Package({deep});
+      const handleParseItInsertLinkId = await package["handleParseItInsert"].localId();
+      ```
+      #### Use name field to get the name of the handleParseItInsert link
+      ```ts
+      const package = new Package({deep});
+      const handleParseItInsert = await package["handleParseItInsert"].name;
+      ```
+      */
+  public "handleParseItInsert" = this.createEntity("handleParseItInsert");
 }
 
 export type PackageOptions = Omit<BasePackageOptions, "name">;
