@@ -10,6 +10,7 @@ import {
 } from "../src/create-object-to-links-converter-decorator.js";
 import { debug } from "../src/debug.js";
 import { PACKAGE_NAME } from "../src/package-name.js";
+import { capitalCase } from "case-anything";
 
 const graphQlPath = `${process.env.DEEPLINKS_HASURA_PATH!}/v1/graphql`;
 const ssl = !!+process.env.DEEPLINKS_HASURA_SSL!;
@@ -47,7 +48,14 @@ beforeAll(async () => {
   decoratedDeep.minilinks.apply(requiredPackageLinks);
 });
 
-describe("without root link id with obj that has one string property", async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
+describe(
+  `${capitalCase(withoutRootLinkIdWithObjThatHasOneStringProperty.name)} - ${
+    withoutRootLinkIdWithObjThatHasOneStringProperty.name
+  }`,
+  withoutRootLinkIdWithObjThatHasOneStringProperty,
+);
+
+async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
   const log = debug(withoutRootLinkIdWithObjThatHasOneStringProperty.name);
   const obj = {
     myStringKey: "myStringValue",
@@ -76,4 +84,4 @@ describe("without root link id with obj that has one string property", async fun
     to_id: rootLink.id,
   });
   assert.notStrictEqual(stringLink, undefined);
-});
+}
