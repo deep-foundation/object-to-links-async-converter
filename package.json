@@ -9,6 +9,7 @@
     "url": "https://github.com/FreePhoenix888/object-to-links-async-converter"
   },
   "scripts": {
+    "test": "jest",
     "library:build:clean": "fse remove dist && npm run library:build:dirty",
     "library:build:dirty": "ts-node --esm ./automation/library/build.ts",
     "npm-pull": "npm-pull",
