@@ -1,17 +1,24 @@
 import { generateApolloClient } from "@deep-foundation/hasura/client.js";
 import { ApolloClient, InMemoryCache } from "@apollo/client/index.js";
-import "@testing-library/jest-dom";
 import assert from "assert";
 import { DeepClient } from "@deep-foundation/deeplinks/imports/client.js";
-import { callClientHandler } from "../src/call-client-handler.js";
+import { callClientHandler } from "./call-client-handler.js";
 import {
   createObjectToLinksConverterDecorator,
   ObjectToLinksConverterDecorator,
-} from "../src/create-object-to-links-converter-decorator.js";
-import { debug } from "../src/debug.js";
-import { PACKAGE_NAME } from "../src/package-name.js";
-import { capitalCase } from "case-anything";
-import { REQUIRED_PROCESS_ENVS } from "./required-process-envs.js";
+} from "./create-object-to-links-converter-decorator.js";
+import { debug } from "./debug.js";
+import { PACKAGE_NAME } from "./package-name.js";
+import dotenv from "dotenv";
+dotenv.config({
+  path: "./.env.test.local",
+});
+
+export const REQUIRED_PROCESS_ENVS = {
+  graphqlPath: "GRAPHQL_PATH",
+  ssl: "SSL",
+  token: "TOKEN",
+};
 
 const graphqlUrl = new URL(process.env[REQUIRED_PROCESS_ENVS.graphqlPath]!);
 const graphQlPath =
@@ -24,39 +31,34 @@ let decoratedDeep: ObjectToLinksConverterDecorator<DeepClient>;
 
 const REQUIRED_PACKAGES_IN_MINILINKS = ["@deep-foundation/core", PACKAGE_NAME];
 
-beforeAll(async () => {
-  apolloClient = generateApolloClient({
-    path: graphQlPath,
-    ssl,
-    token,
-    ws: true,
-  });
-  const deep = new DeepClient({ apolloClient });
-  decoratedDeep = createObjectToLinksConverterDecorator(deep);
-
-  const { data: requiredPackageLinks } = await deep.select({
-    up: {
-      tree_id: {
-        _id: ["@deep-foundation/core", "containTree"],
-      },
-      parent: {
-        _or: REQUIRED_PACKAGES_IN_MINILINKS.map((packageName) => ({
-          id: {
-            _id: [packageName],
-          },
-        })),
-      },
-    },
-  });
-  decoratedDeep.minilinks.apply(requiredPackageLinks);
+apolloClient = generateApolloClient({
+  path: graphQlPath,
+  ssl,
+  token,
+  ws: true,
 });
+const deep = new DeepClient({ apolloClient });
+decoratedDeep = createObjectToLinksConverterDecorator(deep);
 
-describe(
-  `${capitalCase(withoutRootLinkIdWithObjThatHasOneStringProperty.name)} - ${
-    withoutRootLinkIdWithObjThatHasOneStringProperty.name
-  }`,
-  withoutRootLinkIdWithObjThatHasOneStringProperty,
-);
+const { data: requiredPackageLinks } = await deep.select({
+  up: {
+    tree_id: {
+      _id: ["@deep-foundation/core", "containTree"],
+    },
+    parent: {
+      _or: REQUIRED_PACKAGES_IN_MINILINKS.map((packageName) => ({
+        id: {
+          _id: [packageName],
+        },
+      })),
+    },
+  },
+});
+console.log({ decoratedDeep });
+decoratedDeep.minilinks.apply(requiredPackageLinks);
+// console.log(decoratedDeep.minilinks.links.find(link => link.value?.value === 'clientHandler'))
+
+withoutRootLinkIdWithObjThatHasOneStringProperty();
 
 async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
   const log = debug(withoutRootLinkIdWithObjThatHasOneStringProperty.name);
@@ -64,6 +66,7 @@ async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
     myStringKey: "myStringValue",
   };
   log({ obj });
+  decoratedDeep.idLocal("@deep-foundation/core", "containTree");
   const clientHandlerResult = await callClientHandler({
     deep: decoratedDeep,
     linkId: decoratedDeep.objectToLinksConverterPackage.clientHandler.idLocal(),
