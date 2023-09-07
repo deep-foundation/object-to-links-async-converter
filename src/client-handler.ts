@@ -167,7 +167,10 @@ async ({
       });
       log({ serialResult });
 
-      return serialResult;
+      return {
+        serialResult,
+        rootLinkId,
+      };
     }
 
     static getTypesContainer() {
