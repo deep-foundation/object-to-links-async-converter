@@ -8,6 +8,7 @@ import {
   createObjectToLinksConverterDecorator,
   ObjectToLinksConverterDecorator,
 } from "../src/create-object-to-links-converter-decorator.js";
+import { debug } from "../src/debug.js";
 
 const graphQlPath = `${process.env.DEEPLINKS_HASURA_PATH!}/v1/graphql`;
 const ssl = !!+process.env.DEEPLINKS_HASURA_SSL!;
@@ -40,10 +41,33 @@ beforeAll(async () => {
   deep.minilinks.apply(corePackageLinks);
 });
 
-describe("client-handler", () => {
-  // await callClientHandler({
-  //   deep,
-  //   linkId: decoratedDeep.objectToLinksConverterPackage.handl,
-  // });
-  throw new Error("Not implemented");
+describe("without root link id with obj that has one string property", async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
+  const log = debug(withoutRootLinkIdWithObjThatHasOneStringProperty.name);
+  const obj = {
+    myStringKey: "myStringValue",
+  };
+  log({ obj });
+  const clientHandlerResult = await callClientHandler({
+    deep,
+    linkId: decoratedDeep.objectToLinksConverterPackage.clientHandler.idLocal(),
+    args: [
+      {
+        deep: deep,
+        obj: obj,
+      },
+    ],
+  });
+  log(clientHandlerResult);
+  const {
+    data: [rootLink],
+  } = await decoratedDeep.select(clientHandlerResult.rootLinkId);
+  assert.notStrictEqual(rootLink, undefined);
+  const {
+    data: [stringLink],
+  } = await decoratedDeep.select({
+    type_id: decoratedDeep.objectToLinksConverterPackage.String.idLocal(),
+    from_id: rootLink.id,
+    to_id: rootLink.id,
+  });
+  assert.notStrictEqual(stringLink, undefined);
 });
