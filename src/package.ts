@@ -19,6 +19,8 @@ const {name: packageName} = package;
 ```ts
 const package = new Package({deep});
 const dependency@freephoenix888/booleanLinkId = await package["dependency@freephoenix888/boolean"].id();
+const clientHandlerCodeLinkId = await package["clientHandlerCode"].id();
+const clientHandlerLinkId = await package["clientHandler"].id();
 const booleanTypeLinkId = await package["Boolean"].id();
 const objectTypeLinkId = await package["Object"].id();
 const numberTypeLinkId = await package["Number"].id();
@@ -39,6 +41,8 @@ const handleParseItInsertLinkId = await package["handleParseItInsert"].id();
 const package = new Package({deep});
 await package.applyMinilinks();
 const dependency@freephoenix888/booleanLinkId = package["dependency@freephoenix888/boolean"].idLocal();
+const clientHandlerCodeLinkId = package["clientHandlerCode"].idLocal();
+const clientHandlerLinkId = package["clientHandler"].idLocal();
 const booleanTypeLinkId = package["Boolean"].idLocal();
 const objectTypeLinkId = package["Object"].idLocal();
 const numberTypeLinkId = package["Number"].idLocal();
@@ -57,6 +61,8 @@ const handleParseItInsertLinkId = package["handleParseItInsert"].idLocal();
 ```ts
 const package = new Package({deep});
 const dependency@freephoenix888/boolean = package["dependency@freephoenix888/boolean"].name;
+const clientHandlerCode = package["clientHandlerCode"].name;
+const clientHandler = package["clientHandler"].name;
 const boolean = package["Boolean"].name;
 const object = package["Object"].name;
 const number = package["Number"].name;
@@ -101,6 +107,44 @@ export class Package extends BasePackage {
   public "dependency@freephoenix888/boolean" = this.createEntity(
     "dependency@freephoenix888/boolean",
   );
+  /**
+      @example
+      #### Use id method to get the id of the clientHandlerCode link
+      ```ts
+      const package = new Package({deep});
+      const clientHandlerCodeLinkId = await package["clientHandlerCode"].id();
+      ```
+      #### Use localId method to get the local id of the clientHandlerCode link
+      ```ts
+      const package = new Package({deep});
+      const clientHandlerCodeLinkId = await package["clientHandlerCode"].localId();
+      ```
+      #### Use name field to get the name of the clientHandlerCode link
+      ```ts
+      const package = new Package({deep});
+      const clientHandlerCode = await package["clientHandlerCode"].name;
+      ```
+      */
+  public "clientHandlerCode" = this.createEntity("clientHandlerCode");
+  /**
+      @example
+      #### Use id method to get the id of the clientHandler link
+      ```ts
+      const package = new Package({deep});
+      const clientHandlerLinkId = await package["clientHandler"].id();
+      ```
+      #### Use localId method to get the local id of the clientHandler link
+      ```ts
+      const package = new Package({deep});
+      const clientHandlerLinkId = await package["clientHandler"].localId();
+      ```
+      #### Use name field to get the name of the clientHandler link
+      ```ts
+      const package = new Package({deep});
+      const clientHandler = await package["clientHandler"].name;
+      ```
+      */
+  public "clientHandler" = this.createEntity("clientHandler");
   /**
       @example
       #### Use id method to get the id of the Boolean link
