@@ -13,7 +13,9 @@ import { PACKAGE_NAME } from "../src/package-name.js";
 import { capitalCase } from "case-anything";
 import { REQUIRED_PROCESS_ENVS } from "./required-process-envs.js";
 
-const graphQlPath = process.env[REQUIRED_PROCESS_ENVS.graphqlPath]!;
+const graphqlUrl = new URL(process.env[REQUIRED_PROCESS_ENVS.graphqlPath]!);
+const graphQlPath =
+  graphqlUrl.host + graphqlUrl.pathname + graphqlUrl.search + graphqlUrl.hash;
 const ssl = process.env[REQUIRED_PROCESS_ENVS.ssl]! === "true";
 const token = process.env[REQUIRED_PROCESS_ENVS.token]!;
 
