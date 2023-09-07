@@ -24,21 +24,18 @@ export function createObjectToLinksConverterDecorator<
   log({ deep });
   const _package = new Package({ deep });
   log({ _package });
-  const result = Object.assign(
-    {
-      [PACKAGE_NAME]: _package,
-      objectToLinksConverterPackage: _package,
-      requiredPackagesInMinilinksToApply: [
-        ...("requiredPackagesInMinilinksToApply" in deep
-          ? (deep.requiredPackagesInMinilinksToApply as Array<string>)
-          : []),
-        ...REQUIRED_PACKAGES_IN_MINILINKS,
-      ],
-      applyRequiredPackagesInMinilinks: applyRequiredPackagesInMinilinks,
-      convert: convert,
-    } as ObjectToLinksConverterDecorator<TDeepClient>,
-    deep,
-  );
+  const result = Object.assign(Object.create(deep), {
+    [PACKAGE_NAME]: _package,
+    objectToLinksConverterPackage: _package,
+    requiredPackagesInMinilinksToApply: [
+      ...("requiredPackagesInMinilinksToApply" in deep
+        ? (deep.requiredPackagesInMinilinksToApply as Array<string>)
+        : []),
+      ...REQUIRED_PACKAGES_IN_MINILINKS,
+    ],
+    applyRequiredPackagesInMinilinks: applyRequiredPackagesInMinilinks,
+    convert: convert,
+  } as ObjectToLinksConverterDecorator<TDeepClient>);
   log({ result });
   return result;
 }
