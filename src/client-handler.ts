@@ -10,7 +10,6 @@ import {
   Link,
   MinilinksResult,
 } from "@deep-foundation/deeplinks/imports/minilinks.js";
-import { pascalCase } from "case-anything";
 
 async ({
   deep,
@@ -25,6 +24,7 @@ async ({
   const { createSerialOperation } = await import(
     "@deep-foundation/deeplinks/imports/gql/index.js"
   );
+  const { pascalCase } = await import("case-anything");
   const logs: Array<any> = [];
   const DEFAULT_LOG_DEPTH = 3;
 
