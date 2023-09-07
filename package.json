@@ -3,6 +3,7 @@
   "keywords": [
     "deep-package"
   ],
+  "type": "module",
   "description": "",
   "repository": {
     "type": "git",
