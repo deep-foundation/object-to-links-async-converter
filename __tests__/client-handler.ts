@@ -11,10 +11,11 @@ import {
 import { debug } from "../src/debug.js";
 import { PACKAGE_NAME } from "../src/package-name.js";
 import { capitalCase } from "case-anything";
+import { REQUIRED_PROCESS_ENVS } from "./required-process-envs.js";
 
-const graphQlPath = `${process.env.DEEPLINKS_HASURA_PATH!}/v1/graphql`;
-const ssl = !!+process.env.DEEPLINKS_HASURA_SSL!;
-const token = process.env.DEEPLINKS_HASURA_TOKEN!;
+const graphQlPath = process.env[REQUIRED_PROCESS_ENVS.graphqlPath]!;
+const ssl = process.env[REQUIRED_PROCESS_ENVS.ssl]! === "true";
+const token = process.env[REQUIRED_PROCESS_ENVS.token]!;
 
 let apolloClient: ApolloClient<InMemoryCache>;
 let decoratedDeep: ObjectToLinksConverterDecorator<DeepClient>;
