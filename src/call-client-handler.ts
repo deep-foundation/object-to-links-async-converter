@@ -5,9 +5,9 @@ export async function callClientHandler(
   options: CallClientHandlerOptions,
 ): Promise<any> {
   const { linkId, deep, args } = options;
+  console.log({ deep });
   const code = await deep
     .select({
-      type_id: deep.idLocal("@deep-foundation/core", "SyncTextFile"),
       in: {
         id: linkId,
       },
