@@ -1,11 +1,14 @@
 import ts from "typescript";
 import { DeepClientInstance } from "@deep-foundation/deeplinks/imports/client";
+import { debug } from "./debug.js";
 
 export async function callClientHandler(
   options: CallClientHandlerOptions,
 ): Promise<any> {
+  const log = debug(callClientHandler.name);
+  log({ options });
   const { linkId, deep, args } = options;
-  console.log({ deep });
+  log({ linkId, deep, args });
   const code = await deep
     .select({
       in: {
@@ -19,14 +22,18 @@ export async function callClientHandler(
       if (!code) throw new Error(`##${link.id} must have value`);
       return code;
     });
+  log({ code });
 
-  const jsCode = ts.transpileModule(code, {
+  const functionExpressionString = ts.transpileModule(code, {
     compilerOptions: { module: ts.ModuleKind.ESNext },
   }).outputText;
+  log({ functionExpressionString });
+  const fn: Function = eval(functionExpressionString);
+  log({ fn });
 
-  const modifiedJsCode = `(${jsCode})(...${JSON.stringify(args)});`;
-
-  return await eval(modifiedJsCode);
+  const result = await fn(args);
+  log({ result });
+  return result;
 }
 
 export interface CallClientHandlerOptions {
