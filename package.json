@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@atao60/fse-cli": "^0.1.7",
-    "@deep-foundation/npm-automation": "~18.1.5",
+    "@deep-foundation/npm-automation": "~18.1.6",
     "@freephoenix888/recursive-object-map": "^1.0.0",
     "@types/debug": "^4.1.8",
     "@types/fs-extra": "^11.0.1",
