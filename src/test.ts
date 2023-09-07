@@ -1,7 +1,10 @@
 import { generateApolloClient } from "@deep-foundation/hasura/client.js";
 import { ApolloClient, InMemoryCache } from "@apollo/client/index.js";
 import assert from "assert";
-import { DeepClient } from "@deep-foundation/deeplinks/imports/client.js";
+import {
+  DeepClient,
+  DeepClientOptions,
+} from "@deep-foundation/deeplinks/imports/client.js";
 import { callClientHandler } from "./call-client-handler.js";
 import {
   createObjectToLinksConverterDecorator,
@@ -9,6 +12,8 @@ import {
 } from "./create-object-to-links-converter-decorator.js";
 import { debug } from "./debug.js";
 import { PACKAGE_NAME } from "./package-name.js";
+import util from "util";
+import stringify from "json-stringify-safe";
 import dotenv from "dotenv";
 dotenv.config({
   path: "./.env.test.local",
@@ -39,6 +44,7 @@ apolloClient = generateApolloClient({
 });
 const deep = new DeepClient({ apolloClient });
 decoratedDeep = createObjectToLinksConverterDecorator(deep);
+await decoratedDeep.applyRequiredPackagesInMinilinks();
 
 const { data: requiredPackageLinks } = await deep.select({
   up: {
@@ -67,12 +73,32 @@ async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
   };
   log({ obj });
   decoratedDeep.idLocal("@deep-foundation/core", "containTree");
+  console.log(
+    decoratedDeep.minilinks.links.find(
+      (link) =>
+        link.value?.value === "@freephoenix888/object-to-links-async-converter",
+    )!.id,
+  );
+  console.log(
+    decoratedDeep.idLocal("@freephoenix888/object-to-links-async-converter"),
+  );
+  console.dir(
+    stringify(decoratedDeep.minilinks.links.find((link) => link.id === 1372)),
+  );
+  const packageDeepClientOptions: DeepClientOptions = {
+    apolloClient,
+    ...(await decoratedDeep.login({
+      linkId: decoratedDeep.objectToLinksConverterPackage.idLocal(),
+    })),
+  };
+  log({ packageDeepClientOptions });
+  const packageDeep = new DeepClient(packageDeepClientOptions);
   const clientHandlerResult = await callClientHandler({
     deep: decoratedDeep,
     linkId: decoratedDeep.objectToLinksConverterPackage.clientHandler.idLocal(),
     args: [
       {
-        deep: decoratedDeep,
+        deep: packageDeep,
         obj: obj,
       },
     ],
