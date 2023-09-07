@@ -1,6 +1,7 @@
 import ts from "typescript";
 import { DeepClientInstance } from "@deep-foundation/deeplinks/imports/client";
 import { debug } from "./debug.js";
+import tsNode from "ts-node";
 
 export async function callClientHandler(
   options: CallClientHandlerOptions,
@@ -24,14 +25,16 @@ export async function callClientHandler(
     });
   log({ code });
 
-  const functionExpressionString = ts.transpileModule(code, {
-    compilerOptions: { module: ts.ModuleKind.ESNext },
-  }).outputText;
+  const functionExpressionString = ts
+    .transpileModule(code, {
+      compilerOptions: { module: ts.ModuleKind.ESNext },
+    })
+    .outputText.replace("export {}", "");
   log({ functionExpressionString });
   const fn: Function = eval(functionExpressionString);
   log({ fn });
 
-  const result = await fn(args);
+  const result = await fn(...args);
   log({ result });
   return result;
 }
