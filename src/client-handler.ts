@@ -18,7 +18,7 @@ async ({
   obj,
 }: {
   deep: DeepClient;
-  rootLinkId: number;
+  rootLinkId?: number;
   obj: Obj;
 }) => {
   const util = await import("util");
