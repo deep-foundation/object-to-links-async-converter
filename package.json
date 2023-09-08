@@ -65,7 +65,7 @@
     "typescript": "^5.2.2"
   },
   "peerDependencies": {
-    "@deep-foundation/deeplinks": "~0.0.299"
+    "@deep-foundation/deeplinks": "~0.0.300"
   },
   "lint-staged": {
     "**/*": "npm run prettier:write"
