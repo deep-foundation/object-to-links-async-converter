@@ -31,7 +31,6 @@ async ({
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
     rootLink: Link<number>;
-    typesContainer: Link<number>;
     static requiredPackageNames = {
       core: "@deep-foundation/core",
       boolean: "@freephoenix888/boolean",
@@ -44,7 +43,6 @@ async ({
     constructor(options: ObjectToLinksConverterOptions) {
       this.rootLink = options.rootLink;
       this.reservedLinkIds = options.reservedLinkIds;
-      this.typesContainer = options.typesContainer;
     }
 
     static getNamespacedLogger({
@@ -147,8 +145,6 @@ async ({
           minilinks: deep.minilinks,
         });
       log({ containTreeLinksDownToRootLinkApplyMinilinksResult });
-      const typesContainer = this.getTypesContainer();
-      log({ typesContainer });
       // const linkIdsToReserveCount = this.getLinksToReserveCount({value: obj});
       // log({linkIdsToReserveCount})
       // const reservedLinkIds = await deep.reserve(linkIdsToReserveCount);
@@ -156,7 +152,6 @@ async ({
       const converter = new this({
         reservedLinkIds: [],
         rootLink,
-        typesContainer,
       });
       log({ converter });
       return converter;
@@ -186,30 +181,6 @@ async ({
         serialResult,
         rootLinkId,
       };
-    }
-
-    static getTypesContainer() {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: ObjectToLinksConverter.getTypesContainer.name,
-      });
-      const selectData: BoolExpLink = {
-        type_id: deep.idLocal(deep.linkId!, "TypesContainer"),
-      };
-      log({ selectData });
-      const queryResult = deep.minilinks.query(selectData);
-      log({ queryResult });
-      const typesContainer = queryResult[0];
-      log({ typesContainer });
-      if (!typesContainer) {
-        throw new Error(
-          `Failed to find package containing types by using select data ${JSON.stringify(
-            selectData,
-            null,
-            2,
-          )}`,
-        );
-      }
-      return typesContainer;
     }
 
     async getOptions(options: GetOptionsOptions): Promise<Options> {
@@ -352,22 +323,10 @@ async ({
           parentPropertyNames.join("") + propertyKey,
         );
         log({ propertyName });
-        const propertyTypeLinkId = deep.idLocal(
-          this.typesContainer.id,
-          propertyName,
-        );
-        log({ propertyTypeLinkId });
-        if (!propertyTypeLinkId) {
-          throw new Error(
-            `Failed to find type id for ${propertyName}. Path for idLocal: ${[
-              this.typesContainer.id,
-              propertyName,
-            ]}`,
-          );
-        }
         const [propertyLink] = deep.minilinks.query({
-          type_id: propertyTypeLinkId,
-          from_id: link.id,
+          id: {
+            _id: [link.id, propertyKey],
+          },
         });
         log({ propertyLink });
         propertyLinks.push(propertyLink);
@@ -390,21 +349,21 @@ async ({
           log({ propertyUpdateOperations });
           serialOperations.push(...propertyUpdateOperations);
         } else {
-          const idLocalArgs: Parameters<DeepClientInstance["idLocal"]> = [
-            this.typesContainer.id,
-            pascalCase(typeof value),
-          ];
-          const typeLinkId = deep.idLocal(...idLocalArgs);
-          if (!typeLinkId) {
-            throw new Error(
-              `Failed to get type id for ${propertyKey}. Path for idLocal: ${idLocalArgs}`,
-            );
+          if (
+            typeof propertyValue !== "string" ||
+            typeof propertyValue !== "number" ||
+            typeof propertyValue !== "boolean"
+          ) {
+            continue;
           }
           const propertyInsertSerialOperations =
             await this.makeInsertSerialOperationsForAnyValue({
               linkId: this.reservedLinkIds.pop()!,
               parentLinkId: link.id,
-              typeLinkId: typeLinkId,
+              typeLinkId: deep.idLocal(
+                deep.linkId!,
+                pascalCase(typeof propertyValue),
+              ),
               value: propertyValue,
             });
           log({ propertyInsertSerialOperations });
@@ -565,25 +524,21 @@ async ({
       serialOperations.push(containInsertSerialOperation);
 
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
-        const typeOfValue = typeof propertyValue;
-        if (!["string", "number", "boolean"].includes(typeOfValue)) {
+        if (
+          typeof propertyValue !== "string" ||
+          typeof propertyValue !== "number" ||
+          typeof propertyValue !== "boolean"
+        ) {
           continue;
-        }
-        const idLocalArgs: Parameters<DeepClientInstance["idLocal"]> = [
-          this.typesContainer.id,
-          pascalCase(typeOfValue),
-        ];
-        const typeLinkId = deep.idLocal(...idLocalArgs);
-        if (!typeLinkId) {
-          throw new Error(
-            `Failed to get type id for ${propertyKey}. Path for idLocal: ${idLocalArgs}`,
-          );
         }
         const propertyInsertOperations =
           await this.makeInsertSerialOperationsForAnyValue({
             linkId: this.reservedLinkIds.pop()!,
             parentLinkId: linkId,
-            typeLinkId: typeLinkId,
+            typeLinkId: deep.idLocal(
+              deep.linkId!,
+              pascalCase(typeof propertyValue),
+            ),
             value: propertyValue,
           });
         serialOperations.push(...propertyInsertOperations);
@@ -701,7 +656,6 @@ interface GetContainTreeLinksDownToLinkOptions {
 interface ObjectToLinksConverterOptions {
   rootLink: Link<number>;
   reservedLinkIds: Array<number>;
-  typesContainer: Link<number>;
 }
 
 interface ObjectToLinksConverterInitOptions {
