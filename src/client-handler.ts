@@ -32,9 +32,13 @@ async ({
     reservedLinkIds: Array<number>;
     rootLink: Link<number>;
     typesContainer: Link<number>;
-    requiredPackageNames = {
+    static requiredPackageNames = {
       core: "@deep-foundation/core",
       boolean: "@freephoenix888/boolean",
+    };
+    static requiredPackagesInMinilinks = {
+      ...this.requiredPackageNames,
+      objectToLinksConverter: "@freephoenix888/object-to-links-async-converter",
     };
 
     constructor(options: ObjectToLinksConverterOptions) {
@@ -60,7 +64,9 @@ async ({
       options: ApplyContainTreeLinksDownToParentToMinilinksOptions,
     ) {
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.applyContainTreeLinksDownToParentToMinilinks.name,
+        namespace:
+          ObjectToLinksConverter.applyContainTreeLinksDownToParentToMinilinks
+            .name,
       });
       log({ options });
       const links = (await this.getContainTreeLinksDownToParent({
@@ -77,7 +83,7 @@ async ({
       options: GetContainTreeLinksDownToLinkOptions,
     ) {
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.getContainTreeLinksDownToParent.name,
+        namespace: ObjectToLinksConverter.getContainTreeLinksDownToParent.name,
       });
       log({ options });
       const { linkExp, useMinilinks } = options;
@@ -104,10 +110,24 @@ async ({
       options: ObjectToLinksConverterInitOptions,
     ): Promise<ObjectToLinksConverter | undefined> {
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: `${this.init.name}`,
+        namespace: ObjectToLinksConverter.init.name,
       });
       log({ options });
       const { obj } = options;
+      const containTreeLinksDownToCoreAndThisPackageLinkApplyMinilinksResult =
+        await this.applyContainTreeLinksDownToParentToMinilinks({
+          linkExp: {
+            _or: Object.values(
+              ObjectToLinksConverter.requiredPackagesInMinilinks,
+            ).map((packageName) => ({
+              id: {
+                _id: [packageName],
+              },
+            })),
+          },
+          minilinks: deep.minilinks,
+        });
+      log({ containTreeLinksDownToCoreAndThisPackageLinkApplyMinilinksResult });
       const rootLink: Link<number> = options.rootLinkId
         ? await deep.select(options.rootLinkId).then((result) => result.data[0])
         : await deep
@@ -124,14 +144,14 @@ async ({
       if (Object.keys(obj).length === 0) {
         return;
       }
-      const applyMinilinksResult =
+      const containTreeLinksDownToRootLinkApplyMinilinksResult =
         await this.applyContainTreeLinksDownToParentToMinilinks({
           linkExp: {
             id: rootLink.id,
           },
           minilinks: deep.minilinks,
         });
-      log({ applyMinilinksResult });
+      log({ containTreeLinksDownToRootLinkApplyMinilinksResult });
       const typesContainer = this.getTypesContainer();
       log({ typesContainer });
       // const linkIdsToReserveCount = this.getLinksToReserveCount({value: obj});
@@ -175,7 +195,7 @@ async ({
 
     static getTypesContainer() {
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: `${this.getTypesContainer.name}`,
+        namespace: ObjectToLinksConverter.getTypesContainer.name,
       });
       const selectData: BoolExpLink = {
         type_id: deep.idLocal(deep.linkId!, "TypesContainer"),
@@ -223,7 +243,7 @@ async ({
     }): number {
       const { value } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.getLinksToReserveCount.name,
+        namespace: ObjectToLinksConverter.getLinksToReserveCount.name,
       });
       log({ options });
       let count = 0;
@@ -274,8 +294,14 @@ async ({
             },
             value: {
               to_id: value
-                ? await deep.id(this.requiredPackageNames.boolean, "True")
-                : await deep.id(this.requiredPackageNames.boolean, "False"),
+                ? await deep.id(
+                    ObjectToLinksConverter.requiredPackageNames.boolean,
+                    "True",
+                  )
+                : await deep.id(
+                    ObjectToLinksConverter.requiredPackageNames.boolean,
+                    "False",
+                  ),
             },
           }),
         );
@@ -424,8 +450,14 @@ async ({
           type_id: typeLinkId,
           from_id: parentLinkId,
           to_id: value
-            ? deep.idLocal(this.requiredPackageNames.boolean, "True")
-            : deep.idLocal(this.requiredPackageNames.boolean, "False"),
+            ? deep.idLocal(
+                ObjectToLinksConverter.requiredPackageNames.boolean,
+                "True",
+              )
+            : deep.idLocal(
+                ObjectToLinksConverter.requiredPackageNames.boolean,
+                "False",
+              ),
         },
       });
       log({ linkInsertSerialOperation });
