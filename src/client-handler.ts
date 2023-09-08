@@ -631,7 +631,7 @@ async ({
     });
     log({ objectToLinksConverter });
 
-    const convertResult = objectToLinksConverter?.convert();
+    const convertResult = await objectToLinksConverter?.convert();
     log({ convertResult });
 
     return convertResult;
