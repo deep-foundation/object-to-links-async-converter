@@ -71,7 +71,6 @@ async ({
       log({ options });
       const links = (await this.getContainTreeLinksDownToParent({
         linkExp: options.linkExp,
-        useMinilinks: false,
       })) as DeepClientResult<Link<number>[]>;
       log({ links });
       const minilinksApplyResult = options.minilinks.apply(links.data);
@@ -86,19 +85,15 @@ async ({
         namespace: ObjectToLinksConverter.getContainTreeLinksDownToParent.name,
       });
       log({ options });
-      const { linkExp, useMinilinks } = options;
+      const { linkExp } = options;
       const query: BoolExpLink = {
         up: {
-          tree_id: useMinilinks
-            ? deep.idLocal("@deep-foundation/core", "containTree")
-            : await deep.id("@deep-foundation/core", "containTree"),
+          tree_id: await deep.id("@deep-foundation/core", "containTree"),
           parent: linkExp,
         },
       };
       log({ query });
-      const result = useMinilinks
-        ? deep.minilinks.query(query)
-        : await deep.select(query);
+      const result = await deep.select(query);
       log({ result });
       return result;
     }
@@ -701,7 +696,6 @@ type ApplyContainTreeLinksDownToParentToMinilinksOptions = Omit<
 
 interface GetContainTreeLinksDownToLinkOptions {
   linkExp: BoolExpLink;
-  useMinilinks?: boolean;
 }
 
 interface ObjectToLinksConverterOptions {
