@@ -72,19 +72,6 @@ async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
     myStringKey: "myStringValue",
   };
   log({ obj });
-  decoratedDeep.idLocal("@deep-foundation/core", "containTree");
-  console.log(
-    decoratedDeep.minilinks.links.find(
-      (link) =>
-        link.value?.value === "@freephoenix888/object-to-links-async-converter",
-    )!.id,
-  );
-  console.log(
-    decoratedDeep.idLocal("@freephoenix888/object-to-links-async-converter"),
-  );
-  console.dir(
-    stringify(decoratedDeep.minilinks.links.find((link) => link.id === 1372)),
-  );
   const packageDeepClientOptions: DeepClientOptions = {
     apolloClient,
     ...(await decoratedDeep.login({
@@ -103,7 +90,7 @@ async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
       },
     ],
   });
-  log(clientHandlerResult);
+  log({ clientHandlerResult });
   const {
     data: [rootLink],
   } = await decoratedDeep.select(clientHandlerResult.rootLinkId);
