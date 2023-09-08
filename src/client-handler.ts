@@ -316,7 +316,6 @@ async ({
         serialOperations.push(linkUpdateOperation);
       }
 
-      const propertyLinks: Array<Link<number>> = [];
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
         log({ propertyKey, propertyValue });
         const propertyName = pascalCase(
@@ -329,7 +328,6 @@ async ({
           },
         });
         log({ propertyLink });
-        propertyLinks.push(propertyLink);
         if (propertyLink) {
           let propertyUpdateOperations: Array<SerialOperation> = [];
           if (typeof value === "object") {
