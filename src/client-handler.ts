@@ -162,7 +162,7 @@ async ({
 
     async convert() {
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.convert.name,
+        namespace: "convert",
       });
 
       const operations = await this.makeUpdateOperationsForObjectValue({
@@ -192,7 +192,7 @@ async ({
 
     async getTypesContainer(): Promise<Options["typesContainerLink"]> {
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.getTypesContainer.name,
+        namespace: "getTypesContainer",
       });
       const {
         data: [typesContainer],
@@ -245,7 +245,7 @@ async ({
       TValue extends string | number | boolean,
     >(options: UpdateOperationsForPrimitiveValueOptions<TValue>) {
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: `${this.makeUpdateOperationsForPrimitiveValue.name}`,
+        namespace: `${"makeUpdateOperationsForPrimitiveValue"}`,
       });
       log({ options });
       const { link, value } = options;
@@ -295,7 +295,7 @@ async ({
       options: UpdateOperationsForObjectValueOptions,
     ) {
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeUpdateOperationsForObjectValue.name,
+        namespace: "makeUpdateOperationsForObjectValue",
       });
       log({ options });
       const { link, value, isRootObject, parentPropertyNames = [] } = options;
@@ -393,7 +393,7 @@ async ({
       const serialOperations: Array<SerialOperation> = [];
       const { value, parentLinkId, linkId, typeLinkId } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeInsertSerialOperationsForStringValue.name,
+        namespace: "makeInsertSerialOperationsForStringValue",
       });
 
       const linkInsertSerialOperation = createSerialOperation({
@@ -438,7 +438,7 @@ async ({
       const serialOperations: Array<SerialOperation> = [];
       const { value, parentLinkId, linkId, typeLinkId } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeInsertSerialOperationsForStringValue.name,
+        namespace: "makeInsertSerialOperationsForStringValue",
       });
       const linkInsertSerialOperation = createSerialOperation({
         type: "insert",
@@ -485,7 +485,7 @@ async ({
       const serialOperations: Array<SerialOperation> = [];
       const { typeLinkId, value, linkId, parentLinkId } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeInsertSerialOperationsForStringValue.name,
+        namespace: "makeInsertSerialOperationsForStringValue",
       });
       const linkInsertSerialOperation = createSerialOperation({
         type: "insert",
@@ -553,7 +553,7 @@ async ({
     ) {
       const { value, parentLinkId, linkId } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeInsertSerialOperationsForAnyValue.name,
+        namespace: "makeInsertSerialOperationsForAnyValue",
       });
 
       const serialOperations: Array<SerialOperation> = [];
