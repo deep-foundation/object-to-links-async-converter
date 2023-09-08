@@ -348,12 +348,16 @@ async ({
           operations.push(...propertyUpdateOperations);
         } else {
           if (
-            typeof propertyValue !== "string" ||
-            typeof propertyValue !== "number" ||
+            typeof propertyValue !== "string" &&
+            typeof propertyValue !== "number" &&
             typeof propertyValue !== "boolean"
           ) {
+            log(
+              `Skipping property ${propertyKey} because it is not string or number or boolean`,
+            );
             continue;
           }
+
           const propertyInsertoperations =
             await this.makeInsertoperationsForAnyValue({
               linkId: this.reservedLinkIds.pop()!,
