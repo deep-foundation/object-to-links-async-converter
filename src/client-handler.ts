@@ -31,6 +31,7 @@ async ({
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
     rootLink: Link<number>;
+    obj: Obj;
     static requiredPackageNames = {
       core: "@deep-foundation/core",
       boolean: "@freephoenix888/boolean",
@@ -43,6 +44,7 @@ async ({
     constructor(options: ObjectToLinksConverterOptions) {
       this.rootLink = options.rootLink;
       this.reservedLinkIds = options.reservedLinkIds;
+      this.obj = options.obj;
     }
 
     static getNamespacedLogger({
@@ -152,6 +154,7 @@ async ({
       const converter = new this({
         reservedLinkIds: [],
         rootLink,
+        obj,
       });
       log({ converter });
       return converter;
@@ -162,12 +165,9 @@ async ({
         namespace: this.convert.name,
       });
 
-      const obj = this.rootLink.value.value;
-      log({ obj });
-
       const operations = await this.makeUpdateOperationsForObjectValue({
         link: this.rootLink,
-        value: obj,
+        value: this.obj,
         isRootObject: true,
       });
       log({ operations });
@@ -656,6 +656,7 @@ interface GetContainTreeLinksDownToLinkOptions {
 interface ObjectToLinksConverterOptions {
   rootLink: Link<number>;
   reservedLinkIds: Array<number>;
+  obj: Obj;
 }
 
 interface ObjectToLinksConverterInitOptions {
