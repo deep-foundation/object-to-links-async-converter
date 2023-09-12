@@ -60,7 +60,6 @@ const { data: requiredPackageLinks } = await deep.select({
     },
   },
 });
-console.log({ decoratedDeep });
 decoratedDeep.minilinks.apply(requiredPackageLinks);
 // console.log(decoratedDeep.minilinks.links.find(link => link.value?.value === 'clientHandler'))
 
@@ -91,9 +90,11 @@ async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
     ],
   });
   log({ clientHandlerResult });
+  if (clientHandlerResult.error) throw clientHandlerResult.error;
+  assert.notStrictEqual(clientHandlerResult.result?.rootLinkId, undefined);
   const {
     data: [rootLink],
-  } = await decoratedDeep.select(clientHandlerResult.rootLinkId);
+  } = await decoratedDeep.select(clientHandlerResult.result.rootLinkId);
   assert.notStrictEqual(rootLink, undefined);
   const {
     data: [stringLink],
