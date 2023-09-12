@@ -70,14 +70,12 @@ async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
   const obj = {
     myStringKey: "myStringValue",
   };
-  log({ obj });
   const packageDeepClientOptions: DeepClientOptions = {
     apolloClient,
     ...(await decoratedDeep.login({
       linkId: decoratedDeep.objectToLinksConverterPackage.idLocal(),
     })),
   };
-  log({ packageDeepClientOptions });
   const packageDeep = new DeepClient(packageDeepClientOptions);
   const clientHandlerResult = await callClientHandler({
     deep: decoratedDeep,
@@ -89,7 +87,6 @@ async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
       },
     ],
   });
-  log({ clientHandlerResult });
   if (clientHandlerResult.error) throw clientHandlerResult.error;
   assert.notStrictEqual(clientHandlerResult.result?.rootLinkId, undefined);
   const {

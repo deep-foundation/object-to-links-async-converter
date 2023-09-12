@@ -9,7 +9,6 @@ export async function convert<TDeepClient extends DeepClientInstance>(
   options: ConvertOptions,
 ) {
   const log = debug(convert.name);
-  log({ options });
   const { rootLinkId, obj } = options;
   const result = await callClientHandler({
     deep: this,

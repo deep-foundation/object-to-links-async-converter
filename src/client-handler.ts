@@ -73,7 +73,6 @@ async ({
           ObjectToLinksConverter.applyContainTreeLinksDownToParentToMinilinks
             .name,
       });
-      log({ options });
       const links = (await this.getContainTreeLinksDownToParent({
         linkExp: options.linkExp,
       })) as DeepClientResult<Link<number>[]>;
@@ -89,7 +88,6 @@ async ({
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: ObjectToLinksConverter.getContainTreeLinksDownToParent.name,
       });
-      log({ options });
       const { linkExp } = options;
       const query: BoolExpLink = {
         up: {
@@ -112,7 +110,6 @@ async ({
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: ObjectToLinksConverter.init.name,
       });
-      log({ options });
       const { obj } = options;
       const containTreeLinksDownToCoreAndThisPackageLinkApplyMinilinksResult =
         await this.applyContainTreeLinksDownToParentToMinilinks({
@@ -216,7 +213,6 @@ async ({
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: ObjectToLinksConverter.getLinksToReserveCount.name,
       });
-      log({ options });
       let count = 0;
       const typeOfValue = typeof value;
       log({ typeOfValue });
@@ -252,7 +248,6 @@ async ({
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: `${"makeUpdateOperationsForPrimitiveValue"}`,
       });
-      log({ options });
       const { link, value } = options;
       const operations: Array<SerialOperation> = [];
       if (typeof value === "boolean") {
@@ -302,7 +297,6 @@ async ({
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: "makeUpdateOperationsForObjectValue",
       });
-      log({ options });
       const { link, value, isRootObject, parentPropertyNames = [] } = options;
       const operations: Array<SerialOperation> = [];
 

@@ -1,0 +1,23 @@
+588 |                 _id: paths
+589 |             }
+590 |         });
+591 |         const result = link === null || link === void 0 ? void 0 : link.id;
+592 |         if (!result) {
+593 |             throw new Error(`Id not found by ${JSON.stringify([start, ...path])}`);
+                      ^
+error: Id not found by [1099,"String"]
+      at idLocal (/home/freephoenix888/Programming/object-to-links-async-converter/node_modules/@deep-foundation/deeplinks/imports/client.js:593:18)
+      at step (/home/freephoenix888/Programming/object-to-links-async-converter/node_modules/apollo-link-ws/node_modules/tslib/tslib.js:136:24)
+      at /home/freephoenix888/Programming/object-to-links-async-converter/node_modules/apollo-link-ws/node_modules/tslib/tslib.js:115:18
+      at /home/freephoenix888/Programming/object-to-links-async-converter/node_modules/apollo-link-ws/node_modules/tslib/tslib.js:112:89
+      at new Promise (:1:20)
+      at __awaiter (/home/freephoenix888/Programming/object-to-links-async-converter/node_modules/apollo-link-ws/node_modules/tslib/tslib.js:101:4)
+      at step (/home/freephoenix888/Programming/object-to-links-async-converter/node_modules/apollo-link-ws/node_modules/tslib/tslib.js:136:24)
+      at /home/freephoenix888/Programming/object-to-links-async-converter/node_modules/apollo-link-ws/node_modules/tslib/tslib.js:115:18
+      at /home/freephoenix888/Programming/object-to-links-async-converter/node_modules/apollo-link-ws/node_modules/tslib/tslib.js:112:89
+      at new Promise (:1:20)
+      at __awaiter (/home/freephoenix888/Programming/object-to-links-async-converter/node_modules/apollo-link-ws/node_modules/tslib/tslib.js:101:4)
+      at step (/home/freephoenix888/Programming/object-to-links-async-converter/node_modules/apollo-link-ws/node_modules/tslib/tslib.js:136:24)
+      at /home/freephoenix888/Programming/object-to-links-async-converter/node_modules/apollo-link-ws/node_modules/tslib/tslib.js:115:18
+      at fulfilled (/home/freephoenix888/Programming/object-to-links-async-converter/node_modules/apollo-link-ws/node_modules/tslib/tslib.js:102:73)
+      at processTicksAndRejections (:1:2602)

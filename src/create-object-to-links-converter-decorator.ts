@@ -21,9 +21,7 @@ export function createObjectToLinksConverterDecorator<
   TDeepClient extends DeepClientInstance,
 >(deep: TDeepClient) {
   const log = debug(createObjectToLinksConverterDecorator.name);
-  log({ deep });
   const _package = new Package({ deep });
-  log({ _package });
   const result = Object.assign(Object.create(deep), {
     [PACKAGE_NAME]: _package,
     objectToLinksConverterPackage: _package,
@@ -36,7 +34,6 @@ export function createObjectToLinksConverterDecorator<
     applyRequiredPackagesInMinilinks: applyRequiredPackagesInMinilinks,
     convert: convert,
   } as ObjectToLinksConverterDecorator<TDeepClient>);
-  log({ result });
   return result;
 }
 

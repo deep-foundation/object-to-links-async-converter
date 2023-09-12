@@ -22,10 +22,8 @@ export async function applyRequiredPackagesInMinilinks<
       },
     },
   });
-  log({ links });
 
   const minilinksApplyResult = this.minilinks.apply(links);
-  log({ minilinksApplyResult });
 
   this.requiredPackagesInMinilinksToApply = [];
 

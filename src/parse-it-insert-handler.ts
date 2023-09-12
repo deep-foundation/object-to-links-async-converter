@@ -72,7 +72,6 @@ const result = objectToLinksConverter?.convert({
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.applyContainTreeLinksDownToParentToMinilinks.name,
       });
-      log({ options });
       const links = (await this.getContainTreeLinksDownToParent({
         linkExp: options.linkExp,
         useMinilinks: false,
@@ -95,7 +94,6 @@ const result = objectToLinksConverter?.convert({
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.getContainTreeLinksDownToParent.name,
       });
-      log({ options });
       const { linkExp, useMinilinks } = options;
       const query: BoolExpLink = {
         up: {
@@ -226,7 +224,6 @@ const result = objectToLinksConverter?.convert({
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.getLinksToReserveCount.name,
       });
-      log({ options });
       let count = 0;
       const typeOfValue = typeof value;
       log({ typeOfValue });
@@ -283,7 +280,6 @@ const result = objectToLinksConverter?.convert({
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: `${this.makeUpdateOperationsForPrimitiveValue.name}`,
       });
-      log({ options });
       const { link, value } = options;
       const serialOperations: Array<SerialOperation> = [];
       const typeOfValue = this.getTypeOfValueForLink(link);
@@ -326,7 +322,6 @@ const result = objectToLinksConverter?.convert({
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.makeUpdateOperationsForObjectValue.name,
       });
-      log({ options });
       const { link, value, isRootObject, parentPropertyNames = [] } = options;
       const serialOperations: Array<SerialOperation> = [];
 
@@ -421,7 +416,6 @@ const result = objectToLinksConverter?.convert({
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.makeParseItInsertOperations.name,
       });
-      log({ options });
       const { linkId: linkId } = options;
       const serialOperations: Array<SerialOperation> = [];
       const parseItInsertSerialOperation = createSerialOperation({
