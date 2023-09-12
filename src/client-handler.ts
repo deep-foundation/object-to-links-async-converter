@@ -26,7 +26,10 @@ async ({
   );
   const { pascalCase } = await import("case-anything");
   const logs: Array<any> = [];
-  const DEFAULT_LOG_DEPTH = 3;
+  const DEFAULT_DEBUG_OPTIONS = {
+    depth: 2,
+    maxArrayLength: 10,
+  };
 
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
@@ -49,13 +52,15 @@ async ({
 
     static getNamespacedLogger({
       namespace,
-      depth = DEFAULT_LOG_DEPTH,
+      depth = DEFAULT_DEBUG_OPTIONS.depth,
+      maxArrayLength = DEFAULT_DEBUG_OPTIONS.maxArrayLength,
     }: {
       namespace: string;
       depth?: number;
+      maxArrayLength?: number;
     }) {
       return function (content: any) {
-        const message = util.inspect(content, { depth });
+        const message = util.inspect(content, { depth, maxArrayLength });
         logs.push(`${ObjectToLinksConverter.name}:${namespace}: ${message}`);
       };
     }
