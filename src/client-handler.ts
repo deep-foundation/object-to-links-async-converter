@@ -24,12 +24,15 @@ async ({
   const { createSerialOperation } = await import(
     "@deep-foundation/deeplinks/imports/gql/index.js"
   );
+  const { format: prettyFormat } = await import("pretty-format");
   const { pascalCase } = await import("case-anything");
+  const { debug } = await import("debug");
   const logs: Array<any> = [];
   const DEFAULT_DEBUG_OPTIONS = {
-    depth: 2,
-    maxArrayLength: 10,
+    maxDepth: 15,
+    maxWidth: 100,
   };
+  process.env.DEBUG_COLORS = "0";
 
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
@@ -52,17 +55,27 @@ async ({
 
     static getNamespacedLogger({
       namespace,
-      depth = DEFAULT_DEBUG_OPTIONS.depth,
-      maxArrayLength = DEFAULT_DEBUG_OPTIONS.maxArrayLength,
+      maxDepth = DEFAULT_DEBUG_OPTIONS.maxDepth,
+      maxWidth = DEFAULT_DEBUG_OPTIONS.maxWidth,
     }: {
       namespace: string;
-      depth?: number;
-      maxArrayLength?: number;
+      maxDepth?: number;
+      maxWidth?: number;
     }) {
-      return function (content: any) {
-        const message = util.inspect(content, { depth, maxArrayLength });
-        logs.push(`${ObjectToLinksConverter.name}:${namespace}: ${message}`);
+      const log = debug(`${ObjectToLinksConverter.name}:${namespace}`);
+      log.enabled = true;
+      log.log = (...content: Array<any>) => {
+        logs.push(...content);
       };
+      return log;
+      // return (content: any) => {
+      //   const formattedContent = prettyFormat(content, {
+      //     maxDepth: maxDepth,
+      //     maxWidth: maxWidth,
+      //     escapeString: false,
+      //   })
+      //   logs.push(`${namespace}:${formattedContent}`)
+      // }
     }
 
     static async applyContainTreeLinksDownToParentToMinilinks(
