@@ -87,6 +87,7 @@ async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
       },
     ],
   });
+  log({ clientHandlerResult });
   if (clientHandlerResult.error) throw clientHandlerResult.error;
   assert.notStrictEqual(clientHandlerResult.result?.rootLinkId, undefined);
   const {
