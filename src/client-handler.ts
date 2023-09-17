@@ -790,24 +790,16 @@ type MakeInsertoperationsForStringOrNumberOptions =
   };
 
 type MakeInsertoperationsForStringOptions =
-  MakeInsertoperationsForAnyValueOptions<string> & {
-    value: string;
-  };
+  MakeInsertoperationsForAnyValueOptions<string>;
 
 type MakeInsertoperationsForNumberOptions =
-  MakeInsertoperationsForAnyValueOptions<number> & {
-    value: number;
-  };
+  MakeInsertoperationsForAnyValueOptions<number>;
 
 type MakeInsertoperationsForBooleanOptions =
-  MakeInsertoperationsForAnyValueOptions<boolean> & {
-    value: boolean;
-  };
+  MakeInsertoperationsForAnyValueOptions<boolean>;
 
 type MakeInsertoperationsForObject =
-  MakeInsertoperationsForAnyValueOptions<object> & {
-    value: object;
-  };
+  MakeInsertoperationsForAnyValueOptions<object>;
 
 type MakeInsertoperationsForAnyValueOptions<TValue extends Value> = {
   parentLinkId: number;
