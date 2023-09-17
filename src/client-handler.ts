@@ -53,15 +53,18 @@ async ({
       this.obj = options.obj;
     }
 
-    static getNamespacedLogger({
-      namespace,
-      maxDepth = DEFAULT_DEBUG_OPTIONS.maxDepth,
-      maxWidth = DEFAULT_DEBUG_OPTIONS.maxWidth,
-    }: {
+    static getNamespacedLogger(options: {
       namespace: string;
       maxDepth?: number;
       maxWidth?: number;
     }) {
+      const _log = debug(this.getNamespacedLogger.name);
+      _log({ options });
+      const {
+        namespace,
+        maxDepth = DEFAULT_DEBUG_OPTIONS.maxDepth,
+        maxWidth = DEFAULT_DEBUG_OPTIONS.maxWidth,
+      } = options;
       const log = debug(`${ObjectToLinksConverter.name}:${namespace}`);
       log.enabled = true;
       log.log = (...content: Array<any>) => {
