@@ -273,15 +273,10 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
               id: link.id,
             },
             value: {
-              to_id: value
-                ? await deep.id(
-                    ObjectToLinksConverter.requiredPackageNames.boolean,
-                    "True",
-                  )
-                : await deep.id(
-                    ObjectToLinksConverter.requiredPackageNames.boolean,
-                    "False",
-                  ),
+              to_id: await deep.id(
+                ObjectToLinksConverter.requiredPackageNames.boolean,
+                pascalCase(value.toString()),
+              ),
             },
           }),
         );
