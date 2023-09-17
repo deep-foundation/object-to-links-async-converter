@@ -374,6 +374,33 @@ async ({
             continue;
           }
 
+          log("TEMPORARY! REMOVE THIS!");
+          log(`minilinks.links`, deep.minilinks.links);
+          log(
+            `package link`,
+            deep.minilinks.query({
+              id: deep.linkId!,
+            }),
+          );
+          log(
+            `contain to string`,
+            deep.minilinks.query({
+              type_id: deep.idLocal("@deep-foundation/core", "Contain"),
+              string: {
+                value: "String",
+              },
+              from_id: deep.linkId!,
+            }),
+          );
+          log(
+            `contain to string`,
+            deep.minilinks.query({
+              id: {
+                _id: [deep.linkId!, "String"],
+              },
+            }),
+          );
+
           const propertyInsertoperations =
             await this.makeInsertOperationsForAnyValue({
               linkId: this.reservedLinkIds.pop()!,
