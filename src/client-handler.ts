@@ -310,21 +310,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       log({ options });
       const operations: Array<SerialOperation> = [];
 
-      if (!isRootObject) {
-        const linkUpdateOperation = createSerialOperation({
-          type: "update",
-          table: "objects",
-          exp: {
-            link_id: link.id,
-          },
-          value: {
-            value: value,
-          },
-        });
-        log({ linkUpdateOperation });
-        operations.push(linkUpdateOperation);
-      }
-
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
         log({ propertyKey, propertyValue });
         const propertyName = pascalCase(
