@@ -256,6 +256,61 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       return count;
     }
 
+    async makeUpdateOperationsForBooleanValue(
+      options: UpdateOperationsForPrimitiveValueOptions<boolean>,
+    ) {
+      const log = ObjectToLinksConverter.getNamespacedLogger({
+        namespace: this.makeUpdateOperationsForBooleanValue.name,
+      });
+      log({ options });
+      const { link, value } = options;
+      const operations: Array<SerialOperation> = [];
+      operations.push(
+        createSerialOperation({
+          type: "update",
+          table: "links",
+          exp: {
+            id: link.id,
+          },
+          value: {
+            to_id: await deep.id(
+              ObjectToLinksConverter.requiredPackageNames.boolean,
+              pascalCase(value.toString()),
+            ),
+          },
+        }),
+      );
+      log({ operations });
+      return operations;
+    }
+
+    async makeUpdateOperationsForStringOrNumberValue(
+      options: UpdateOperationsForPrimitiveValueOptions<string | number>,
+    ) {
+      const log = ObjectToLinksConverter.getNamespacedLogger({
+        namespace: this.makeUpdateOperationsForStringOrNumberValue.name,
+      });
+      log({ options });
+      const { link, value } = options;
+      const operations: Array<SerialOperation> = [];
+      operations.push(
+        createSerialOperation({
+          type: "update",
+          table: `${typeof value
+            .toString()
+            .toLocaleLowerCase()}s` as Table<"update">,
+          exp: {
+            link_id: link.id,
+          },
+          value: {
+            value: link,
+          },
+        }),
+      );
+      log({ operations });
+      return operations;
+    }
+
     async makeUpdateOperationsForPrimitiveValue<
       TValue extends string | number | boolean,
     >(options: UpdateOperationsForPrimitiveValueOptions<TValue>) {
@@ -266,34 +321,17 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       const operations: Array<SerialOperation> = [];
       if (typeof value === "boolean") {
         operations.push(
-          createSerialOperation({
-            type: "update",
-            table: "links",
-            exp: {
-              id: link.id,
-            },
-            value: {
-              to_id: await deep.id(
-                ObjectToLinksConverter.requiredPackageNames.boolean,
-                pascalCase(value.toString()),
-              ),
-            },
-          }),
+          ...(await this.makeUpdateOperationsForBooleanValue({
+            ...options,
+            value,
+          })),
         );
-      } else {
+      } else if (typeof value === "string" || typeof value === "number") {
         operations.push(
-          createSerialOperation({
-            type: "update",
-            table: `${typeof value
-              .toString()
-              .toLocaleLowerCase()}s` as Table<"update">,
-            exp: {
-              link_id: link.id,
-            },
-            value: {
-              value: link,
-            },
-          }),
+          ...(await this.makeUpdateOperationsForStringOrNumberValue({
+            ...options,
+            value,
+          })),
         );
       }
 
