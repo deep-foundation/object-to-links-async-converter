@@ -468,17 +468,10 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
           id: linkId,
           type_id: typeLinkId,
           from_id: parentLinkId,
-          to_id: value
-            ? // TODO: Replace id with idLocal when it work properly
-              await deep.id(
-                ObjectToLinksConverter.requiredPackageNames.boolean,
-                "True",
-              )
-            : // TODO: Replace id with idLocal when it work properly
-              await deep.id(
-                ObjectToLinksConverter.requiredPackageNames.boolean,
-                "False",
-              ),
+          to_id: await deep.id(
+            ObjectToLinksConverter.requiredPackageNames.boolean,
+            value ? "True" : "False",
+          ),
         },
       });
       log({ linkInsertSerialOperation });
