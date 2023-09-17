@@ -256,7 +256,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     }
 
     async makeUpdateOperationsForBooleanValue(
-      options: UpdateOperationsForPrimitiveValueOptions<boolean>,
+      options: UpdateOperationsForAnyValueOptions<boolean>,
     ) {
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.makeUpdateOperationsForBooleanValue.name,
@@ -284,7 +284,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     }
 
     async makeUpdateOperationsForStringOrNumberValue(
-      options: UpdateOperationsForPrimitiveValueOptions<string | number>,
+      options: UpdateOperationsForAnyValueOptions<string | number>,
     ) {
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.makeUpdateOperationsForStringOrNumberValue.name,
@@ -310,11 +310,11 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       return operations;
     }
 
-    async makeUpdateOperationsForPrimitiveValue<
+    async makeUpdateOperationsForAnyValue<
       TValue extends string | number | boolean,
-    >(options: UpdateOperationsForPrimitiveValueOptions<TValue>) {
+    >(options: UpdateOperationsForAnyValueOptions<TValue>) {
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeUpdateOperationsForPrimitiveValue.name,
+        namespace: this.makeUpdateOperationsForAnyValue.name,
       });
       const { link, value } = options;
       const operations: Array<SerialOperation> = [];
@@ -332,6 +332,15 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
             value,
           })),
         );
+      } else if (typeof value === "object") {
+        operations.push(
+          ...(await this.makeUpdateOperationsForObjectValue({
+            ...options,
+            value,
+          })),
+        );
+      } else {
+        throw new Error(`Type of value ${typeof value} is not supported`);
       }
 
       return operations;
@@ -357,19 +366,12 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
         log({ propertyLink });
         if (propertyLink) {
           let propertyUpdateOperations: Array<SerialOperation> = [];
-          if (typeof value === "object") {
-            propertyUpdateOperations =
-              await this.makeUpdateOperationsForObjectValue({
-                link: propertyLink,
-                value: propertyValue,
-              });
-          } else {
-            propertyUpdateOperations =
-              await this.makeUpdateOperationsForPrimitiveValue({
-                link: propertyLink,
-                value: propertyValue,
-              });
-          }
+          propertyUpdateOperations = await this.makeUpdateOperationsForAnyValue(
+            {
+              link: propertyLink,
+              value: propertyValue,
+            },
+          );
           log({ propertyUpdateOperations });
           operations.push(...propertyUpdateOperations);
         } else {
@@ -839,7 +841,7 @@ interface UpdateOperationsForValueOptions<
   value: TValue;
 }
 
-type UpdateOperationsForPrimitiveValueOptions<
+type UpdateOperationsForAnyValueOptions<
   TValue extends string | number | boolean,
 > = UpdateOperationsForValueOptions<TValue>;
 
