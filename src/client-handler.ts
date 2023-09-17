@@ -146,7 +146,8 @@ async ({
         : await deep
             .insert(
               {
-                type_id: deep.idLocal(deep.linkId!, "Root"),
+                // TODO: Replace id with idLocal when it work properly
+                type_id: await deep.id(deep.linkId!, "Root"),
               },
               {
                 returning: deep.linksSelectReturning,
@@ -385,7 +386,8 @@ async ({
           log(
             `contain to string`,
             deep.minilinks.query({
-              type_id: deep.idLocal("@deep-foundation/core", "Contain"),
+              // TODO: Replace id with idLocal when it work properly
+              type_id: await deep.id("@deep-foundation/core", "Contain"),
               string: {
                 value: "String",
               },
@@ -405,7 +407,8 @@ async ({
             await this.makeInsertOperationsForAnyValue({
               linkId: this.reservedLinkIds.pop()!,
               parentLinkId: link.id,
-              typeLinkId: deep.idLocal(
+              // TODO: Replace id with idLocal when it work properly
+              typeLinkId: await deep.id(
                 deep.linkId!,
                 pascalCase(typeof propertyValue),
               ),
@@ -449,11 +452,13 @@ async ({
           type_id: typeLinkId,
           from_id: parentLinkId,
           to_id: value
-            ? deep.idLocal(
+            ? // TODO: Replace id with idLocal when it work properly
+              await deep.id(
                 ObjectToLinksConverter.requiredPackageNames.boolean,
                 "True",
               )
-            : deep.idLocal(
+            : // TODO: Replace id with idLocal when it work properly
+              await deep.id(
                 ObjectToLinksConverter.requiredPackageNames.boolean,
                 "False",
               ),
@@ -466,7 +471,8 @@ async ({
         type: "insert",
         table: "links",
         objects: {
-          type_id: deep.idLocal("@deep-foundation/core", "Contain"),
+          // TODO: Replace id with idLocal when it work properly
+          type_id: await deep.id("@deep-foundation/core", "Contain"),
           from_id: parentLinkId,
           to_id: linkId,
         },
@@ -513,7 +519,8 @@ async ({
         type: "insert",
         table: "links",
         objects: {
-          type_id: deep.idLocal("@deep-foundation/core", "Contain"),
+          // TODO: Replace id with idLocal when it work properly
+          type_id: await deep.id("@deep-foundation/core", "Contain"),
           from_id: parentLinkId,
           to_id: linkId,
         },
@@ -560,7 +567,8 @@ async ({
         type: "insert",
         table: "links",
         objects: {
-          type_id: deep.idLocal("@deep-foundation/core", "Contain"),
+          // TODO: Replace id with idLocal when it work properly
+          type_id: await deep.id("@deep-foundation/core", "Contain"),
           from_id: parentLinkId,
           to_id: linkId,
         },
@@ -580,7 +588,8 @@ async ({
           await this.makeInsertOperationsForAnyValue({
             linkId: this.reservedLinkIds.pop()!,
             parentLinkId: linkId,
-            typeLinkId: deep.idLocal(
+            // TODO: Replace id with idLocal when it work properly
+            typeLinkId: await deep.id(
               deep.linkId!,
               pascalCase(typeof propertyValue),
             ),
@@ -636,7 +645,8 @@ async ({
         type: "insert",
         table: "links",
         objects: {
-          type_id: deep.idLocal(deep.linkId!, "Property"),
+          // TODO: Replace id with idLocal when it work properly
+          type_id: await deep.id(deep.linkId!, "Property"),
           from_id: parentLinkId,
           to_id: linkId,
         },
