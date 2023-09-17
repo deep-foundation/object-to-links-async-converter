@@ -492,7 +492,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       options: MakeInsertoperationsForBooleanOptions,
     ) {
       const operations: Array<SerialOperation> = [];
-      const { value, parentLinkId, linkId, typeLinkId, name } = options;
+      const { value, parentLinkId, linkId, name } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: "makeInsertoperationsForStringValue",
       });
@@ -502,7 +502,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
         table: "links",
         objects: {
           id: linkId,
-          type_id: typeLinkId,
+          type_id: await deep.id(deep.linkId!, pascalCase(typeof value)),
           from_id: parentLinkId,
           to_id: await deep.id(
             ObjectToLinksConverter.requiredPackageNames.boolean,
@@ -538,7 +538,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       options: MakeInsertoperationsForStringOrNumberOptions,
     ) {
       const operations: Array<SerialOperation> = [];
-      const { value, parentLinkId, linkId, typeLinkId, name } = options;
+      const { value, parentLinkId, linkId, name } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: "makeInsertoperationsForStringValue",
       });
@@ -549,7 +549,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
           id: linkId,
           from_id: parentLinkId,
           to_id: parentLinkId,
-          type_id: typeLinkId,
+          type_id: await deep.id(deep.linkId!, pascalCase(typeof value)),
         },
       });
       log({ linkInsertSerialOperation });
@@ -591,7 +591,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       options: MakeInsertoperationsForObject,
     ) {
       const operations: Array<SerialOperation> = [];
-      const { typeLinkId, value, linkId, parentLinkId, name } = options;
+      const { value, linkId, parentLinkId, name } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: "makeInsertoperationsForStringValue",
       });
@@ -602,7 +602,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
           id: linkId,
           from_id: parentLinkId,
           to_id: parentLinkId,
-          type_id: typeLinkId,
+          type_id: await deep.id("@deep-foundation/core", "Object"),
         },
       });
       log({ linkInsertSerialOperation });
@@ -665,6 +665,61 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       return operations;
     }
 
+    async makeInsertOperationsForArrayValue(
+      options: MakeInsertOperationsForArrayValueOptions,
+    ) {
+      const operations: Array<SerialOperation> = [];
+      const { value, linkId, name, parentLinkId } = options;
+      const log = ObjectToLinksConverter.getNamespacedLogger({
+        namespace: "makeInsertoperationsForStringValue",
+      });
+
+      const linkInsertSerialOperation = createSerialOperation({
+        type: "insert",
+        table: "links",
+        objects: {
+          id: linkId,
+          type_id: await deep.id(deep.linkId!, pascalCase(typeof value)),
+          from_id: parentLinkId,
+          to_id: parentLinkId,
+        },
+      });
+      log({ linkInsertSerialOperation });
+      operations.push(linkInsertSerialOperation);
+
+      const containInsertSerialOperation = createSerialOperation({
+        type: "insert",
+        table: "links",
+        objects: {
+          // TODO: Replace id with idLocal when it work properly
+          type_id: await deep.id("@deep-foundation/core", "Contain"),
+          from_id: parentLinkId,
+          to_id: linkId,
+          string: {
+            data: {
+              value: name,
+            },
+          },
+        },
+      });
+      log({ containInsertSerialOperation });
+      operations.push(containInsertSerialOperation);
+
+      for (let i = 0; i < value.length; i++) {
+        const element = value[i];
+        operations.push(
+          ...(await this.makeInsertOperationsForAnyValue({
+            value: element,
+            parentLinkId: linkId,
+            linkId: this.reservedLinkIds.pop()!,
+            name: i.toString(),
+          })),
+        );
+      }
+
+      return operations;
+    }
+
     async makeInsertOperationsForAnyValue(
       options: MakeInsertoperationsForAnyValueOptions,
     ) {
@@ -724,7 +779,14 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       log({ containInsertSerialOperation });
       operations.push(containInsertSerialOperation);
 
-      if (typeof value === "object") {
+      if (Array.isArray(value)) {
+        operations.push(
+          ...(await this.makeInsertOperationsForArrayValue({
+            ...options,
+            value,
+          })),
+        );
+      } else if (typeof value === "object") {
         for (const [propertyKey, propertyValue] of Object.entries(value)) {
           if (
             typeof propertyValue !== "string" ||
@@ -837,6 +899,9 @@ type MakeInsertoperationsForBooleanOptions =
 type MakeInsertoperationsForObject =
   MakeInsertoperationsForValueOptions<AllowedObject>;
 
+type MakeInsertOperationsForArrayValueOptions =
+  MakeInsertoperationsForValueOptions<AllowedArray>;
+
 type MakeInsertoperationsForAnyValueOptions = Omit<
   MakeInsertoperationsForValueOptions<AllowedValue>,
   "typeLinkId"
@@ -846,7 +911,6 @@ type MakeInsertoperationsForValueOptions<TValue extends AllowedValue> = {
   parentLinkId: number;
   linkId: number;
   value: TValue;
-  typeLinkId: number;
   name: string;
 };
 
