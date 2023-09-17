@@ -310,6 +310,40 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       return operations;
     }
 
+    async makeUpdateOperationsForArrayValue<TValue extends AllowedArray>(
+      options: UpdateOperationsForAnyValueOptions<TValue>,
+    ) {
+      const log = ObjectToLinksConverter.getNamespacedLogger({
+        namespace: this.makeUpdateOperationsForAnyValue.name,
+      });
+      const { link, value } = options;
+      const operations: Array<SerialOperation> = [];
+
+      await deep.delete({
+        up: {
+          tree_id: await deep.id(
+            ObjectToLinksConverter.requiredPackagesInMinilinks.core,
+            "ContainTree",
+          ),
+          parent_id: link.id,
+        },
+      });
+
+      for (let i = 0; i < value.length; i++) {
+        const element = value[i];
+        operations.push(
+          ...(await this.makeInsertOperationsForAnyValue({
+            value: element,
+            linkId: this.reservedLinkIds.pop()!,
+            name: i,
+            parentLinkId: link.id,
+          })),
+        );
+      }
+
+      return operations;
+    }
+
     async makeUpdateOperationsForAnyValue<TValue extends AllowedValue>(
       options: UpdateOperationsForAnyValueOptions<TValue>,
     ) {
@@ -328,6 +362,13 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       } else if (typeof value === "string" || typeof value === "number") {
         operations.push(
           ...(await this.makeUpdateOperationsForStringOrNumberValue({
+            ...options,
+            value,
+          })),
+        );
+      } else if (Array.isArray(value)) {
+        operations.push(
+          ...(await this.makeUpdateOperationsForArrayValue({
             ...options,
             value,
           })),
