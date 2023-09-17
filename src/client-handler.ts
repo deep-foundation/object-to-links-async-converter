@@ -163,12 +163,12 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
           minilinks: deep.minilinks,
         });
       log({ containTreeLinksDownToRootLinkApplyMinilinksResult });
-      // const linkIdsToReserveCount = this.getLinksToReserveCount({value: obj});
-      // log({linkIdsToReserveCount})
-      // const reservedLinkIds = await deep.reserve(linkIdsToReserveCount);
-      // log({reservedLinkIds})
+      const linkIdsToReserveCount = this.getLinksToReserveCount({ value: obj });
+      log({ linkIdsToReserveCount });
+      const reservedLinkIds = await deep.reserve(linkIdsToReserveCount);
+      log({ reservedLinkIds });
       const converter = new this({
-        reservedLinkIds: [],
+        reservedLinkIds,
         rootLink,
         obj,
       });
@@ -400,9 +400,14 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
             }),
           );
 
+          const propertyLinkId = this.reservedLinkIds.pop();
+          log({ propertyLinkId });
+          if (!propertyLinkId) {
+            throw new Error(`Not enough reserved link ids`);
+          }
           const propertyInsertoperations =
             await this.makeInsertOperationsForAnyValue({
-              linkId: this.reservedLinkIds.pop()!,
+              linkId: propertyLinkId,
               parentLinkId: link.id,
               // TODO: Replace id with idLocal when it work properly
               typeLinkId: await deep.id(
@@ -581,9 +586,14 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
         ) {
           continue;
         }
+        const propertyLinkId = this.reservedLinkIds.pop();
+        log({ propertyLinkId });
+        if (!propertyLinkId) {
+          throw new Error(`Not enough reserved link ids`);
+        }
         const propertyInsertOperations =
           await this.makeInsertOperationsForAnyValue({
-            linkId: this.reservedLinkIds.pop()!,
+            linkId: propertyLinkId,
             parentLinkId: linkId,
             // TODO: Replace id with idLocal when it work properly
             typeLinkId: await deep.id(
