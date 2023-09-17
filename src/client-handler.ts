@@ -397,8 +397,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
           log(
             `contain to string`,
             deep.minilinks.query({
-              // TODO: Replace id with idLocal when it work properly
-              type_id: await deep.id("@deep-foundation/core", "Contain"),
+              type_id: deep.idLocal("@deep-foundation/core", "Contain"),
               string: {
                 value: "String",
               },
@@ -488,8 +487,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
         type: "insert",
         table: "links",
         objects: {
-          // TODO: Replace id with idLocal when it work properly
-          type_id: await deep.id("@deep-foundation/core", "Contain"),
+          type_id: deep.idLocal("@deep-foundation/core", "Contain"),
           from_id: parentLinkId,
           to_id: linkId,
           string: {
@@ -542,7 +540,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
         table: "links",
         objects: {
           // TODO: Replace id with idLocal when it work properly
-          type_id: await deep.id("@deep-foundation/core", "Contain"),
+          type_id: deep.idLocal("@deep-foundation/core", "Contain"),
           from_id: parentLinkId,
           to_id: linkId,
           string: {
@@ -595,7 +593,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
         table: "links",
         objects: {
           // TODO: Replace id with idLocal when it work properly
-          type_id: await deep.id("@deep-foundation/core", "Contain"),
+          type_id: deep.idLocal("@deep-foundation/core", "Contain"),
           from_id: parentLinkId,
           to_id: linkId,
           string: {
@@ -686,8 +684,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
         type: "insert",
         table: "links",
         objects: {
-          // TODO: Replace id with idLocal when it work properly
-          type_id: await deep.id("@deep-foundation/core", "Contain"),
           from_id: parentLinkId,
           to_id: linkId,
           string: {
