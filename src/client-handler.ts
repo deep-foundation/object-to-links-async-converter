@@ -26,7 +26,7 @@ async ({
   );
   const { format: prettyFormat } = await import("pretty-format");
   const { pascalCase } = await import("case-anything");
-  const { debug } = await import("debug");
+  const { default: debug } = await import("debug");
   const logs: Array<any> = [];
   const DEFAULT_DEBUG_OPTIONS = {
     maxDepth: 15,
@@ -311,6 +311,7 @@ async ({
         namespace: "makeUpdateOperationsForObjectValue",
       });
       const { link, value, isRootObject, parentPropertyNames = [] } = options;
+      log({ options });
       const operations: Array<SerialOperation> = [];
 
       if (!isRootObject) {
@@ -371,7 +372,7 @@ async ({
           }
 
           const propertyInsertoperations =
-            await this.makeInsertoperationsForAnyValue({
+            await this.makeInsertOperationsForAnyValue({
               linkId: this.reservedLinkIds.pop()!,
               parentLinkId: link.id,
               typeLinkId: deep.idLocal(
@@ -546,7 +547,7 @@ async ({
           continue;
         }
         const propertyInsertOperations =
-          await this.makeInsertoperationsForAnyValue({
+          await this.makeInsertOperationsForAnyValue({
             linkId: this.reservedLinkIds.pop()!,
             parentLinkId: linkId,
             typeLinkId: deep.idLocal(
@@ -562,7 +563,7 @@ async ({
       log({ operations });
       return operations;
     }
-    async makeInsertoperationsForAnyValue<TValue extends Value>(
+    async makeInsertOperationsForAnyValue<TValue extends Value>(
       options: MakeInsertoperationsForAnyValueOptions<TValue>,
     ) {
       const { value, parentLinkId, linkId } = options;
