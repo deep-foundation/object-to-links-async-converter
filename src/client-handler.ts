@@ -464,11 +464,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
             await this.makeInsertOperationsForAnyValue({
               linkId: propertyLinkId,
               parentLinkId: link.id,
-              // TODO: Replace id with idLocal when it work properly
-              typeLinkId: await deep.id(
-                deep.linkId!,
-                pascalCase(typeof propertyValue),
-              ),
               value: propertyValue,
               name: propertyKey,
             });
@@ -659,11 +654,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
           await this.makeInsertOperationsForAnyValue({
             linkId: propertyLinkId,
             parentLinkId: linkId,
-            // TODO: Replace id with idLocal when it work properly
-            typeLinkId: await deep.id(
-              deep.linkId!,
-              pascalCase(typeof propertyValue),
-            ),
             value: propertyValue,
             name: propertyKey,
           });
@@ -675,11 +665,11 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       return operations;
     }
 
-    async makeInsertOperationsForAnyValue<TValue extends AllowedValue>(
-      options: MakeInsertoperationsForValueOptions<TValue>,
+    async makeInsertOperationsForAnyValue(
+      options: MakeInsertoperationsForAnyValueOptions,
     ) {
       const operations: Array<SerialOperation> = [];
-      const { value, parentLinkId, linkId, typeLinkId, name } = options;
+      const { value, parentLinkId, linkId, name } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: "makeInsertoperationsForStringValue",
       });
@@ -689,7 +679,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
         table: "links",
         objects: {
           id: linkId,
-          type_id: typeLinkId,
+          type_id: await deep.id(deep.linkId!, pascalCase(typeof value)),
           from_id: parentLinkId,
           to_id:
             typeof value === "boolean" // TODO: Replace id with idLocal when it work properly
@@ -752,11 +742,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
             await this.makeInsertOperationsForAnyValue({
               linkId: propertyLinkId,
               parentLinkId: linkId,
-              // TODO: Replace id with idLocal when it work properly
-              typeLinkId: await deep.id(
-                deep.linkId!,
-                pascalCase(typeof propertyValue),
-              ),
               value: propertyValue,
               name: propertyKey,
             });
@@ -851,6 +836,11 @@ type MakeInsertoperationsForBooleanOptions =
 
 type MakeInsertoperationsForObject =
   MakeInsertoperationsForValueOptions<AllowedObject>;
+
+type MakeInsertoperationsForAnyValueOptions = Omit<
+  MakeInsertoperationsForValueOptions<AllowedValue>,
+  "typeLinkId"
+>;
 
 type MakeInsertoperationsForValueOptions<TValue extends AllowedValue> = {
   parentLinkId: number;
