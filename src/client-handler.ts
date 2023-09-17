@@ -195,7 +195,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
 
       return {
         serialResult,
-        rootLinkId,
+        rootLinkId: this.rootLink.id,
       };
     }
 
