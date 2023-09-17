@@ -115,9 +115,6 @@ async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
     ],
   });
   fnLog({ clientHandlerResult });
-  clientHandlerResult.logs.forEach((log: string) => {
-    fnLog({ log });
-  });
   if (clientHandlerResult.error) throw clientHandlerResult.error;
   assert.notStrictEqual(clientHandlerResult.result?.rootLinkId, undefined);
   const {
