@@ -184,7 +184,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       const operations = await this.makeUpdateOperationsForObjectValue({
         link: this.rootLink,
         value: this.obj,
-        isRootObject: true,
       });
       log({ operations });
 
@@ -344,16 +343,12 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: "makeUpdateOperationsForObjectValue",
       });
-      const { link, value, isRootObject, parentPropertyNames = [] } = options;
+      const { link, value } = options;
       log({ options });
       const operations: Array<SerialOperation> = [];
 
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
         log({ propertyKey, propertyValue });
-        const propertyName = pascalCase(
-          parentPropertyNames.join("") + propertyKey,
-        );
-        log({ propertyName });
         const [propertyLink] = deep.minilinks.query({
           id: {
             _id: [link.id, propertyKey],
@@ -367,7 +362,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
               await this.makeUpdateOperationsForObjectValue({
                 link: propertyLink,
                 value: propertyValue,
-                parentPropertyNames: [...parentPropertyNames, propertyKey],
               });
           } else {
             propertyUpdateOperations =
@@ -849,17 +843,5 @@ type UpdateOperationsForPrimitiveValueOptions<
   TValue extends string | number | boolean,
 > = UpdateOperationsForValueOptions<TValue>;
 
-type UpdateOperationsForRootObject = UpdateOperationsForValueOptions<object> & {
-  isRootObject: true;
-  parentPropertyNames?: undefined;
-};
-
-type UpdateOperationsForNonRootObject =
-  UpdateOperationsForValueOptions<object> & {
-    isRootObject?: false;
-    parentPropertyNames: Array<string>;
-  };
-
 type UpdateOperationsForObjectValueOptions =
-  | UpdateOperationsForRootObject
-  | UpdateOperationsForNonRootObject;
+  UpdateOperationsForValueOptions<object>;
