@@ -587,83 +587,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       log({ operations });
       return operations;
     }
-    async makeInsertoperationsForObject(
-      options: MakeInsertoperationsForObject,
-    ) {
-      const operations: Array<SerialOperation> = [];
-      const { value, linkId, parentLinkId, name } = options;
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: "makeInsertoperationsForStringValue",
-      });
-      const linkInsertSerialOperation = createSerialOperation({
-        type: "insert",
-        table: "links",
-        objects: {
-          id: linkId,
-          from_id: parentLinkId,
-          to_id: parentLinkId,
-          type_id: await deep.id("@deep-foundation/core", "Object"),
-        },
-      });
-      log({ linkInsertSerialOperation });
-      operations.push(linkInsertSerialOperation);
-
-      const objectValueInsertSerialOperation = createSerialOperation({
-        type: "insert",
-        table: "objects",
-        objects: {
-          link_id: linkId,
-          value: value,
-        },
-      });
-      log({ objectValueInsertSerialOperation });
-      operations.push(objectValueInsertSerialOperation);
-
-      const containInsertSerialOperation = createSerialOperation({
-        type: "insert",
-        table: "links",
-        objects: {
-          // TODO: Replace id with idLocal when it work properly
-          type_id: await deep.id("@deep-foundation/core", "Contain"),
-          from_id: parentLinkId,
-          to_id: linkId,
-          string: {
-            data: {
-              value: name,
-            },
-          },
-        },
-      });
-      log({ containInsertSerialOperation });
-      operations.push(containInsertSerialOperation);
-
-      for (const [propertyKey, propertyValue] of Object.entries(value)) {
-        if (
-          typeof propertyValue !== "string" ||
-          typeof propertyValue !== "number" ||
-          typeof propertyValue !== "boolean"
-        ) {
-          continue;
-        }
-        const propertyLinkId = this.reservedLinkIds.pop();
-        log({ propertyLinkId });
-        if (!propertyLinkId) {
-          throw new Error(`Not enough reserved link ids`);
-        }
-        const propertyInsertOperations =
-          await this.makeInsertOperationsForAnyValue({
-            linkId: propertyLinkId,
-            parentLinkId: linkId,
-            value: propertyValue,
-            name: propertyKey,
-          });
-        operations.push(...propertyInsertOperations);
-      }
-
-      operations.push(containInsertSerialOperation);
-      log({ operations });
-      return operations;
-    }
 
     async makeInsertOperationsForArrayValue(
       options: MakeInsertOperationsForArrayValueOptions,
@@ -720,11 +643,11 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       return operations;
     }
 
-    async makeInsertOperationsForAnyValue(
-      options: MakeInsertoperationsForAnyValueOptions,
+    async makeInsertOperationsForPrimitiveValue(
+      options: MakeInsertOperationsForPrimitiveValueOptions,
     ) {
       const operations: Array<SerialOperation> = [];
-      const { value, parentLinkId, linkId, name } = options;
+      const { value, linkId, name, parentLinkId } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: "makeInsertoperationsForStringValue",
       });
@@ -779,7 +702,109 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       log({ containInsertSerialOperation });
       operations.push(containInsertSerialOperation);
 
-      if (Array.isArray(value)) {
+      return operations;
+    }
+
+    async makeInsertOperationsForObjectValue(
+      options: MakeInsertoperationsForObjectValue,
+    ) {
+      const operations: Array<SerialOperation> = [];
+      const { value, linkId, name, parentLinkId } = options;
+      const log = ObjectToLinksConverter.getNamespacedLogger({
+        namespace: this.makeInsertOperationsForObjectValue.name,
+      });
+
+      const linkInsertSerialOperation = createSerialOperation({
+        type: "insert",
+        table: "links",
+        objects: {
+          id: linkId,
+          type_id: await deep.id(deep.linkId!, pascalCase(typeof value)),
+          from_id: parentLinkId,
+          to_id: parentLinkId,
+        },
+      });
+      log({ linkInsertSerialOperation });
+      operations.push(linkInsertSerialOperation);
+
+      if (["string", "number"].includes(typeof value)) {
+        const stringValueInsertSerialOperation = createSerialOperation({
+          type: "insert",
+          table: `${typeof value}s` as Table<"insert">,
+          objects: {
+            link_id: linkId,
+            value: value,
+          },
+        });
+        log({ stringValueInsertSerialOperation });
+        operations.push(stringValueInsertSerialOperation);
+      }
+
+      const containInsertSerialOperation = createSerialOperation({
+        type: "insert",
+        table: "links",
+        objects: {
+          // TODO: Replace id with idLocal when it work properly
+          type_id: await deep.id("@deep-foundation/core", "Contain"),
+          from_id: parentLinkId,
+          to_id: linkId,
+          string: {
+            data: {
+              value: name,
+            },
+          },
+        },
+      });
+      log({ containInsertSerialOperation });
+      operations.push(containInsertSerialOperation);
+
+      for (const [propertyKey, propertyValue] of Object.entries(value)) {
+        if (
+          typeof propertyValue !== "string" ||
+          typeof propertyValue !== "number" ||
+          typeof propertyValue !== "boolean"
+        ) {
+          continue;
+        }
+        const propertyLinkId = this.reservedLinkIds.pop();
+        log({ propertyLinkId });
+        if (!propertyLinkId) {
+          throw new Error(`Not enough reserved link ids`);
+        }
+        const propertyInsertOperations =
+          await this.makeInsertOperationsForAnyValue({
+            linkId: propertyLinkId,
+            parentLinkId: linkId,
+            value: propertyValue,
+            name: propertyKey,
+          });
+        operations.push(...propertyInsertOperations);
+      }
+
+      return operations;
+    }
+
+    async makeInsertOperationsForAnyValue(
+      options: MakeInsertoperationsForAnyValueOptions,
+    ) {
+      const operations: Array<SerialOperation> = [];
+      const { value } = options;
+      const log = ObjectToLinksConverter.getNamespacedLogger({
+        namespace: this.makeInsertOperationsForAnyValue.name,
+      });
+
+      if (
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean"
+      ) {
+        operations.push(
+          ...(await this.makeInsertOperationsForPrimitiveValue({
+            ...options,
+            value,
+          })),
+        );
+      } else if (Array.isArray(value)) {
         operations.push(
           ...(await this.makeInsertOperationsForArrayValue({
             ...options,
@@ -787,28 +812,14 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
           })),
         );
       } else if (typeof value === "object") {
-        for (const [propertyKey, propertyValue] of Object.entries(value)) {
-          if (
-            typeof propertyValue !== "string" ||
-            typeof propertyValue !== "number" ||
-            typeof propertyValue !== "boolean"
-          ) {
-            continue;
-          }
-          const propertyLinkId = this.reservedLinkIds.pop();
-          log({ propertyLinkId });
-          if (!propertyLinkId) {
-            throw new Error(`Not enough reserved link ids`);
-          }
-          const propertyInsertOperations =
-            await this.makeInsertOperationsForAnyValue({
-              linkId: propertyLinkId,
-              parentLinkId: linkId,
-              value: propertyValue,
-              name: propertyKey,
-            });
-          operations.push(...propertyInsertOperations);
-        }
+        operations.push(
+          ...(await this.makeInsertOperationsForObjectValue({
+            ...options,
+            value,
+          })),
+        );
+      } else {
+        throw new Error(`Type of value ${typeof value} is not supported`);
       }
 
       log({ operations });
@@ -896,11 +907,14 @@ type MakeInsertoperationsForNumberOptions =
 type MakeInsertoperationsForBooleanOptions =
   MakeInsertoperationsForValueOptions<boolean>;
 
-type MakeInsertoperationsForObject =
+type MakeInsertoperationsForObjectValue =
   MakeInsertoperationsForValueOptions<AllowedObject>;
 
 type MakeInsertOperationsForArrayValueOptions =
   MakeInsertoperationsForValueOptions<AllowedArray>;
+
+type MakeInsertOperationsForPrimitiveValueOptions =
+  MakeInsertoperationsForValueOptions<AllowedPrimitive>;
 
 type MakeInsertoperationsForAnyValueOptions = Omit<
   MakeInsertoperationsForValueOptions<AllowedValue>,
