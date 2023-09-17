@@ -626,58 +626,97 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       log({ operations });
       return operations;
     }
+
     async makeInsertOperationsForAnyValue<TValue extends Value>(
       options: MakeInsertoperationsForAnyValueOptions<TValue>,
     ) {
-      const { value, parentLinkId, linkId } = options;
+      const operations: Array<SerialOperation> = [];
+      const { value, parentLinkId, linkId, typeLinkId, name } = options;
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: "makeInsertoperationsForAnyValue",
+        namespace: "makeInsertoperationsForStringValue",
       });
 
-      const operations: Array<SerialOperation> = [];
-      if (typeof value === "string") {
-        const inneroperations = await this.makeInsertoperationsForStringValue({
-          ...options,
-          value,
+      const linkInsertSerialOperation = createSerialOperation({
+        type: "insert",
+        table: "links",
+        objects: {
+          id: linkId,
+          type_id: typeLinkId,
+          from_id: parentLinkId,
+          to_id:
+            typeof value === "boolean" // TODO: Replace id with idLocal when it work properly
+              ? await deep.id(
+                  "@freephoenix888/boolean",
+                  pascalCase(value.toString()),
+                )
+              : parentLinkId,
+        },
+      });
+      log({ linkInsertSerialOperation });
+      operations.push(linkInsertSerialOperation);
+
+      if (["string", "number"].includes(typeof value)) {
+        const stringValueInsertSerialOperation = createSerialOperation({
+          type: "insert",
+          table: `${typeof value}s` as Table<"insert">,
+          objects: {
+            link_id: linkId,
+            value: value,
+          },
         });
-        operations.push(...inneroperations);
-      } else if (typeof value === "number") {
-        const inneroperations = await this.makeInsertoperationsForNumberValue({
-          ...options,
-          value,
-        });
-        operations.push(...inneroperations);
-      } else if (typeof value === "boolean") {
-        const inneroperations = await this.makeInsertoperationsForBooleanValue({
-          ...options,
-          value,
-        });
-        operations.push(...inneroperations);
-      } else if (typeof value === "object") {
-        const inneroperations = await this.makeInsertoperationsForObject({
-          ...options,
-          value,
-        });
-        operations.push(...inneroperations);
-      } else {
-        throw new Error(
-          `Unknown type of value ${value}: ${typeof value}. Only string, number, boolean, and object are supported`,
-        );
+        log({ stringValueInsertSerialOperation });
+        operations.push(stringValueInsertSerialOperation);
       }
 
-      const propertyInsertSerialOperation = createSerialOperation({
+      const containInsertSerialOperation = createSerialOperation({
         type: "insert",
         table: "links",
         objects: {
           // TODO: Replace id with idLocal when it work properly
-          type_id: await deep.id(deep.linkId!, "Property"),
+          type_id: await deep.id("@deep-foundation/core", "Contain"),
           from_id: parentLinkId,
           to_id: linkId,
+          string: {
+            data: {
+              value: name,
+            },
+          },
         },
       });
-      log({ propertyInsertSerialOperation });
-      operations.push(propertyInsertSerialOperation);
+      log({ containInsertSerialOperation });
+      operations.push(containInsertSerialOperation);
 
+      if (typeof value === "object") {
+        for (const [propertyKey, propertyValue] of Object.entries(value)) {
+          if (
+            typeof propertyValue !== "string" ||
+            typeof propertyValue !== "number" ||
+            typeof propertyValue !== "boolean"
+          ) {
+            continue;
+          }
+          const propertyLinkId = this.reservedLinkIds.pop();
+          log({ propertyLinkId });
+          if (!propertyLinkId) {
+            throw new Error(`Not enough reserved link ids`);
+          }
+          const propertyInsertOperations =
+            await this.makeInsertOperationsForAnyValue({
+              linkId: propertyLinkId,
+              parentLinkId: linkId,
+              // TODO: Replace id with idLocal when it work properly
+              typeLinkId: await deep.id(
+                deep.linkId!,
+                pascalCase(typeof propertyValue),
+              ),
+              value: propertyValue,
+              name: propertyKey,
+            });
+          operations.push(...propertyInsertOperations);
+        }
+      }
+
+      log({ operations });
       return operations;
     }
   }
