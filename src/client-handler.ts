@@ -314,7 +314,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       TValue extends string | number | boolean,
     >(options: UpdateOperationsForPrimitiveValueOptions<TValue>) {
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: `${"makeUpdateOperationsForPrimitiveValue"}`,
+        namespace: this.makeUpdateOperationsForPrimitiveValue.name,
       });
       const { link, value } = options;
       const operations: Array<SerialOperation> = [];
@@ -341,7 +341,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       options: UpdateOperationsForObjectValueOptions,
     ) {
       const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: "makeUpdateOperationsForObjectValue",
+        namespace: this.makeUpdateOperationsForObjectValue.name,
       });
       const { link, value } = options;
       log({ options });
