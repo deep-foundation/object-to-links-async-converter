@@ -335,7 +335,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
           ...(await this.makeInsertOperationsForAnyValue({
             value: element,
             linkId: this.reservedLinkIds.pop()!,
-            name: i,
+            name: i.toString(0),
             parentLinkId: link.id,
           })),
         );
