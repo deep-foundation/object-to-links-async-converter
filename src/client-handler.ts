@@ -676,7 +676,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     }
 
     async makeInsertOperationsForAnyValue<TValue extends AllowedValue>(
-      options: MakeInsertoperationsForAnyValueOptions<TValue>,
+      options: MakeInsertoperationsForValueOptions<TValue>,
     ) {
       const operations: Array<SerialOperation> = [];
       const { value, parentLinkId, linkId, typeLinkId, name } = options;
@@ -826,7 +826,7 @@ interface ObjectToLinksConverterInitOptions {
   rootLinkId?: number;
 }
 type MakeInsertoperationsForStringOrNumberOptions =
-  MakeInsertoperationsForAnyValueOptions<string | number> & {
+  MakeInsertoperationsForValueOptions<string | number> & {
     value: string | number;
   };
 
@@ -841,18 +841,18 @@ type AllowedArray = Array<AllowedValue>;
 type AllowedValue = AllowedPrimitive | AllowedObject | AllowedArray;
 
 type MakeInsertoperationsForStringOptions =
-  MakeInsertoperationsForAnyValueOptions<string>;
+  MakeInsertoperationsForValueOptions<string>;
 
 type MakeInsertoperationsForNumberOptions =
-  MakeInsertoperationsForAnyValueOptions<number>;
+  MakeInsertoperationsForValueOptions<number>;
 
 type MakeInsertoperationsForBooleanOptions =
-  MakeInsertoperationsForAnyValueOptions<boolean>;
+  MakeInsertoperationsForValueOptions<boolean>;
 
 type MakeInsertoperationsForObject =
-  MakeInsertoperationsForAnyValueOptions<AllowedObject>;
+  MakeInsertoperationsForValueOptions<AllowedObject>;
 
-type MakeInsertoperationsForAnyValueOptions<TValue extends AllowedValue> = {
+type MakeInsertoperationsForValueOptions<TValue extends AllowedValue> = {
   parentLinkId: number;
   linkId: number;
   value: TValue;
