@@ -506,7 +506,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
           from_id: parentLinkId,
           to_id: await deep.id(
             ObjectToLinksConverter.requiredPackageNames.boolean,
-            value ? "True" : "False",
+            pascalCase(value.toString()),
           ),
         },
       });
