@@ -11,15 +11,8 @@ import {
   MinilinksResult,
 } from "@deep-foundation/deeplinks/imports/minilinks.js";
 
-async ({
-  deep,
-  rootLinkId,
-  obj,
-}: {
-  deep: DeepClient;
-  rootLinkId?: number;
-  obj: Obj;
-}) => {
+async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
+  const { deep, rootLinkId, obj } = options;
   const util = await import("util");
   const { createSerialOperation } = await import(
     "@deep-foundation/deeplinks/imports/gql/index.js"
@@ -33,6 +26,8 @@ async ({
     maxWidth: 100,
   };
   process.env.DEBUG_COLORS = "0";
+  const log = debug("@deep-foundation/object-to-links-converter");
+  log({ options });
 
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
@@ -58,19 +53,21 @@ async ({
       maxDepth?: number;
       maxWidth?: number;
     }) {
-      const _log = debug(this.getNamespacedLogger.name);
-      _log({ options });
+      const getNamespacedLoggerLogger = debug(this.getNamespacedLogger.name);
+      getNamespacedLoggerLogger({ options });
       const {
         namespace,
         maxDepth = DEFAULT_DEBUG_OPTIONS.maxDepth,
         maxWidth = DEFAULT_DEBUG_OPTIONS.maxWidth,
       } = options;
-      const log = debug(`${ObjectToLinksConverter.name}:${namespace}`);
-      log.enabled = true;
-      log.log = (...content: Array<any>) => {
+      const resultLogger = log.extend(
+        `${ObjectToLinksConverter.name}:${namespace}`,
+      );
+      resultLogger.enabled = true;
+      resultLogger.log = (...content: Array<any>) => {
         logs.push(...content);
       };
-      return log;
+      return resultLogger;
       // return (content: any) => {
       //   const formattedContent = prettyFormat(content, {
       //     maxDepth: maxDepth,
