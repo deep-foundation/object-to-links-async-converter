@@ -310,9 +310,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       return operations;
     }
 
-    async makeUpdateOperationsForAnyValue<
-      TValue extends string | number | boolean,
-    >(options: UpdateOperationsForAnyValueOptions<TValue>) {
+    async makeUpdateOperationsForAnyValue<TValue extends AllowedValue>(
+      options: UpdateOperationsForAnyValueOptions<TValue>,
+    ) {
       const log = ObjectToLinksConverter.getNamespacedLogger({
         namespace: this.makeUpdateOperationsForAnyValue.name,
       });
@@ -634,7 +634,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       return operations;
     }
 
-    async makeInsertOperationsForAnyValue<TValue extends Value>(
+    async makeInsertOperationsForAnyValue<TValue extends AllowedValue>(
       options: MakeInsertoperationsForAnyValueOptions<TValue>,
     ) {
       const operations: Array<SerialOperation> = [];
@@ -789,6 +789,16 @@ type MakeInsertoperationsForStringOrNumberOptions =
     value: string | number;
   };
 
+type AllowedPrimitive = string | number | boolean;
+
+interface AllowedObject {
+  [key: string]: AllowedValue;
+}
+
+type AllowedArray = Array<AllowedValue>;
+
+type AllowedValue = AllowedPrimitive | AllowedObject | AllowedArray;
+
 type MakeInsertoperationsForStringOptions =
   MakeInsertoperationsForAnyValueOptions<string>;
 
@@ -799,17 +809,15 @@ type MakeInsertoperationsForBooleanOptions =
   MakeInsertoperationsForAnyValueOptions<boolean>;
 
 type MakeInsertoperationsForObject =
-  MakeInsertoperationsForAnyValueOptions<object>;
+  MakeInsertoperationsForAnyValueOptions<AllowedObject>;
 
-type MakeInsertoperationsForAnyValueOptions<TValue extends Value> = {
+type MakeInsertoperationsForAnyValueOptions<TValue extends AllowedValue> = {
   parentLinkId: number;
   linkId: number;
   value: TValue;
   typeLinkId: number;
   name: string;
 };
-
-type Value = string | number | boolean | object;
 
 interface Options {
   typesContainerLink: Link<number>;
@@ -819,16 +827,13 @@ interface GetOptionsOptions {
   rootLinkId: number;
 }
 
-interface UpdateOperationsForValueOptions<
-  TValue extends string | number | boolean | object,
-> {
+interface UpdateOperationsForValueOptions<TValue extends AllowedValue> {
   link: Link<number>;
   value: TValue;
 }
 
-type UpdateOperationsForAnyValueOptions<
-  TValue extends string | number | boolean,
-> = UpdateOperationsForValueOptions<TValue>;
+type UpdateOperationsForAnyValueOptions<TValue extends AllowedValue> =
+  UpdateOperationsForValueOptions<TValue>;
 
 type UpdateOperationsForObjectValueOptions =
-  UpdateOperationsForValueOptions<object>;
+  UpdateOperationsForValueOptions<AllowedObject>;
