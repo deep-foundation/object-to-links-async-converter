@@ -85,25 +85,6 @@ async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
   fnLog({ packageDeepClientOptions });
   const packageDeep = new DeepClient(packageDeepClientOptions);
   fnLog({ packageDeep });
-  // const logs: any[] = []
-  // function getNamespacedLogger({
-  //   namespace,
-  // }: {
-  //   namespace: string;
-  //   depth?: number;
-  //   maxArrayLength?: number;
-  // }) {
-  //   const log = debug(namespace);
-  //   log.enabled = true;
-  //   log.log = (...content: Array<any>) => {
-  //     logs.push(...content)
-  //   };
-  //   return log;
-  // }
-  // const log2 = getNamespacedLogger({ namespace: "test" });
-  // log2({a:"MyLog!"})
-  // console.log({logs})
-  // return;
   const clientHandlerResult = await callClientHandler({
     deep: decoratedDeep,
     linkId: decoratedDeep.objectToLinksConverterPackage.clientHandler.idLocal(),
