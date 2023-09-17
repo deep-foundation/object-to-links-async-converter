@@ -19,6 +19,8 @@ dotenv.config({
   path: "./.env.test.local",
 });
 
+const molduleLog = debug("test");
+
 export const REQUIRED_PROCESS_ENVS = {
   graphqlPath: "GRAPHQL_PATH",
   ssl: "SSL",
@@ -66,17 +68,23 @@ decoratedDeep.minilinks.apply(requiredPackageLinks);
 withoutRootLinkIdWithObjThatHasOneStringProperty();
 
 async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
-  const log = debug(withoutRootLinkIdWithObjThatHasOneStringProperty.name);
+  // const log = debug(withoutRootLinkIdWithObjThatHasOneStringProperty.name);
+  const fnLog = molduleLog.extend(
+    withoutRootLinkIdWithObjThatHasOneStringProperty.name,
+  );
   const obj = {
     myStringKey: "myStringValue",
   };
+  fnLog({ obj });
   const packageDeepClientOptions: DeepClientOptions = {
     apolloClient,
     ...(await decoratedDeep.login({
       linkId: decoratedDeep.objectToLinksConverterPackage.idLocal(),
     })),
   };
+  fnLog({ packageDeepClientOptions });
   const packageDeep = new DeepClient(packageDeepClientOptions);
+  fnLog({ packageDeep });
   // const logs: any[] = []
   // function getNamespacedLogger({
   //   namespace,
@@ -106,7 +114,10 @@ async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
       },
     ],
   });
-  log({ clientHandlerResult });
+  fnLog({ clientHandlerResult });
+  clientHandlerResult.logs.forEach((log: string) => {
+    fnLog({ log });
+  });
   if (clientHandlerResult.error) throw clientHandlerResult.error;
   assert.notStrictEqual(clientHandlerResult.result?.rootLinkId, undefined);
   const {
