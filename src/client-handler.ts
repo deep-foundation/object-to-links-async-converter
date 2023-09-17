@@ -655,16 +655,17 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     }
   }
 
+  const logsString = logs.join("\n");
   try {
     const result = await main();
     return {
       result,
-      logs,
+      logs: logsString,
     };
   } catch (error) {
     return {
       error,
-      logs,
+      logs: logsString,
     };
   }
 
