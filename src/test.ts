@@ -73,7 +73,12 @@ async function test() {
   // await stringPropertyTest();
   // await numberPropertyTest();
   // await booleanPropertyTest();
-  await objectPropertyWithStringPropertyTest();
+  await arrayPropertyTest();
+  // await objectPropertyWithStringPropertyTest();
+  // await objectPropertyWithArrayOfStringsPropertyTest();
+  // await objectPropertyWithArrayOfArraysOfStringsPropertyTest();
+  // await objectPropertyWithArrayOfObjectsPropertyTest();
+  // await objectPropertyWithObjectPropertyTest();
 }
 async function stringPropertyTest() {
   const propertyKey = "myStringKey";
@@ -102,10 +107,75 @@ async function booleanPropertyTest() {
   });
 }
 
+async function arrayPropertyTest() {
+  const propertyKey = "myArrayKey";
+  const propertyValue = ["myString1", "myString2"];
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+  });
+}
+
 async function objectPropertyWithStringPropertyTest() {
   const propertyKey = "myObjectKey";
   const propertyValue = {
     myStringKey: "myStringValue",
+  };
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+  });
+}
+
+async function objectPropertyWithArrayOfStringsPropertyTest() {
+  const propertyKey = "myObjectKey";
+  const propertyValue = {
+    myArrayKey: ["myString1", "myString2"],
+  };
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+  });
+}
+
+async function objectPropertyWithArrayOfArraysOfStringsPropertyTest() {
+  const propertyKey = "myObjectKey";
+  const propertyValue = {
+    myArrayKey: [
+      ["myString1", "myString2"],
+      ["myString1", "myString2"],
+    ],
+  };
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+  });
+}
+
+async function objectPropertyWithArrayOfObjectsPropertyTest() {
+  const propertyKey = "myObjectKey";
+  const propertyValue = {
+    myArrayKey: [
+      {
+        myStringKey: "myStringValue",
+      },
+      {
+        myStringKey: "myStringValue",
+      },
+    ],
+  };
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+  });
+}
+
+async function objectPropertyWithObjectPropertyTest() {
+  const propertyKey = "myObjectKey";
+  const propertyValue = {
+    myObjectKey: {
+      myStringKey: "myStringValue",
+    },
   };
   await clientHandlerTests({
     propertyKey,
