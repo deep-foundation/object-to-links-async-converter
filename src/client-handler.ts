@@ -727,10 +727,10 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
 
       for (const [propertyKey, propertyValue] of Object.entries(value)) {
         if (
-          typeof propertyValue !== "string" ||
-          typeof propertyValue !== "number" ||
-          typeof propertyValue !== "boolean" ||
-          !Array.isArray(propertyValue) ||
+          typeof propertyValue !== "string" &&
+          typeof propertyValue !== "number" &&
+          typeof propertyValue !== "boolean" &&
+          !Array.isArray(propertyValue) &&
           typeof propertyValue !== "object"
         ) {
           log(
