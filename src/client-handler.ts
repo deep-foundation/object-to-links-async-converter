@@ -209,7 +209,7 @@ async (options: {
     }
 
     async makeUpdateOperationsForBooleanValue(
-      options: UpdateOperationsForAnyValueOptions<boolean>,
+      options: MakeUpdateOperationsForAnyValueOptions<boolean>,
     ) {
       const log = ObjectToLinksConverter.getLogger(
         this.makeUpdateOperationsForBooleanValue.name,
@@ -236,11 +236,38 @@ async (options: {
       return operations;
     }
 
-    async makeUpdateOperationsForStringOrNumberValue(
-      options: UpdateOperationsForAnyValueOptions<string | number>,
+    async makeUpdateOperationsForStringValue(
+      options: MakeUpdateOperationsForStringValueOptions,
     ) {
       const log = ObjectToLinksConverter.getLogger(
-        this.makeUpdateOperationsForStringOrNumberValue.name,
+        this.makeUpdateOperationsForStringValue.name,
+      );
+      log({ options });
+      const { link, value } = options;
+      const operations: Array<SerialOperation> = [];
+      operations.push(
+        createSerialOperation({
+          type: "update",
+          table: `${typeof value
+            .toString()
+            .toLocaleLowerCase()}s` as Table<"update">,
+          exp: {
+            link_id: link.id,
+          },
+          value: {
+            value: link,
+          },
+        }),
+      );
+      log({ operations });
+      return operations;
+    }
+
+    async makeUpdateOperationsForNumberValue(
+      options: MakeUpdateOperationsForNumberValueOptions,
+    ) {
+      const log = ObjectToLinksConverter.getLogger(
+        this.makeUpdateOperationsForNumberValue.name,
       );
       log({ options });
       const { link, value } = options;
@@ -264,7 +291,7 @@ async (options: {
     }
 
     async makeUpdateOperationsForArrayValue<TValue extends AllowedArray>(
-      options: UpdateOperationsForAnyValueOptions<TValue>,
+      options: MakeUpdateOperationsForAnyValueOptions<TValue>,
     ) {
       const log = ObjectToLinksConverter.getLogger(
         this.makeUpdateOperationsForAnyValue.name,
@@ -298,7 +325,7 @@ async (options: {
     }
 
     async makeUpdateOperationsForAnyValue<TValue extends AllowedValue>(
-      options: UpdateOperationsForAnyValueOptions<TValue>,
+      options: MakeUpdateOperationsForAnyValueOptions<TValue>,
     ) {
       const log = ObjectToLinksConverter.getLogger(
         this.makeUpdateOperationsForAnyValue.name,
@@ -312,9 +339,16 @@ async (options: {
             value,
           })),
         );
-      } else if (typeof value === "string" || typeof value === "number") {
+      } else if (typeof value === "string") {
         operations.push(
-          ...(await this.makeUpdateOperationsForStringOrNumberValue({
+          ...(await this.makeUpdateOperationsForStringValue({
+            ...options,
+            value,
+          })),
+        );
+      } else if (typeof value === "number") {
+        operations.push(
+          ...(await this.makeUpdateOperationsForNumberValue({
             ...options,
             value,
           })),
@@ -341,7 +375,7 @@ async (options: {
     }
 
     async makeUpdateOperationsForObjectValue(
-      options: UpdateOperationsForObjectValueOptions,
+      options: MakeUpdateOperationsForObjectValueOptions,
     ) {
       const log = ObjectToLinksConverter.getLogger(
         this.makeUpdateOperationsForObjectValue.name,
@@ -433,16 +467,6 @@ async (options: {
       return operations;
     }
 
-    async makeInsertOperationsForStringValue(
-      options: MakeInsertOperationsForStringOptions,
-    ) {
-      return this.makeInsertOperationsForStringOrNumberValue(options);
-    }
-    async makeInsertOperationsForNumberValue(
-      options: MakeInsertOperationsForNumberOptions,
-    ) {
-      return this.makeInsertOperationsForStringOrNumberValue(options);
-    }
     async makeInsertOperationsForBooleanValue(
       options: MakeInsertOperationsForBooleanOptions,
     ) {
@@ -489,8 +513,62 @@ async (options: {
       log({ operations });
       return operations;
     }
-    async makeInsertOperationsForStringOrNumberValue(
-      options: MakeInsertOperationsForStringOrNumberOptions,
+    async makeInsertOperationsForStringValue(
+      options: MakeInsertOperationsForStringOptions,
+    ) {
+      const operations: Array<SerialOperation> = [];
+      const { value, parentLinkId, linkId, name } = options;
+      const log = ObjectToLinksConverter.getLogger(
+        "makeInsertOperationsForStringValue",
+      );
+      const linkInsertSerialOperation = createSerialOperation({
+        type: "insert",
+        table: "links",
+        objects: {
+          id: linkId,
+          from_id: parentLinkId,
+          to_id: parentLinkId,
+          type_id: await deep.id(deep.linkId!, pascalCase(typeof value)),
+        },
+      });
+      log({ linkInsertSerialOperation });
+      operations.push(linkInsertSerialOperation);
+
+      const stringValueInsertSerialOperation = createSerialOperation({
+        type: "insert",
+        table: `${typeof value}s` as Table<"insert">,
+        objects: {
+          link_id: linkId,
+          value: value,
+        },
+      });
+      log({ stringValueInsertSerialOperation });
+      operations.push(stringValueInsertSerialOperation);
+
+      const containInsertSerialOperation = createSerialOperation({
+        type: "insert",
+        table: "links",
+        objects: {
+          // TODO: Replace id with idLocal when it work properly
+          type_id: await deep.id("@deep-foundation/core", "Contain"),
+          from_id: parentLinkId,
+          to_id: linkId,
+          string: {
+            data: {
+              value: name,
+            },
+          },
+        },
+      });
+      log({ containInsertSerialOperation });
+      operations.push(containInsertSerialOperation);
+
+      log({ operations });
+      return operations;
+    }
+
+    async makeInsertOperationsForNumberValue(
+      options: MakeInsertOperationsForNumberOptions,
     ) {
       const operations: Array<SerialOperation> = [];
       const { value, parentLinkId, linkId, name } = options;
@@ -602,61 +680,29 @@ async (options: {
       options: MakeInsertOperationsForPrimitiveValueOptions,
     ) {
       const operations: Array<SerialOperation> = [];
-      const { value, linkId, name, parentLinkId } = options;
-      const log = ObjectToLinksConverter.getLogger(
-        this.makeInsertOperationsForPrimitiveValue.name,
-      );
-
-      const linkInsertSerialOperation = createSerialOperation({
-        type: "insert",
-        table: "links",
-        objects: {
-          id: linkId,
-          type_id: await deep.id(deep.linkId!, pascalCase(typeof value)),
-          from_id: parentLinkId,
-          to_id:
-            typeof value === "boolean" // TODO: Replace id with idLocal when it work properly
-              ? await deep.id(
-                  "@freephoenix888/boolean",
-                  pascalCase(value.toString()),
-                )
-              : parentLinkId,
-        },
-      });
-      log({ linkInsertSerialOperation });
-      operations.push(linkInsertSerialOperation);
-
-      if (["string", "number"].includes(typeof value)) {
-        const stringValueInsertSerialOperation = createSerialOperation({
-          type: "insert",
-          table: `${typeof value}s` as Table<"insert">,
-          objects: {
-            link_id: linkId,
-            value: value,
-          },
-        });
-        log({ stringValueInsertSerialOperation });
-        operations.push(stringValueInsertSerialOperation);
+      const { value } = options;
+      if (typeof value === "string") {
+        operations.push(
+          ...(await this.makeInsertOperationsForStringValue({
+            ...options,
+            value,
+          })),
+        );
+      } else if (typeof value === "number") {
+        operations.push(
+          ...(await this.makeInsertOperationsForNumberValue({
+            ...options,
+            value,
+          })),
+        );
+      } else if (typeof value === "boolean") {
+        operations.push(
+          ...(await this.makeInsertOperationsForBooleanValue({
+            ...options,
+            value,
+          })),
+        );
       }
-
-      const containInsertSerialOperation = createSerialOperation({
-        type: "insert",
-        table: "links",
-        objects: {
-          // TODO: Replace id with idLocal when it work properly
-          type_id: await deep.id("@deep-foundation/core", "Contain"),
-          from_id: parentLinkId,
-          to_id: linkId,
-          string: {
-            data: {
-              value: name,
-            },
-          },
-        },
-      });
-      log({ containInsertSerialOperation });
-      operations.push(containInsertSerialOperation);
-
       return operations;
     }
 
@@ -853,7 +899,7 @@ async (options: {
     makeInsertOperationsForNumberValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForNumberValue;
     makeInsertOperationsForBooleanValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForBooleanValue;
     makeUpdateOperationsForBooleanValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForBooleanValue;
-    makeUpdateOperationsForStringOrNumberValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForStringOrNumberValue;
+    makeUpdateOperationsForStringOrNumberValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForStringValue;
     makeUpdateOperationsForArrayValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForArrayValue;
     makeUpdateOperationsForObjectValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForObjectValue;
     applyContainTreeLinksDownToParentToMinilinks: typeof ObjectToLinksConverter.applyContainTreeLinksDownToParentToMinilinks;
@@ -874,10 +920,6 @@ async (options: {
     rootLinkId?: number;
     customMethods?: CustomMethods;
   }
-  type MakeInsertOperationsForStringOrNumberOptions =
-    MakeInsertOperationsForValueOptions<string | number> & {
-      value: string | number;
-    };
 
   type AllowedPrimitive = string | number | boolean;
 
@@ -919,16 +961,28 @@ async (options: {
     name: string;
   };
 
-  interface UpdateOperationsForValueOptions<TValue extends AllowedValue> {
+  interface MakeUpdateOperationsForValueOptions<TValue extends AllowedValue> {
     link: Link<number>;
     value: TValue;
   }
 
-  type UpdateOperationsForAnyValueOptions<TValue extends AllowedValue> =
-    UpdateOperationsForValueOptions<TValue>;
+  type MakeUpdateOperationsForAnyValueOptions<TValue extends AllowedValue> =
+    MakeUpdateOperationsForValueOptions<TValue>;
 
-  type UpdateOperationsForObjectValueOptions =
-    UpdateOperationsForValueOptions<AllowedObject>;
+  type MakeUpdateOperationsForObjectValueOptions =
+    MakeUpdateOperationsForValueOptions<AllowedObject>;
+
+  type MakeUpdateOperationsForStringValueOptions =
+    MakeUpdateOperationsForValueOptions<string>;
+
+  type MakeUpdateOperationsForArrayValueOptions =
+    MakeUpdateOperationsForValueOptions<AllowedArray>;
+
+  type MakeUpdateOperationsForBooleanValueOptions =
+    MakeUpdateOperationsForValueOptions<boolean>;
+
+  type MakeUpdateOperationsForNumberValueOptions =
+    MakeUpdateOperationsForValueOptions<number>;
 };
 
 interface Obj {
