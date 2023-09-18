@@ -180,23 +180,8 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       };
     }
 
-    async getOptions(options: GetOptionsOptions): Promise<Options> {
-      const { rootLinkId } = options;
-      return {
-        typesContainerLink: await this.getTypesContainer(),
-      };
-    }
-
-    async getTypesContainer(): Promise<Options["typesContainerLink"]> {
-      const log = ObjectToLinksConverter.getLogger("getTypesContainer");
-      const {
-        data: [typesContainer],
-      } = await deep.select({
-        from_id: this.rootLink.id,
-        type_id: await deep.id(deep.linkId!, "TypesContainer"),
-      });
-      log({ typesContainer });
-      return typesContainer;
+    async getOptions(): Promise<Options> {
+      return {};
     }
 
     static getLinksToReserveCount(options: {
@@ -914,13 +899,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     name: string;
   };
 
-  interface Options {
-    typesContainerLink: Link<number>;
-  }
-
-  interface GetOptionsOptions {
-    rootLinkId: number;
-  }
+  interface Options {}
 
   interface UpdateOperationsForValueOptions<TValue extends AllowedValue> {
     link: Link<number>;
