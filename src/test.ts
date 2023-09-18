@@ -80,7 +80,24 @@ async function test() {
   await objectPropertyWithArrayOfObjectsPropertyTest();
   await objectPropertyWithObjectPropertyTest();
   await objectPropertyWithObjectPropertyWithArrayPropertyTest();
+  await customRootLinkTest();
 }
+
+async function customRootLinkTest() {
+  const propertyKey = "myStringKey";
+  const propertyValue = "myStringValue";
+  const {
+    data: [{ id: rootLinkId }],
+  } = await deep.insert({
+    type_id: await deep.id("@deep-foundation/core", "Type"),
+  });
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+    rootLinkId,
+  });
+}
+
 async function stringPropertyTest() {
   const propertyKey = "myStringKey";
   const propertyValue = "myStringValue";
@@ -200,14 +217,10 @@ async function objectPropertyWithObjectPropertyWithArrayPropertyTest() {
 async function clientHandlerTests(options: {
   propertyKey: string;
   propertyValue: AllowedValue;
-  otherArgs?: any[];
+  rootLinkId?: number;
 }) {
   const log = molduleLog.extend("clientHandlerTests");
-  const {
-    propertyKey: propertyKey,
-    propertyValue: propertyValue,
-    otherArgs,
-  } = options;
+  const { propertyKey: propertyKey, propertyValue: propertyValue } = options;
   const packageDeepClientOptions: DeepClientOptions = {
     apolloClient,
     ...(await decoratedDeep.login({
@@ -226,7 +239,7 @@ async function clientHandlerTests(options: {
       {
         deep: packageDeep,
         obj: obj,
-        ...otherArgs,
+        rootLinkId: options.rootLinkId,
       },
     ],
   });
@@ -234,6 +247,9 @@ async function clientHandlerTests(options: {
   if (clientHandlerResult.error) throw clientHandlerResult.error;
   assert.notStrictEqual(clientHandlerResult.result?.rootLinkId, undefined);
   const { rootLinkId } = clientHandlerResult.result;
+  if (options.rootLinkId) {
+    assert.equal(rootLinkId, options.rootLinkId);
+  }
   const {
     data: [rootLinkFromSelect],
   } = await decoratedDeep.select(rootLinkId);
