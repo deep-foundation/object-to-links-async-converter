@@ -26,7 +26,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     maxWidth: 100,
   };
   process.env.DEBUG_COLORS = "0";
-  const packageLog = debug("@deep-foundation/object-to-links-converter");
+  const packageLog = debug("@freephoenix888/object-to-links-async-converter");
   packageLog({ options });
 
   class ObjectToLinksConverter {
