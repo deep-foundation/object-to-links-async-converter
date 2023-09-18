@@ -30,6 +30,7 @@ async (options: {
     reservedLinkIds: Array<number>;
     rootLink: Link<number>;
     obj: Obj;
+    deep = deep;
     static requiredPackageNames = {
       core: "@deep-foundation/core",
       boolean: "@freephoenix888/boolean",
