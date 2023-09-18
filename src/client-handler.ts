@@ -858,6 +858,10 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       makeUpdateOperationsForStringOrNumberValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForStringOrNumberValue;
       makeUpdateOperationsForArrayValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForArrayValue;
       makeUpdateOperationsForObjectValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForObjectValue;
+      applyContainTreeLinksDownToParentToMinilinks: typeof ObjectToLinksConverter.applyContainTreeLinksDownToParentToMinilinks;
+      getContainTreeLinksDownToParent: typeof ObjectToLinksConverter.getContainTreeLinksDownToParent;
+      getLinksToReserveCount: typeof ObjectToLinksConverter.getLinksToReserveCount;
+      init: typeof ObjectToLinksConverter.init;
     };
   }
 
