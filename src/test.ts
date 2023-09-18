@@ -118,6 +118,8 @@ async function treeTest() {
     1 + // root link
       1 + // object link
       1 + // contain for object link
+      1 + // object link
+      1 + // contain for object link
       1 + // string link
       1, // contain for string link
   );
