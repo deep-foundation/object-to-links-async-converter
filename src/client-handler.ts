@@ -11,8 +11,13 @@ import {
   MinilinksResult,
 } from "@deep-foundation/deeplinks/imports/minilinks.js";
 
-async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
-  const { deep, rootLinkId, obj } = options;
+async (options: {
+  deep: DeepClient;
+  rootLinkId?: number;
+  obj: Obj;
+  customMethods?: Record<string, Function>;
+}) => {
+  const { deep, rootLinkId, obj, customMethods } = options;
   const { createSerialOperation } = await import(
     "@deep-foundation/deeplinks/imports/gql/index.js"
   );
@@ -34,13 +39,11 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       ...this.requiredPackageNames,
       objectToLinksConverter: "@freephoenix888/object-to-links-async-converter",
     };
-    customMethods: ObjectToLinksConverterOptions["customMethods"];
 
     constructor(options: ObjectToLinksConverterOptions) {
       this.rootLink = options.rootLink;
       this.reservedLinkIds = options.reservedLinkIds;
       this.obj = options.obj;
-      this.customMethods = options.customMethods;
     }
 
     static getLogger(namespace: string) {
@@ -96,7 +99,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
      */
     static async init(
       options: ObjectToLinksConverterInitOptions,
-    ): Promise<ObjectToLinksConverter | undefined> {
+    ): Promise<ObjectToLinksConverter> {
       const log = ObjectToLinksConverter.getLogger(
         ObjectToLinksConverter.init.name,
       );
@@ -129,9 +132,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
             )
             .then((result) => result.data[0] as Link<number>);
       log({ rootLink });
-      if (Object.keys(obj).length === 0) {
-        return;
-      }
       const containTreeLinksDownToRootLinkApplyMinilinksResult =
         await this.applyContainTreeLinksDownToParentToMinilinks({
           linkExp: {
@@ -775,6 +775,28 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     }
   }
 
+  function getObjectToLinksConverterProxy(
+    target: ObjectToLinksConverter,
+  ): ObjectToLinksConverter {
+    const handler: ProxyHandler<ObjectToLinksConverter> = {
+      get(
+        target: ObjectToLinksConverter,
+        propKey: keyof ObjectToLinksConverter,
+        receiver: any,
+      ): any {
+        if (
+          typeof target[propKey] === "function" &&
+          receiver._customMethods?.[propKey]
+        ) {
+          return receiver._customMethods[propKey];
+        }
+        return Reflect.get(target, propKey, receiver);
+      },
+    };
+
+    return new Proxy(target, handler);
+  }
+
   try {
     const result = await main();
     return {
@@ -791,13 +813,23 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
   async function main() {
     const log = ObjectToLinksConverter.getLogger(main.name);
 
+    if (Object.keys(obj).length === 0) {
+      return;
+    }
+
     const objectToLinksConverter = await ObjectToLinksConverter.init({
       obj,
       rootLinkId,
     });
     log({ objectToLinksConverter });
 
-    const convertResult = await objectToLinksConverter?.convert();
+    const proxiedObjectToLinksConverter = getObjectToLinksConverterProxy(
+      objectToLinksConverter,
+    );
+    // @ts-ignore
+    proxiedObjectToLinksConverter["_customMethods"] = customMethods;
+
+    const convertResult = await proxiedObjectToLinksConverter.convert();
     log({ convertResult });
 
     return convertResult;
