@@ -71,11 +71,20 @@ await test();
 
 async function test() {
   await stringProperty();
-  // await numberProperty();
+  await numberProperty();
 }
 async function stringProperty() {
   const propertyKey = "myStringKey";
   const propertyValue = "myStringValue";
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+  });
+}
+
+async function numberProperty() {
+  const propertyKey = "myStringKey";
+  const propertyValue = 123;
   await clientHandlerTests({
     propertyKey,
     propertyValue,
