@@ -717,7 +717,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
         if (
           typeof propertyValue !== "string" ||
           typeof propertyValue !== "number" ||
-          typeof propertyValue !== "boolean"
+          typeof propertyValue !== "boolean" ||
+          !Array.isArray(propertyValue) ||
+          typeof propertyValue !== "object"
         ) {
           continue;
         }
