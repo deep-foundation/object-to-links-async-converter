@@ -52,7 +52,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       const getLoggerLogger = debug(this.getLogger.name);
       getLoggerLogger({ options });
       const resultLogger = packageLog.extend(
-        `${ObjectToLinksConverter.name}${namespace ? `: ${namespace}` : ""}`,
+        `${ObjectToLinksConverter.name}${namespace ? `:${namespace}` : ""}`,
       );
       resultLogger.enabled = true;
       resultLogger.log = (...content: Array<any>) => {
