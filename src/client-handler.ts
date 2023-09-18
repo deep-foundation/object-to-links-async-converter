@@ -419,10 +419,12 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
           if (
             typeof propertyValue !== "string" &&
             typeof propertyValue !== "number" &&
-            typeof propertyValue !== "boolean"
+            typeof propertyValue !== "boolean" &&
+            !Array.isArray(propertyValue) &&
+            typeof propertyValue !== "object"
           ) {
             log(
-              `Skipping property ${propertyKey} because it is not string or number or boolean`,
+              `Skipping property ${propertyKey} because its type ${typeof value} is not supported`,
             );
             continue;
           }
