@@ -13,19 +13,12 @@ import {
 
 async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
   const { deep, rootLinkId, obj } = options;
-  const util = await import("util");
   const { createSerialOperation } = await import(
     "@deep-foundation/deeplinks/imports/gql/index.js"
   );
-  const { format: prettyFormat } = await import("pretty-format");
   const { pascalCase } = await import("case-anything");
   const { default: debug } = await import("debug");
   const logs: Array<any> = [];
-  const DEFAULT_DEBUG_OPTIONS = {
-    maxDepth: 15,
-    maxWidth: 100,
-  };
-  process.env.DEBUG_COLORS = "0";
   const packageLog = debug("@freephoenix888/object-to-links-async-converter");
   packageLog({ options });
 
