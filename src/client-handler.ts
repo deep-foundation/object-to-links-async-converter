@@ -415,15 +415,15 @@ async (options: {
           if (!propertyLinkId) {
             throw new Error(`Not enough reserved link ids`);
           }
-          const propertyInsertoperations =
+          const propertyInsertOperations =
             await this.makeInsertOperationsForAnyValue({
               linkId: propertyLinkId,
               parentLinkId: link.id,
               value: propertyValue,
               name: propertyKey,
             });
-          log({ propertyInsertoperations });
-          operations.push(...propertyInsertoperations);
+          log({ propertyInsertOperations });
+          operations.push(...propertyInsertOperations);
         }
 
         log({ operations });
@@ -433,23 +433,23 @@ async (options: {
       return operations;
     }
 
-    async makeInsertoperationsForStringValue(
-      options: MakeInsertoperationsForStringOptions,
+    async makeInsertOperationsForStringValue(
+      options: MakeInsertOperationsForStringOptions,
     ) {
-      return this.makeInsertoperationsForStringOrNumberValue(options);
+      return this.makeInsertOperationsForStringOrNumberValue(options);
     }
-    async makeInsertoperationsForNumberValue(
-      options: MakeInsertoperationsForNumberOptions,
+    async makeInsertOperationsForNumberValue(
+      options: MakeInsertOperationsForNumberOptions,
     ) {
-      return this.makeInsertoperationsForStringOrNumberValue(options);
+      return this.makeInsertOperationsForStringOrNumberValue(options);
     }
-    async makeInsertoperationsForBooleanValue(
-      options: MakeInsertoperationsForBooleanOptions,
+    async makeInsertOperationsForBooleanValue(
+      options: MakeInsertOperationsForBooleanOptions,
     ) {
       const operations: Array<SerialOperation> = [];
       const { value, parentLinkId, linkId, name } = options;
       const log = ObjectToLinksConverter.getLogger(
-        "makeInsertoperationsForStringValue",
+        "makeInsertOperationsForStringValue",
       );
 
       const linkInsertSerialOperation = createSerialOperation({
@@ -489,13 +489,13 @@ async (options: {
       log({ operations });
       return operations;
     }
-    async makeInsertoperationsForStringOrNumberValue(
-      options: MakeInsertoperationsForStringOrNumberOptions,
+    async makeInsertOperationsForStringOrNumberValue(
+      options: MakeInsertOperationsForStringOrNumberOptions,
     ) {
       const operations: Array<SerialOperation> = [];
       const { value, parentLinkId, linkId, name } = options;
       const log = ObjectToLinksConverter.getLogger(
-        "makeInsertoperationsForStringValue",
+        "makeInsertOperationsForStringValue",
       );
       const linkInsertSerialOperation = createSerialOperation({
         type: "insert",
@@ -549,7 +549,7 @@ async (options: {
       const operations: Array<SerialOperation> = [];
       const { value, linkId, name, parentLinkId } = options;
       const log = ObjectToLinksConverter.getLogger(
-        "makeInsertoperationsForStringValue",
+        "makeInsertOperationsForStringValue",
       );
 
       const linkInsertSerialOperation = createSerialOperation({
@@ -604,7 +604,7 @@ async (options: {
       const operations: Array<SerialOperation> = [];
       const { value, linkId, name, parentLinkId } = options;
       const log = ObjectToLinksConverter.getLogger(
-        "makeInsertoperationsForStringValue",
+        "makeInsertOperationsForStringValue",
       );
 
       const linkInsertSerialOperation = createSerialOperation({
@@ -661,7 +661,7 @@ async (options: {
     }
 
     async makeInsertOperationsForObjectValue(
-      options: MakeInsertoperationsForObjectValue,
+      options: MakeInsertOperationsForObjectValue,
     ) {
       const operations: Array<SerialOperation> = [];
       const { value, linkId, name, parentLinkId } = options;
@@ -732,7 +732,7 @@ async (options: {
     }
 
     async makeInsertOperationsForAnyValue(
-      options: MakeInsertoperationsForAnyValueOptions,
+      options: MakeInsertOperationsForAnyValueOptions,
     ) {
       const operations: Array<SerialOperation> = [];
       const { value } = options;
@@ -849,9 +849,9 @@ async (options: {
     makeInsertOperationsForPrimitiveValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForPrimitiveValue;
     makeInsertOperationsForArrayValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForArrayValue;
     makeInsertOperationsForObjectValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForObjectValue;
-    makeInsertoperationsForStringValue: typeof ObjectToLinksConverter.prototype.makeInsertoperationsForStringValue;
-    makeInsertoperationsForNumberValue: typeof ObjectToLinksConverter.prototype.makeInsertoperationsForNumberValue;
-    makeInsertoperationsForBooleanValue: typeof ObjectToLinksConverter.prototype.makeInsertoperationsForBooleanValue;
+    makeInsertOperationsForStringValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForStringValue;
+    makeInsertOperationsForNumberValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForNumberValue;
+    makeInsertOperationsForBooleanValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForBooleanValue;
     makeUpdateOperationsForBooleanValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForBooleanValue;
     makeUpdateOperationsForStringOrNumberValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForStringOrNumberValue;
     makeUpdateOperationsForArrayValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForArrayValue;
@@ -874,8 +874,8 @@ async (options: {
     rootLinkId?: number;
     customMethods?: CustomMethods;
   }
-  type MakeInsertoperationsForStringOrNumberOptions =
-    MakeInsertoperationsForValueOptions<string | number> & {
+  type MakeInsertOperationsForStringOrNumberOptions =
+    MakeInsertOperationsForValueOptions<string | number> & {
       value: string | number;
     };
 
@@ -889,30 +889,30 @@ async (options: {
 
   type AllowedValue = AllowedPrimitive | AllowedObject | AllowedArray;
 
-  type MakeInsertoperationsForStringOptions =
-    MakeInsertoperationsForValueOptions<string>;
+  type MakeInsertOperationsForStringOptions =
+    MakeInsertOperationsForValueOptions<string>;
 
-  type MakeInsertoperationsForNumberOptions =
-    MakeInsertoperationsForValueOptions<number>;
+  type MakeInsertOperationsForNumberOptions =
+    MakeInsertOperationsForValueOptions<number>;
 
-  type MakeInsertoperationsForBooleanOptions =
-    MakeInsertoperationsForValueOptions<boolean>;
+  type MakeInsertOperationsForBooleanOptions =
+    MakeInsertOperationsForValueOptions<boolean>;
 
-  type MakeInsertoperationsForObjectValue =
-    MakeInsertoperationsForValueOptions<AllowedObject>;
+  type MakeInsertOperationsForObjectValue =
+    MakeInsertOperationsForValueOptions<AllowedObject>;
 
   type MakeInsertOperationsForArrayValueOptions =
-    MakeInsertoperationsForValueOptions<AllowedArray>;
+    MakeInsertOperationsForValueOptions<AllowedArray>;
 
   type MakeInsertOperationsForPrimitiveValueOptions =
-    MakeInsertoperationsForValueOptions<AllowedPrimitive>;
+    MakeInsertOperationsForValueOptions<AllowedPrimitive>;
 
-  type MakeInsertoperationsForAnyValueOptions = Omit<
-    MakeInsertoperationsForValueOptions<AllowedValue>,
+  type MakeInsertOperationsForAnyValueOptions = Omit<
+    MakeInsertOperationsForValueOptions<AllowedValue>,
     "typeLinkId"
   >;
 
-  type MakeInsertoperationsForValueOptions<TValue extends AllowedValue> = {
+  type MakeInsertOperationsForValueOptions<TValue extends AllowedValue> = {
     parentLinkId: number;
     linkId: number;
     value: TValue;
