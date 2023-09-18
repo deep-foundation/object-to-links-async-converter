@@ -84,7 +84,45 @@ async function test() {
   await objectPropertyWithObjectPropertyWithArrayPropertyTest();
   await customRootLinkTest();
   await customMethodMakeInsertoperationsForBooleanValue();
+  await treeTest();
 }
+
+async function treeTest() {
+  const {
+    data: [{ id: rootLinkId }],
+  } = await deep.insert({
+    type_id: await deep.id("@deep-foundation/core", "Type"),
+  });
+  const propertyKey = "myObjectKey";
+  const propertyValue = {
+    myObjectKey: {
+      myStringKey: "myStringValue",
+    },
+  };
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+    rootLinkId,
+  });
+  const { data: containTreeLinkDownToRoot } = await deep.select({
+    up: {
+      tree_id: {
+        _id: ["@deep-foundation/core", "containTree"],
+      },
+      parent_id: rootLinkId,
+    },
+  });
+  assert.notStrictEqual(containTreeLinkDownToRoot, undefined);
+  assert.equal(
+    containTreeLinkDownToRoot.length,
+    1 + // root link
+      1 + // object link
+      1 + // contain for object link
+      1 + // string link
+      1, // contain for string link
+  );
+}
+
 async function customMethodMakeInsertoperationsForBooleanValue() {
   const propertyKey = "myStringKey";
   const propertyValue = true;
