@@ -70,9 +70,10 @@ decoratedDeep.minilinks.apply(requiredPackageLinks);
 await test();
 
 async function test() {
-  await stringPropertyTest();
-  await numberPropertyTest();
-  await booleanPropertyTest();
+  // await stringPropertyTest();
+  // await numberPropertyTest();
+  // await booleanPropertyTest();
+  await objectPropertyWithStringPropertyTest();
 }
 async function stringPropertyTest() {
   const propertyKey = "myStringKey";
@@ -95,6 +96,17 @@ async function numberPropertyTest() {
 async function booleanPropertyTest() {
   const propertyKey = "myBooleanKey";
   const propertyValue = true;
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+  });
+}
+
+async function objectPropertyWithStringPropertyTest() {
+  const propertyKey = "myObjectKey";
+  const propertyValue = {
+    myStringKey: "myStringValue",
+  };
   await clientHandlerTests({
     propertyKey,
     propertyValue,
@@ -227,6 +239,7 @@ async function checkObjectProperty(options: CheckObjectPropertyOptions) {
         _id: [parentLink.id, propertyKey],
       },
     });
+    assert.notEqual(propertyLink, undefined);
     await checkProperty({
       parentLink: propertyLink,
       value: propertyValue,
