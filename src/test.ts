@@ -218,30 +218,22 @@ async function checkObjectProperty(options: CheckObjectPropertyOptions) {
   const { value, parentLink, name } = options;
 
   const {
-    data: [link],
+    data: [objectLink],
   } = await deep.select({
     id: {
       _id: [parentLink.id, name],
     },
   });
-  if (!link) {
+  if (!objectLink) {
     throw new Error(`Failed to find property`);
   }
 
-  assert.equal(link.from_id, parentLink.id);
-  assert.equal(link.to_id, parentLink.id);
+  assert.equal(objectLink.from_id, parentLink.id);
+  assert.equal(objectLink.to_id, parentLink.id);
 
   for (const [propertyKey, propertyValue] of Object.entries(value)) {
-    const {
-      data: [propertyLink],
-    } = await deep.select({
-      id: {
-        _id: [parentLink.id, propertyKey],
-      },
-    });
-    assert.notEqual(propertyLink, undefined);
     await checkProperty({
-      parentLink: propertyLink,
+      parentLink: objectLink,
       value: propertyValue,
       name: propertyKey,
     });
