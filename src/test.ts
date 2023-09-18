@@ -72,6 +72,7 @@ await test();
 async function test() {
   await stringProperty();
   await numberProperty();
+  await booleanPropertyTest();
 }
 async function stringProperty() {
   const propertyKey = "myStringKey";
@@ -85,6 +86,15 @@ async function stringProperty() {
 async function numberProperty() {
   const propertyKey = "myStringKey";
   const propertyValue = 123;
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+  });
+}
+
+async function booleanPropertyTest() {
+  const propertyKey = "myBooleanKey";
+  const propertyValue = true;
   await clientHandlerTests({
     propertyKey,
     propertyValue,
