@@ -895,8 +895,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     name: string;
   };
 
-  interface Options {}
-
   interface UpdateOperationsForValueOptions<TValue extends AllowedValue> {
     link: Link<number>;
     value: TValue;
