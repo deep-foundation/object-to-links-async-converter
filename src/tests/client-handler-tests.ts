@@ -6,17 +6,21 @@ import {
   DeepClientOptions,
   SerialOperation,
 } from "@deep-foundation/deeplinks/imports/client.js";
-import { callClientHandler } from "./call-client-handler.js";
+import { callClientHandler } from "../call-client-handler.js";
 import {
   createObjectToLinksConverterDecorator,
   ObjectToLinksConverterDecorator,
-} from "./create-object-to-links-converter-decorator.js";
-import { debug } from "./debug.js";
-import { PACKAGE_NAME } from "./package-name.js";
+} from "../create-object-to-links-converter-decorator.js";
+import { debug } from "../debug.js";
+import { PACKAGE_NAME } from "../package-name.js";
 import util from "util";
 import stringify from "json-stringify-safe";
 import dotenv from "dotenv";
-import { AllowedArray, AllowedObject, AllowedValue } from "./allowed-values.js";
+import {
+  AllowedArray,
+  AllowedObject,
+  AllowedValue,
+} from "../allowed-values.js";
 import { pascalCase } from "case-anything";
 import { Link } from "@deep-foundation/deeplinks/imports/minilinks.js";
 import { createSerialOperation } from "@deep-foundation/deeplinks/imports/gql/serial.js";
