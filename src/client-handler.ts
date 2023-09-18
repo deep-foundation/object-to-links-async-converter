@@ -59,14 +59,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
         logs.push(...content);
       };
       return resultLogger;
-      // return (content: any) => {
-      //   const formattedContent = prettyFormat(content, {
-      //     maxDepth: maxDepth,
-      //     maxWidth: maxWidth,
-      //     escapeString: false,
-      //   })
-      //   logs.push(`${namespace}:${formattedContent}`)
-      // }
     }
 
     static async applyContainTreeLinksDownToParentToMinilinks(
