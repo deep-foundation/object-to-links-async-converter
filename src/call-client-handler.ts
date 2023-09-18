@@ -24,7 +24,11 @@ export async function callClientHandler(
 
   const functionExpressionString = ts
     .transpileModule(code, {
-      compilerOptions: { module: ts.ModuleKind.ESNext, sourceMap: true },
+      compilerOptions: {
+        module: ts.ModuleKind.ESNext,
+        sourceMap: true,
+        target: ts.ScriptTarget.ESNext,
+      },
     })
     .outputText.replace("export {}", "");
   const fn: Function = eval(functionExpressionString);
