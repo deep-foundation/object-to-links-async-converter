@@ -200,9 +200,14 @@ async function objectPropertyWithObjectPropertyWithArrayPropertyTest() {
 async function clientHandlerTests(options: {
   propertyKey: string;
   propertyValue: AllowedValue;
+  otherArgs?: any[];
 }) {
   const log = molduleLog.extend("clientHandlerTests");
-  const { propertyKey: propertyKey, propertyValue: propertyValue } = options;
+  const {
+    propertyKey: propertyKey,
+    propertyValue: propertyValue,
+    otherArgs,
+  } = options;
   const packageDeepClientOptions: DeepClientOptions = {
     apolloClient,
     ...(await decoratedDeep.login({
@@ -221,6 +226,7 @@ async function clientHandlerTests(options: {
       {
         deep: packageDeep,
         obj: obj,
+        ...otherArgs,
       },
     ],
   });
