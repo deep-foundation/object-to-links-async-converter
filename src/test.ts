@@ -4,6 +4,7 @@ import assert from "assert";
 import {
   DeepClient,
   DeepClientOptions,
+  SerialOperation,
 } from "@deep-foundation/deeplinks/imports/client.js";
 import { callClientHandler } from "./call-client-handler.js";
 import {
@@ -18,6 +19,7 @@ import dotenv from "dotenv";
 import { AllowedArray, AllowedObject, AllowedValue } from "./allowed-values.js";
 import { pascalCase } from "case-anything";
 import { Link } from "@deep-foundation/deeplinks/imports/minilinks.js";
+import { createSerialOperation } from "@deep-foundation/deeplinks/imports/gql/serial.js";
 dotenv.config({
   path: "./.env.test.local",
 });
@@ -81,6 +83,97 @@ async function test() {
   await objectPropertyWithObjectPropertyTest();
   await objectPropertyWithObjectPropertyWithArrayPropertyTest();
   await customRootLinkTest();
+  await customMethodMakeInsertoperationsForBooleanValue();
+}
+async function customMethodMakeInsertoperationsForBooleanValue() {
+  const propertyKey = "myStringKey";
+  const propertyValue = true;
+  const {
+    data: [{ id: rootLinkId }],
+  } = await deep.insert({
+    type_id: await deep.id("@deep-foundation/core", "Type"),
+  });
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+    rootLinkId,
+    customMethods: {
+      makeInsertOperationsForBooleanValue,
+    },
+  });
+  const {
+    data: [propertyLink],
+  } = await deep.select({
+    id: {
+      _id: [rootLinkId, propertyKey],
+    },
+  });
+  assert.equal(propertyLink.value?.value, propertyValue.toString());
+
+  async function makeInsertOperationsForBooleanValue(
+    this: any,
+    options: {
+      parentLinkId: number;
+      linkId: number;
+      value: boolean;
+      name: string;
+    },
+  ) {
+    const operations: Array<SerialOperation> = [];
+    const { value, parentLinkId, linkId, name } = options;
+    const log = molduleLog.extend(makeInsertOperationsForBooleanValue.name);
+    log({ options });
+
+    log({ this: this });
+    const linkInsertSerialOperation = createSerialOperation({
+      type: "insert",
+      table: "links",
+      objects: {
+        id: linkId,
+        type_id: await deep.id(this.deep.linkId!, pascalCase(typeof value)),
+        from_id: parentLinkId,
+        to_id: await deep.id(
+          "@freephoenix888/boolean",
+          pascalCase(value.toString()),
+        ),
+      },
+    });
+    operations.push(linkInsertSerialOperation);
+    log({ linkInsertSerialOperation });
+
+    const stringInsertSerialOperation = createSerialOperation({
+      type: "insert",
+      table: "strings",
+      objects: {
+        link_id: linkId,
+        value: value.toString(),
+      },
+    });
+    operations.push(stringInsertSerialOperation);
+    log({ stringInsertSerialOperation });
+
+    const containInsertSerialOperation = createSerialOperation({
+      type: "insert",
+      table: "links",
+      objects: {
+        // TODO: Replace id with idLocal when it work properly
+        type_id: await deep.id("@deep-foundation/core", "Contain"),
+        from_id: parentLinkId,
+        to_id: linkId,
+        string: {
+          data: {
+            value: name,
+          },
+        },
+      },
+    });
+    operations.push(containInsertSerialOperation);
+    log({ containInsertSerialOperation });
+
+    log({ operations });
+
+    return operations;
+  }
 }
 
 async function customRootLinkTest() {
@@ -218,6 +311,7 @@ async function clientHandlerTests(options: {
   propertyKey: string;
   propertyValue: AllowedValue;
   rootLinkId?: number;
+  customMethods?: Record<string, Function>;
 }) {
   const log = molduleLog.extend("clientHandlerTests");
   const { propertyKey: propertyKey, propertyValue: propertyValue } = options;
@@ -240,6 +334,7 @@ async function clientHandlerTests(options: {
         deep: packageDeep,
         obj: obj,
         rootLinkId: options.rootLinkId,
+        customMethods: options.customMethods,
       },
     ],
   });
