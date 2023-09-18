@@ -695,19 +695,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       log({ linkInsertSerialOperation });
       operations.push(linkInsertSerialOperation);
 
-      if (["string", "number"].includes(typeof value)) {
-        const stringValueInsertSerialOperation = createSerialOperation({
-          type: "insert",
-          table: `${typeof value}s` as Table<"insert">,
-          objects: {
-            link_id: linkId,
-            value: value,
-          },
-        });
-        log({ stringValueInsertSerialOperation });
-        operations.push(stringValueInsertSerialOperation);
-      }
-
       const containInsertSerialOperation = createSerialOperation({
         type: "insert",
         table: "links",
