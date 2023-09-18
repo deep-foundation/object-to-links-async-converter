@@ -70,11 +70,11 @@ decoratedDeep.minilinks.apply(requiredPackageLinks);
 await test();
 
 async function test() {
-  await stringProperty();
-  await numberProperty();
+  await stringPropertyTest();
+  await numberPropertyTest();
   await booleanPropertyTest();
 }
-async function stringProperty() {
+async function stringPropertyTest() {
   const propertyKey = "myStringKey";
   const propertyValue = "myStringValue";
   await clientHandlerTests({
@@ -83,7 +83,7 @@ async function stringProperty() {
   });
 }
 
-async function numberProperty() {
+async function numberPropertyTest() {
   const propertyKey = "myStringKey";
   const propertyValue = 123;
   await clientHandlerTests({
