@@ -15,6 +15,9 @@ import { PACKAGE_NAME } from "./package-name.js";
 import util from "util";
 import stringify from "json-stringify-safe";
 import dotenv from "dotenv";
+import { AllowedArray, AllowedObject, AllowedValue } from "./allowed-values.js";
+import { pascalCase } from "case-anything";
+import { Link } from "@deep-foundation/deeplinks/imports/minilinks.js";
 dotenv.config({
   path: "./.env.test.local",
 });
@@ -64,27 +67,38 @@ const { data: requiredPackageLinks } = await deep.select({
 });
 decoratedDeep.minilinks.apply(requiredPackageLinks);
 // console.log(decoratedDeep.minilinks.links.find(link => link.value?.value === 'clientHandler'))
+await test();
 
-withoutRootLinkIdWithObjThatHasOneStringProperty();
+async function test() {
+  await stringProperty();
+  // await numberProperty();
+}
+async function stringProperty() {
+  const propertyKey = "myStringKey";
+  const propertyValue = "myStringValue";
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+  });
+}
 
-async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
-  // const log = debug(withoutRootLinkIdWithObjThatHasOneStringProperty.name);
-  const fnLog = molduleLog.extend(
-    withoutRootLinkIdWithObjThatHasOneStringProperty.name,
-  );
-  const obj = {
-    myStringKey: "myStringValue",
-  };
-  fnLog({ obj });
+async function clientHandlerTests(options: {
+  propertyKey: string;
+  propertyValue: AllowedValue;
+}) {
+  const log = molduleLog.extend("clientHandlerTests");
+  const { propertyKey: propertyKey, propertyValue: propertyValue } = options;
   const packageDeepClientOptions: DeepClientOptions = {
     apolloClient,
     ...(await decoratedDeep.login({
       linkId: decoratedDeep.objectToLinksConverterPackage.idLocal(),
     })),
   };
-  fnLog({ packageDeepClientOptions });
   const packageDeep = new DeepClient(packageDeepClientOptions);
-  fnLog({ packageDeep });
+  const obj = {
+    [propertyKey]: propertyValue,
+  };
+
   const clientHandlerResult = await callClientHandler({
     deep: decoratedDeep,
     linkId: decoratedDeep.objectToLinksConverterPackage.clientHandler.idLocal(),
@@ -95,19 +109,179 @@ async function withoutRootLinkIdWithObjThatHasOneStringProperty() {
       },
     ],
   });
-  fnLog({ clientHandlerResult });
+  log({ clientHandlerResult });
   if (clientHandlerResult.error) throw clientHandlerResult.error;
   assert.notStrictEqual(clientHandlerResult.result?.rootLinkId, undefined);
+  const { rootLinkId } = clientHandlerResult.result;
   const {
-    data: [rootLink],
+    data: [rootLinkFromSelect],
   } = await decoratedDeep.select(clientHandlerResult.result.rootLinkId);
-  assert.notStrictEqual(rootLink, undefined);
-  const {
-    data: [stringLink],
-  } = await decoratedDeep.select({
-    type_id: decoratedDeep.objectToLinksConverterPackage.String.idLocal(),
-    from_id: rootLink.id,
-    to_id: rootLink.id,
+  assert.notStrictEqual(rootLinkFromSelect, undefined);
+  const { data: containTreeLinksDownToRoot } = await decoratedDeep.select({
+    up: {
+      tree_id: {
+        _id: ["@deep-foundation/core", "containTree"],
+      },
+      parent_id: rootLinkFromSelect.id,
+    },
   });
-  assert.notStrictEqual(stringLink, undefined);
+  assert.notStrictEqual(containTreeLinksDownToRoot, undefined);
+  assert.notEqual(containTreeLinksDownToRoot.length, 0);
+  await checkProperty({
+    name: propertyKey,
+    parentLink: rootLinkFromSelect,
+    value: propertyValue,
+  });
 }
+
+async function checkStringOrNumberProperty(
+  options: CheckStringOrNumberPropertyOptions,
+) {
+  const { value, parentLink, name } = options;
+
+  const {
+    data: [link],
+  } = await deep.select({
+    id: {
+      _id: [parentLink.id, name],
+    },
+  });
+  if (!link) {
+    throw new Error(`Failed to find property`);
+  }
+  assert.equal(link.from_id, parentLink.id);
+  assert.equal(link.to_id, parentLink.id);
+  assert.equal(link.value?.value, value);
+}
+
+async function checkBooleanProperty(options: CheckBooleanPropertyOptions) {
+  const { value, parentLink, name } = options;
+
+  const {
+    data: [link],
+  } = await deep.select({
+    id: {
+      _id: [parentLink.id, name],
+    },
+  });
+  if (!link) {
+    throw new Error(`Failed to find property`);
+  }
+  assert.equal(link.from_id, parentLink.id);
+
+  assert.equal(
+    link.to_id,
+    await deep.id("@freephoenix888/boolean", pascalCase(value.toString())),
+  );
+}
+
+async function checkStringProperty(options: CheckStringPropertyOptions) {
+  await checkStringOrNumberProperty(options);
+}
+
+async function checkNumberProperty(options: CheckNumberPropertyOptions) {
+  await checkStringOrNumberProperty(options);
+}
+
+async function checkObjectProperty(options: CheckObjectPropertyOptions) {
+  const { value, parentLink, name } = options;
+
+  const {
+    data: [link],
+  } = await deep.select({
+    id: {
+      _id: [parentLink.id, name],
+    },
+  });
+  if (!link) {
+    throw new Error(`Failed to find property`);
+  }
+
+  assert.equal(link.from_id, parentLink.id);
+  assert.equal(link.to_id, parentLink.id);
+
+  for (const [propertyKey, propertyValue] of Object.entries(value)) {
+    const {
+      data: [propertyLink],
+    } = await deep.select({
+      id: {
+        _id: [parentLink.id, propertyKey],
+      },
+    });
+    await checkProperty({
+      parentLink: propertyLink,
+      value: propertyValue,
+      name: propertyKey,
+    });
+  }
+}
+
+async function checkArrayProperty(options: CheckArrayPropertyOptions) {
+  const { value, parentLink, name } = options;
+
+  const {
+    data: [arrayLink],
+  } = await deep.select({
+    id: {
+      _id: [parentLink.id, name],
+    },
+  });
+  for (let i = 0; i < value.length; i++) {
+    const element = value[i];
+    const {
+      data: [elementLink],
+    } = await deep.select({
+      id: {
+        _id: [parentLink.id, i.toString()],
+      },
+    });
+    if (!elementLink) {
+      throw new Error(`Failed to find element`);
+    }
+    await checkProperty({
+      parentLink: arrayLink,
+      name: i.toString(),
+      value: element,
+    });
+  }
+}
+
+async function checkProperty(options: CheckAnyPropertyOptions) {
+  const { value } = options;
+
+  if (typeof value === "string" || typeof value === "number") {
+    await checkStringOrNumberProperty({
+      ...options,
+      value,
+    });
+  } else if (typeof value === "boolean") {
+    await checkBooleanProperty({
+      ...options,
+      value,
+    });
+  } else if (Array.isArray(value)) {
+    await checkArrayProperty({
+      ...options,
+      value,
+    });
+  } else if (typeof value === "object") {
+    await checkObjectProperty({
+      ...options,
+      value,
+    });
+  }
+}
+
+type CheckPropetyOptions<TValue extends AllowedValue> = {
+  value: TValue;
+  parentLink: Link<number>;
+  name: string;
+};
+
+type CheckAnyPropertyOptions = CheckPropetyOptions<AllowedValue>;
+type CheckStringOrNumberPropertyOptions = CheckPropetyOptions<string | number>;
+type CheckStringPropertyOptions = CheckPropetyOptions<string>;
+type CheckNumberPropertyOptions = CheckPropetyOptions<number>;
+type CheckBooleanPropertyOptions = CheckPropetyOptions<boolean>;
+type CheckObjectPropertyOptions = CheckPropetyOptions<AllowedObject>;
+type CheckArrayPropertyOptions = CheckPropetyOptions<AllowedArray>;
