@@ -79,6 +79,7 @@ async function test() {
   await objectPropertyWithArrayOfArraysOfStringsPropertyTest();
   await objectPropertyWithArrayOfObjectsPropertyTest();
   await objectPropertyWithObjectPropertyTest();
+  await objectPropertyWithObjectPropertyWithArrayPropertyTest();
 }
 async function stringPropertyTest() {
   const propertyKey = "myStringKey";
@@ -175,6 +176,19 @@ async function objectPropertyWithObjectPropertyTest() {
   const propertyValue = {
     myObjectKey: {
       myStringKey: "myStringValue",
+    },
+  };
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+  });
+}
+
+async function objectPropertyWithObjectPropertyWithArrayPropertyTest() {
+  const propertyKey = "myObjectKey";
+  const propertyValue = {
+    myObjectKey: {
+      myStringKey: ["myStringValue", "myStringValue"],
     },
   };
   await clientHandlerTests({
