@@ -462,7 +462,6 @@ async (options: {
         }
 
         log({ operations });
-        return operations;
       }
 
       return operations;
