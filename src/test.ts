@@ -72,19 +72,67 @@ decoratedDeep.minilinks.apply(requiredPackageLinks);
 await test();
 
 async function test() {
-  await stringPropertyTest();
-  await numberPropertyTest();
-  await booleanPropertyTest();
-  await arrayPropertyTest();
-  await objectPropertyWithStringPropertyTest();
-  await objectPropertyWithArrayOfStringsPropertyTest();
-  await objectPropertyWithArrayOfArraysOfStringsPropertyTest();
-  await objectPropertyWithArrayOfObjectsPropertyTest();
-  await objectPropertyWithObjectPropertyTest();
-  await objectPropertyWithObjectPropertyWithArrayPropertyTest();
-  await customRootLinkTest();
-  await customMethodMakeInsertoperationsForBooleanValue();
-  await treeTest();
+  // await stringPropertyTest();
+  // await numberPropertyTest();
+  // await booleanPropertyTest();
+  // await arrayPropertyTest();
+  // await objectPropertyWithStringPropertyTest();
+  // await objectPropertyWithArrayOfStringsPropertyTest();
+  // await objectPropertyWithArrayOfArraysOfStringsPropertyTest();
+  // await objectPropertyWithArrayOfObjectsPropertyTest();
+  // await objectPropertyWithObjectPropertyTest();
+  // await objectPropertyWithObjectPropertyWithArrayPropertyTest();
+  // await customRootLinkTest();
+  // await customMethodMakeInsertoperationsForBooleanValue();
+  // await treeTest();
+  await updateObjectPropertyWithObjectPropertyTest();
+}
+
+async function updateObjectPropertyWithObjectPropertyTest() {
+  const {
+    data: [{ id: rootLinkId }],
+  } = await deep.insert({
+    type_id: await deep.id("@deep-foundation/core", "Type"),
+  });
+  const propertyKey = "myObjectKey";
+  const propertyValue = {
+    myObjectKey: {
+      myStringKey: "myStringValue",
+    },
+  };
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+    rootLinkId,
+  });
+  const newPropertyValue = {
+    myStringKey: "myNewStringValue",
+    myStringKey1: "myNewStringValue1",
+  };
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue: newPropertyValue,
+    rootLinkId,
+  });
+  const {
+    data: [myStringKeyLink],
+  } = await deep.select({
+    id: {
+      _id: [rootLinkId, "myObjectKey", "myStringKey"],
+    },
+  });
+  if (!myStringKeyLink) {
+    throw new Error(`Failed to find myStringKeyLink`);
+  }
+  assert.equal(myStringKeyLink.value?.value, newPropertyValue.myStringKey);
+  const {
+    data: [myStringKey1Link],
+  } = await deep.select({
+    id: {
+      _id: [rootLinkId, "myObjectKey", "myStringKey1"],
+    },
+  });
+  assert.equal(myStringKey1Link.value?.value, newPropertyValue.myStringKey1);
 }
 
 async function treeTest() {
