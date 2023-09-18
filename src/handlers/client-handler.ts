@@ -256,7 +256,7 @@ async (options: {
             link_id: link.id,
           },
           value: {
-            value: link,
+            value: value,
           },
         }),
       );
@@ -283,7 +283,7 @@ async (options: {
             link_id: link.id,
           },
           value: {
-            value: link,
+            value: value,
           },
         }),
       );
