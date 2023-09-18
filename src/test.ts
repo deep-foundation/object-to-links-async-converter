@@ -326,7 +326,7 @@ async function checkArrayProperty(options: CheckArrayPropertyOptions) {
       data: [elementLink],
     } = await deep.select({
       id: {
-        _id: [parentLink.id, i.toString()],
+        _id: [arrayLink.id, i.toString()],
       },
     });
     if (!elementLink) {
