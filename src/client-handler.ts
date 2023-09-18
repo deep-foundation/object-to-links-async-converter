@@ -774,26 +774,23 @@ async (options: {
     }
   }
 
-  function getObjectToLinksConverterProxy(
-    target: ObjectToLinksConverter,
-  ): ObjectToLinksConverter {
-    const handler: ProxyHandler<ObjectToLinksConverter> = {
-      get(
-        target: ObjectToLinksConverter,
-        propKey: keyof ObjectToLinksConverter,
-        receiver: any,
-      ): any {
-        if (
-          typeof target[propKey] === "function" &&
-          receiver._customMethods?.[propKey]
-        ) {
-          return receiver._customMethods[propKey];
-        }
-        return Reflect.get(target, propKey, receiver);
-      },
-    };
+  function getObjectToLinksConverterProxy(options: {
+    target: ObjectToLinksConverter;
+    customMethods?: Record<string, Function>;
+  }): ObjectToLinksConverter {
+    const { target, customMethods } = options;
 
-    return new Proxy(target, handler);
+    return new Proxy(target, {
+      get: function (obj: ObjectToLinksConverter, prop: string | symbol) {
+        if (customMethods && prop in customMethods) {
+          // If the property is in the customMethods object, return that.
+          return customMethods[prop as string];
+        }
+
+        // Otherwise, return the property from the original object.
+        return obj[prop as keyof ObjectToLinksConverter];
+      },
+    }) as ObjectToLinksConverter;
   }
 
   try {
@@ -822,11 +819,11 @@ async (options: {
     });
     log({ objectToLinksConverter });
 
-    const proxiedObjectToLinksConverter = getObjectToLinksConverterProxy(
-      objectToLinksConverter,
-    );
-    // @ts-ignore
-    proxiedObjectToLinksConverter["_customMethods"] = customMethods;
+    const proxiedObjectToLinksConverter = getObjectToLinksConverterProxy({
+      target: objectToLinksConverter,
+      customMethods,
+    });
+    log({ proxiedObjectToLinksConverter });
 
     const convertResult = await proxiedObjectToLinksConverter.convert();
     log({ convertResult });
@@ -845,34 +842,37 @@ async (options: {
     linkExp: BoolExpLink;
   }
 
+  type CustomMethods = {
+    convert: typeof ObjectToLinksConverter.prototype.convert;
+    makeInsertOperationsForAnyValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForAnyValue;
+    makeUpdateOperationsForAnyValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForAnyValue;
+    makeInsertOperationsForPrimitiveValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForPrimitiveValue;
+    makeInsertOperationsForArrayValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForArrayValue;
+    makeInsertOperationsForObjectValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForObjectValue;
+    makeInsertoperationsForStringValue: typeof ObjectToLinksConverter.prototype.makeInsertoperationsForStringValue;
+    makeInsertoperationsForNumberValue: typeof ObjectToLinksConverter.prototype.makeInsertoperationsForNumberValue;
+    makeInsertoperationsForBooleanValue: typeof ObjectToLinksConverter.prototype.makeInsertoperationsForBooleanValue;
+    makeUpdateOperationsForBooleanValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForBooleanValue;
+    makeUpdateOperationsForStringOrNumberValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForStringOrNumberValue;
+    makeUpdateOperationsForArrayValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForArrayValue;
+    makeUpdateOperationsForObjectValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForObjectValue;
+    applyContainTreeLinksDownToParentToMinilinks: typeof ObjectToLinksConverter.applyContainTreeLinksDownToParentToMinilinks;
+    getContainTreeLinksDownToParent: typeof ObjectToLinksConverter.getContainTreeLinksDownToParent;
+    getLinksToReserveCount: typeof ObjectToLinksConverter.getLinksToReserveCount;
+    init: typeof ObjectToLinksConverter.init;
+  };
+
   interface ObjectToLinksConverterOptions {
     rootLink: Link<number>;
     reservedLinkIds: Array<number>;
     obj: Obj;
-    customMethods?: {
-      convert: typeof ObjectToLinksConverter.prototype.convert;
-      makeInsertOperationsForAnyValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForAnyValue;
-      makeUpdateOperationsForAnyValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForAnyValue;
-      makeInsertOperationsForPrimitiveValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForPrimitiveValue;
-      makeInsertOperationsForArrayValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForArrayValue;
-      makeInsertOperationsForObjectValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForObjectValue;
-      makeInsertoperationsForStringValue: typeof ObjectToLinksConverter.prototype.makeInsertoperationsForStringValue;
-      makeInsertoperationsForNumberValue: typeof ObjectToLinksConverter.prototype.makeInsertoperationsForNumberValue;
-      makeInsertoperationsForBooleanValue: typeof ObjectToLinksConverter.prototype.makeInsertoperationsForBooleanValue;
-      makeUpdateOperationsForBooleanValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForBooleanValue;
-      makeUpdateOperationsForStringOrNumberValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForStringOrNumberValue;
-      makeUpdateOperationsForArrayValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForArrayValue;
-      makeUpdateOperationsForObjectValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForObjectValue;
-      applyContainTreeLinksDownToParentToMinilinks: typeof ObjectToLinksConverter.applyContainTreeLinksDownToParentToMinilinks;
-      getContainTreeLinksDownToParent: typeof ObjectToLinksConverter.getContainTreeLinksDownToParent;
-      getLinksToReserveCount: typeof ObjectToLinksConverter.getLinksToReserveCount;
-      init: typeof ObjectToLinksConverter.init;
-    };
+    customMethods?: CustomMethods;
   }
 
   interface ObjectToLinksConverterInitOptions {
     obj: Obj;
     rootLinkId?: number;
+    customMethods?: CustomMethods;
   }
   type MakeInsertoperationsForStringOrNumberOptions =
     MakeInsertoperationsForValueOptions<string | number> & {
