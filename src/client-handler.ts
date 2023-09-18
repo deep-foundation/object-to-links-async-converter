@@ -721,6 +721,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
           !Array.isArray(propertyValue) ||
           typeof propertyValue !== "object"
         ) {
+          log(
+            `Skipping property ${propertyKey} because its type ${typeof value} is not supported`,
+          );
           continue;
         }
         const propertyLinkId = this.reservedLinkIds.pop();
