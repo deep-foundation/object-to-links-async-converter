@@ -26,8 +26,8 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     maxWidth: 100,
   };
   process.env.DEBUG_COLORS = "0";
-  const log = debug("@deep-foundation/object-to-links-converter");
-  log({ options });
+  const packageLog = debug("@deep-foundation/object-to-links-converter");
+  packageLog({ options });
 
   class ObjectToLinksConverter {
     reservedLinkIds: Array<number>;
@@ -41,6 +41,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       ...this.requiredPackageNames,
       objectToLinksConverter: "@freephoenix888/object-to-links-async-converter",
     };
+    static classLog = debug(ObjectToLinksConverter.name);
 
     constructor(options: ObjectToLinksConverterOptions) {
       this.rootLink = options.rootLink;
@@ -48,44 +49,12 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       this.obj = options.obj;
     }
 
-    static getNamespacedLogger(options: {
-      namespace: string;
-      maxDepth?: number;
-      maxWidth?: number;
-    }) {
-      const getNamespacedLoggerLogger = debug(this.getNamespacedLogger.name);
-      getNamespacedLoggerLogger({ options });
-      const {
-        namespace,
-        maxDepth = DEFAULT_DEBUG_OPTIONS.maxDepth,
-        maxWidth = DEFAULT_DEBUG_OPTIONS.maxWidth,
-      } = options;
-      const resultLogger = log.extend(
-        `${ObjectToLinksConverter.name}:${namespace}`,
-      );
-      resultLogger.enabled = true;
-      resultLogger.log = (...content: Array<any>) => {
-        logs.push(...content);
-      };
-      return resultLogger;
-      // return (content: any) => {
-      //   const formattedContent = prettyFormat(content, {
-      //     maxDepth: maxDepth,
-      //     maxWidth: maxWidth,
-      //     escapeString: false,
-      //   })
-      //   logs.push(`${namespace}:${formattedContent}`)
-      // }
-    }
-
     static async applyContainTreeLinksDownToParentToMinilinks(
       options: ApplyContainTreeLinksDownToParentToMinilinksOptions,
     ) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace:
-          ObjectToLinksConverter.applyContainTreeLinksDownToParentToMinilinks
-            .name,
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.applyContainTreeLinksDownToParentToMinilinks.name,
+      );
       const links = (await this.getContainTreeLinksDownToParent({
         linkExp: options.linkExp,
       })) as DeepClientResult<Link<number>[]>;
@@ -98,9 +67,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     static async getContainTreeLinksDownToParent(
       options: GetContainTreeLinksDownToLinkOptions,
     ) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: ObjectToLinksConverter.getContainTreeLinksDownToParent.name,
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.getContainTreeLinksDownToParent.name,
+      );
       const { linkExp } = options;
       const query: BoolExpLink = {
         up: {
@@ -120,9 +89,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     static async init(
       options: ObjectToLinksConverterInitOptions,
     ): Promise<ObjectToLinksConverter | undefined> {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: ObjectToLinksConverter.init.name,
-      });
+      const log = ObjectToLinksConverter.classLog.extend(this.init.name);
       const { obj } = options;
       const containTreeLinksDownToCoreAndThisPackageLinkApplyMinilinksResult =
         await this.applyContainTreeLinksDownToParentToMinilinks({
@@ -177,9 +144,8 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     }
 
     async convert() {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: "convert",
-      });
+      // TODO: When https://github.com/microsoft/TypeScript/issues/5611 is closed: Use this.methodName.name instead of passing hardcoded name
+      const log = ObjectToLinksConverter.classLog.extend(this.convert.name);
 
       const operations = await this.makeUpdateOperationsForObjectValue({
         link: this.rootLink,
@@ -206,9 +172,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     }
 
     async getTypesContainer(): Promise<Options["typesContainerLink"]> {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: "getTypesContainer",
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.getTypesContainer.name,
+      );
       const {
         data: [typesContainer],
       } = await deep.select({
@@ -223,9 +189,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       value: string | number | boolean | object;
     }): number {
       const { value } = options;
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: ObjectToLinksConverter.getLinksToReserveCount.name,
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.getLinksToReserveCount.name,
+      );
       let count = 0;
       const typeOfValue = typeof value;
       log({ typeOfValue });
@@ -258,9 +224,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     async makeUpdateOperationsForBooleanValue(
       options: UpdateOperationsForAnyValueOptions<boolean>,
     ) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeUpdateOperationsForBooleanValue.name,
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.makeUpdateOperationsForBooleanValue.name,
+      );
       log({ options });
       const { link, value } = options;
       const operations: Array<SerialOperation> = [];
@@ -286,9 +252,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     async makeUpdateOperationsForStringOrNumberValue(
       options: UpdateOperationsForAnyValueOptions<string | number>,
     ) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeUpdateOperationsForStringOrNumberValue.name,
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.makeUpdateOperationsForStringOrNumberValue.name,
+      );
       log({ options });
       const { link, value } = options;
       const operations: Array<SerialOperation> = [];
@@ -313,9 +279,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     async makeUpdateOperationsForArrayValue<TValue extends AllowedArray>(
       options: UpdateOperationsForAnyValueOptions<TValue>,
     ) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeUpdateOperationsForAnyValue.name,
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.makeUpdateOperationsForArrayValue.name,
+      );
       const { link, value } = options;
       const operations: Array<SerialOperation> = [];
 
@@ -347,9 +313,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     async makeUpdateOperationsForAnyValue<TValue extends AllowedValue>(
       options: UpdateOperationsForAnyValueOptions<TValue>,
     ) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeUpdateOperationsForAnyValue.name,
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.makeUpdateOperationsForAnyValue.name,
+      );
       const { link, value } = options;
       const operations: Array<SerialOperation> = [];
       if (typeof value === "boolean") {
@@ -390,9 +356,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     async makeUpdateOperationsForObjectValue(
       options: UpdateOperationsForObjectValueOptions,
     ) {
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeUpdateOperationsForObjectValue.name,
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.makeUpdateOperationsForObjectValue.name,
+      );
       const { link, value } = options;
       log({ options });
       const operations: Array<SerialOperation> = [];
@@ -495,9 +461,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     ) {
       const operations: Array<SerialOperation> = [];
       const { value, parentLinkId, linkId, name } = options;
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: "makeInsertoperationsForStringValue",
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.makeInsertoperationsForBooleanValue.name,
+      );
 
       const linkInsertSerialOperation = createSerialOperation({
         type: "insert",
@@ -541,9 +507,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     ) {
       const operations: Array<SerialOperation> = [];
       const { value, parentLinkId, linkId, name } = options;
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: "makeInsertoperationsForStringValue",
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.makeUpdateOperationsForStringOrNumberValue.name,
+      );
       const linkInsertSerialOperation = createSerialOperation({
         type: "insert",
         table: "links",
@@ -595,9 +561,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     ) {
       const operations: Array<SerialOperation> = [];
       const { value, linkId, name, parentLinkId } = options;
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: "makeInsertoperationsForStringValue",
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.makeInsertOperationsForArrayValue.name,
+      );
 
       const linkInsertSerialOperation = createSerialOperation({
         type: "insert",
@@ -650,9 +616,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     ) {
       const operations: Array<SerialOperation> = [];
       const { value, linkId, name, parentLinkId } = options;
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: "makeInsertoperationsForStringValue",
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.makeInsertOperationsForPrimitiveValue.name,
+      );
 
       const linkInsertSerialOperation = createSerialOperation({
         type: "insert",
@@ -712,9 +678,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     ) {
       const operations: Array<SerialOperation> = [];
       const { value, linkId, name, parentLinkId } = options;
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeInsertOperationsForObjectValue.name,
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.makeInsertOperationsForObjectValue.name,
+      );
 
       const linkInsertSerialOperation = createSerialOperation({
         type: "insert",
@@ -791,9 +757,9 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
     ) {
       const operations: Array<SerialOperation> = [];
       const { value } = options;
-      const log = ObjectToLinksConverter.getNamespacedLogger({
-        namespace: this.makeInsertOperationsForAnyValue.name,
-      });
+      const log = ObjectToLinksConverter.classLog.extend(
+        this.makeInsertOperationsForAnyValue.name,
+      );
 
       if (
         typeof value === "string" ||
@@ -843,9 +809,7 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
   }
 
   async function main() {
-    const log = ObjectToLinksConverter.getNamespacedLogger({
-      namespace: main.name,
-    });
+    const log = packageLog.extend(main.name);
 
     const objectToLinksConverter = await ObjectToLinksConverter.init({
       obj,
