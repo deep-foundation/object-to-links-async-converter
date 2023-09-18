@@ -115,7 +115,7 @@ async function clientHandlerTests(options: {
   const { rootLinkId } = clientHandlerResult.result;
   const {
     data: [rootLinkFromSelect],
-  } = await decoratedDeep.select(clientHandlerResult.result.rootLinkId);
+  } = await decoratedDeep.select(rootLinkId);
   assert.notStrictEqual(rootLinkFromSelect, undefined);
   const { data: containTreeLinksDownToRoot } = await decoratedDeep.select({
     up: {
