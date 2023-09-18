@@ -1,6 +1,5 @@
 import {
   DeepClient,
-  DeepClientInstance,
   DeepClientResult,
   SerialOperation,
   Table,
