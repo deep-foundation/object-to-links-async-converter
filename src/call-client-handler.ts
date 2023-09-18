@@ -1,12 +1,9 @@
 import ts from "typescript";
 import { DeepClientInstance } from "@deep-foundation/deeplinks/imports/client";
-import { debug } from "./debug.js";
-import tsNode from "ts-node";
 
 export async function callClientHandler(
   options: CallClientHandlerOptions,
 ): Promise<any> {
-  const log = debug(callClientHandler.name);
   const { linkId, deep, args } = options;
   const code = await deep
     .select({
