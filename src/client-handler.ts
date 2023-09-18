@@ -41,11 +41,13 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       ...this.requiredPackageNames,
       objectToLinksConverter: "@freephoenix888/object-to-links-async-converter",
     };
+    customMethods: ObjectToLinksConverterOptions["customMethods"];
 
     constructor(options: ObjectToLinksConverterOptions) {
       this.rootLink = options.rootLink;
       this.reservedLinkIds = options.reservedLinkIds;
       this.obj = options.obj;
+      this.customMethods = options.customMethods;
     }
 
     static getLogger(namespace: string) {
@@ -826,93 +828,108 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
 
     return convertResult;
   }
+
+  type ApplyContainTreeLinksDownToParentToMinilinksOptions = Omit<
+    GetContainTreeLinksDownToLinkOptions,
+    "useMinilinks"
+  > & {
+    minilinks: MinilinksResult<Link<number>>;
+  };
+
+  interface GetContainTreeLinksDownToLinkOptions {
+    linkExp: BoolExpLink;
+  }
+
+  interface ObjectToLinksConverterOptions {
+    rootLink: Link<number>;
+    reservedLinkIds: Array<number>;
+    obj: Obj;
+    customMethods?: {
+      convert: typeof ObjectToLinksConverter.prototype.convert;
+      makeInsertOperationsForAnyValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForAnyValue;
+      makeUpdateOperationsForAnyValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForAnyValue;
+      makeInsertOperationsForPrimitiveValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForPrimitiveValue;
+      makeInsertOperationsForArrayValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForArrayValue;
+      makeInsertOperationsForObjectValue: typeof ObjectToLinksConverter.prototype.makeInsertOperationsForObjectValue;
+      makeInsertoperationsForStringValue: typeof ObjectToLinksConverter.prototype.makeInsertoperationsForStringValue;
+      makeInsertoperationsForNumberValue: typeof ObjectToLinksConverter.prototype.makeInsertoperationsForNumberValue;
+      makeInsertoperationsForBooleanValue: typeof ObjectToLinksConverter.prototype.makeInsertoperationsForBooleanValue;
+      makeUpdateOperationsForBooleanValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForBooleanValue;
+      makeUpdateOperationsForStringOrNumberValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForStringOrNumberValue;
+      makeUpdateOperationsForArrayValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForArrayValue;
+      makeUpdateOperationsForObjectValue: typeof ObjectToLinksConverter.prototype.makeUpdateOperationsForObjectValue;
+    };
+  }
+
+  interface ObjectToLinksConverterInitOptions {
+    obj: Obj;
+    rootLinkId?: number;
+  }
+  type MakeInsertoperationsForStringOrNumberOptions =
+    MakeInsertoperationsForValueOptions<string | number> & {
+      value: string | number;
+    };
+
+  type AllowedPrimitive = string | number | boolean;
+
+  interface AllowedObject {
+    [key: string]: AllowedValue;
+  }
+
+  type AllowedArray = Array<AllowedValue>;
+
+  type AllowedValue = AllowedPrimitive | AllowedObject | AllowedArray;
+
+  type MakeInsertoperationsForStringOptions =
+    MakeInsertoperationsForValueOptions<string>;
+
+  type MakeInsertoperationsForNumberOptions =
+    MakeInsertoperationsForValueOptions<number>;
+
+  type MakeInsertoperationsForBooleanOptions =
+    MakeInsertoperationsForValueOptions<boolean>;
+
+  type MakeInsertoperationsForObjectValue =
+    MakeInsertoperationsForValueOptions<AllowedObject>;
+
+  type MakeInsertOperationsForArrayValueOptions =
+    MakeInsertoperationsForValueOptions<AllowedArray>;
+
+  type MakeInsertOperationsForPrimitiveValueOptions =
+    MakeInsertoperationsForValueOptions<AllowedPrimitive>;
+
+  type MakeInsertoperationsForAnyValueOptions = Omit<
+    MakeInsertoperationsForValueOptions<AllowedValue>,
+    "typeLinkId"
+  >;
+
+  type MakeInsertoperationsForValueOptions<TValue extends AllowedValue> = {
+    parentLinkId: number;
+    linkId: number;
+    value: TValue;
+    name: string;
+  };
+
+  interface Options {
+    typesContainerLink: Link<number>;
+  }
+
+  interface GetOptionsOptions {
+    rootLinkId: number;
+  }
+
+  interface UpdateOperationsForValueOptions<TValue extends AllowedValue> {
+    link: Link<number>;
+    value: TValue;
+  }
+
+  type UpdateOperationsForAnyValueOptions<TValue extends AllowedValue> =
+    UpdateOperationsForValueOptions<TValue>;
+
+  type UpdateOperationsForObjectValueOptions =
+    UpdateOperationsForValueOptions<AllowedObject>;
 };
 
 interface Obj {
   [key: string]: string | number | Obj | boolean;
 }
-
-type ApplyContainTreeLinksDownToParentToMinilinksOptions = Omit<
-  GetContainTreeLinksDownToLinkOptions,
-  "useMinilinks"
-> & {
-  minilinks: MinilinksResult<Link<number>>;
-};
-
-interface GetContainTreeLinksDownToLinkOptions {
-  linkExp: BoolExpLink;
-}
-
-interface ObjectToLinksConverterOptions {
-  rootLink: Link<number>;
-  reservedLinkIds: Array<number>;
-  obj: Obj;
-}
-
-interface ObjectToLinksConverterInitOptions {
-  obj: Obj;
-  rootLinkId?: number;
-}
-type MakeInsertoperationsForStringOrNumberOptions =
-  MakeInsertoperationsForValueOptions<string | number> & {
-    value: string | number;
-  };
-
-type AllowedPrimitive = string | number | boolean;
-
-interface AllowedObject {
-  [key: string]: AllowedValue;
-}
-
-type AllowedArray = Array<AllowedValue>;
-
-type AllowedValue = AllowedPrimitive | AllowedObject | AllowedArray;
-
-type MakeInsertoperationsForStringOptions =
-  MakeInsertoperationsForValueOptions<string>;
-
-type MakeInsertoperationsForNumberOptions =
-  MakeInsertoperationsForValueOptions<number>;
-
-type MakeInsertoperationsForBooleanOptions =
-  MakeInsertoperationsForValueOptions<boolean>;
-
-type MakeInsertoperationsForObjectValue =
-  MakeInsertoperationsForValueOptions<AllowedObject>;
-
-type MakeInsertOperationsForArrayValueOptions =
-  MakeInsertoperationsForValueOptions<AllowedArray>;
-
-type MakeInsertOperationsForPrimitiveValueOptions =
-  MakeInsertoperationsForValueOptions<AllowedPrimitive>;
-
-type MakeInsertoperationsForAnyValueOptions = Omit<
-  MakeInsertoperationsForValueOptions<AllowedValue>,
-  "typeLinkId"
->;
-
-type MakeInsertoperationsForValueOptions<TValue extends AllowedValue> = {
-  parentLinkId: number;
-  linkId: number;
-  value: TValue;
-  name: string;
-};
-
-interface Options {
-  typesContainerLink: Link<number>;
-}
-
-interface GetOptionsOptions {
-  rootLinkId: number;
-}
-
-interface UpdateOperationsForValueOptions<TValue extends AllowedValue> {
-  link: Link<number>;
-  value: TValue;
-}
-
-type UpdateOperationsForAnyValueOptions<TValue extends AllowedValue> =
-  UpdateOperationsForValueOptions<TValue>;
-
-type UpdateOperationsForObjectValueOptions =
-  UpdateOperationsForValueOptions<AllowedObject>;
