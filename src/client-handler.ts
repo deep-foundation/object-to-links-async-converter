@@ -180,10 +180,6 @@ async (options: { deep: DeepClient; rootLinkId?: number; obj: Obj }) => {
       };
     }
 
-    async getOptions(): Promise<Options> {
-      return {};
-    }
-
     static getLinksToReserveCount(options: {
       value: string | number | boolean | object;
     }): number {
