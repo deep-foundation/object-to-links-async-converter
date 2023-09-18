@@ -604,7 +604,7 @@ async (options: {
       const operations: Array<SerialOperation> = [];
       const { value, linkId, name, parentLinkId } = options;
       const log = ObjectToLinksConverter.getLogger(
-        "makeInsertOperationsForStringValue",
+        this.makeInsertOperationsForPrimitiveValue.name,
       );
 
       const linkInsertSerialOperation = createSerialOperation({
