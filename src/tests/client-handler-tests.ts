@@ -90,6 +90,22 @@ async function test() {
   await customMethodMakeInsertoperationsForBooleanValue();
   await treeTest();
   await updateObjectPropertyWithObjectPropertyTest();
+  await customResultLinkTest();
+}
+
+async function customResultLinkTest() {
+  const propertyKey = "myStringKey";
+  const propertyValue = "myStringValue";
+  const {
+    data: [{ id: resultLinkId }],
+  } = await deep.insert({
+    type_id: await deep.id("@deep-foundation/core", "Type"),
+  });
+  await clientHandlerTests({
+    propertyKey,
+    propertyValue,
+    resultLinkId,
+  });
 }
 
 async function updateObjectPropertyWithObjectPropertyTest() {
@@ -446,19 +462,26 @@ async function clientHandlerTests(options: {
     data: [rootLinkFromSelect],
   } = await decoratedDeep.select(rootLinkId);
   assert.notStrictEqual(rootLinkFromSelect, undefined);
-  const { data: containTreeLinksDownToRoot } = await decoratedDeep.select({
+
+  const {
+    data: [resultLinkFromSelect],
+  } = await decoratedDeep.select(resultLinkId);
+  assert.notStrictEqual(resultLinkFromSelect, undefined);
+
+  const { data: containTreeLinksDownToResult } = await decoratedDeep.select({
     up: {
       tree_id: {
         _id: ["@deep-foundation/core", "containTree"],
       },
-      parent_id: rootLinkFromSelect.id,
+      parent_id: resultLinkId,
     },
   });
-  assert.notStrictEqual(containTreeLinksDownToRoot, undefined);
-  assert.notEqual(containTreeLinksDownToRoot.length, 0);
+  assert.notStrictEqual(containTreeLinksDownToResult, undefined);
+  assert.notEqual(containTreeLinksDownToResult.length, 0);
+
   await checkProperty({
     name: propertyKey,
-    parentLink: rootLinkFromSelect,
+    parentLink: resultLinkFromSelect,
     value: propertyValue,
   });
 }
