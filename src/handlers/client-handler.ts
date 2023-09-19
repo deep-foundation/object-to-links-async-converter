@@ -184,6 +184,7 @@ async (options: {
       return {
         serialResult,
         rootLinkId: this.rootLink.id,
+        resultLinkId: this.resultLink.id,
       };
     }
 
