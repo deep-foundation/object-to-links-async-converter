@@ -47,7 +47,35 @@ These links will be created:
 `Boolean` from `Object` to `true` or `false` (from the `@deep-foundation/boolean` package)
 `Contain` with value `myBooleanField` from `Object` to `Boolean`
 
-## Limitations
+## How to programmatically wait until converting is done?
+
+Use `DeepClient.await` method:
+
+```typescript
+await deep.await(parseItLinkId);
+```
+
+## Links are not created, nothing happened after inserting `ParseIt`
+
+See PromiseResult for your `ParseIt` link
+
+### Using DeepCase
+
+- Press right mouse button on `ParseIt` link and select `Traveller`
+- Select `Down`
+- Select `PromiseTree`
+
+You will see all the links down by `promiseTree` for "parent" `ParseIt`:
+
+- `Then` from `YourLink` to `Promise`
+- `Promise`
+- `Rejected` or `Resolved` from `Promise` to `PromiseResult`
+- `PromiseResult`
+
+If you see `Resolved` link then handler was executed successfully, if you see `Rejected` link then handler was executed with error
+You can see the error in `PromiseResult` link value
+
+# Limitations
 
 If you delete field in your object value and parse it again - link associated with that field will not be deleted. This feature will be implemented in the future!
 
