@@ -29,10 +29,10 @@ async (options: {
     const {
       data: [rootLink],
     } = await deep.select({
-      id: parseItLink.to_id,
+      id: parseItLink.from_id,
     });
     if (!rootLink) {
-      throw new Error(`parseIt.to does not exist: ##${parseItLink.to_id}`);
+      throw new Error(`parseIt.to does not exist: ##${parseItLink.from_id}`);
     }
     const obj = rootLink.value?.value;
     if (!obj) {
@@ -47,6 +47,7 @@ async (options: {
           deep: deep,
           obj: obj,
           rootLinkId: rootLink.id,
+          resultLinkId: parseItLink.to_id,
           // TODO?
           // customMethods: options.customMethods,
         },
