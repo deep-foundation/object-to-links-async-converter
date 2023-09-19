@@ -23,6 +23,7 @@ async (options: {
   );
   const { pascalCase } = await import("case-anything");
   const { default: debug } = await import("debug");
+  const { default: util } = await import("util");
   const logs: Array<any> = [];
   const packageLog = debug("@freephoenix888/object-to-links-async-converter");
   packageLog({ options });
@@ -900,7 +901,7 @@ async (options: {
     };
   } catch (error) {
     throw {
-      error,
+      error: util.inspect(error),
       logs: logs,
     };
   }
