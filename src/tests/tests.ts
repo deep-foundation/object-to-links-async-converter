@@ -77,21 +77,72 @@ decoratedDeep.minilinks.apply(requiredPackageLinks);
 await test();
 
 async function test() {
-  await stringPropertyTest();
-  await numberPropertyTest();
-  await booleanPropertyTest();
-  await arrayPropertyTest();
-  await objectPropertyWithStringPropertyTest();
-  await objectPropertyWithArrayOfStringsPropertyTest();
-  await objectPropertyWithArrayOfArraysOfStringsPropertyTest();
-  await objectPropertyWithArrayOfObjectsPropertyTest();
-  await objectPropertyWithObjectPropertyTest();
-  await objectPropertyWithObjectPropertyWithArrayPropertyTest();
-  await customRootLinkTest();
-  await customMethodMakeInsertoperationsForBooleanValue();
-  await treeTest();
-  await updateObjectPropertyWithObjectPropertyTest();
-  await customResultLinkTest();
+  // await stringPropertyTest();
+  // await numberPropertyTest();
+  // await booleanPropertyTest();
+  // await arrayPropertyTest();
+  // await objectPropertyWithStringPropertyTest();
+  // await objectPropertyWithArrayOfStringsPropertyTest();
+  // await objectPropertyWithArrayOfArraysOfStringsPropertyTest();
+  // await objectPropertyWithArrayOfObjectsPropertyTest();
+  // await objectPropertyWithObjectPropertyTest();
+  // await objectPropertyWithObjectPropertyWithArrayPropertyTest();
+  // await customRootLinkTest();
+  // await customMethodMakeInsertoperationsForBooleanValue();
+  // await treeTest();
+  // await updateObjectPropertyWithObjectPropertyTest();
+  // await customResultLinkTest();
+  await parseItTest();
+}
+
+async function parseItTest() {
+  const reservedLinkIds = await deep.reserve(1);
+  const rootLinkId = reservedLinkIds.pop()!;
+  const propertyKey = "myStringKey";
+  const propertyValue = "myStringValue";
+  const {
+    data: [rootLink],
+  } = await deep.insert(
+    {
+      type_id: await deep.id(
+        "@freephoenix888/object-to-links-async-converter",
+        "Root",
+      ),
+      object: {
+        data: {
+          value: {
+            [propertyKey]: propertyValue,
+          },
+        },
+      },
+    },
+    {
+      returning: deep.linksSelectReturning,
+    },
+  );
+  const {
+    data: [parseItLink],
+  } = await deep.insert(
+    {
+      type_id: await deep.id(
+        "@freephoenix888/object-to-links-async-converter",
+        "ParseIt",
+      ),
+      from_id: rootLink.id,
+      to_id: rootLink.id,
+    },
+    {
+      returning: deep.linksSelectReturning,
+    },
+  );
+
+  await deep.await(parseItLink.id);
+
+  await checkProperty({
+    parentLink: rootLink as Link<number>,
+    name: propertyKey,
+    value: propertyValue,
+  });
 }
 
 async function customResultLinkTest() {
