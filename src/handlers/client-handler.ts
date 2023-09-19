@@ -171,7 +171,7 @@ async (options: {
       const log = ObjectToLinksConverter.getLogger("convert");
 
       const operations = await this.makeUpdateOperationsForObjectValue({
-        link: this.rootLink,
+        link: this.resultLink,
         value: this.obj,
       });
       log({ operations });
