@@ -15,8 +15,9 @@ async (options: {
   rootLinkId?: number;
   obj: Obj;
   customMethods?: Record<string, Function>;
+  resultLinkId?: number;
 }) => {
-  const { deep, rootLinkId, obj, customMethods } = options;
+  const { deep, rootLinkId, obj, customMethods, resultLinkId } = options;
   const { createSerialOperation } = await import(
     "@deep-foundation/deeplinks/imports/gql/index.js"
   );
@@ -30,6 +31,7 @@ async (options: {
     reservedLinkIds: Array<number>;
     rootLink: Link<number>;
     obj: Obj;
+    resultLink: Link<number>;
     deep = deep;
     static requiredPackageNames = {
       core: "@deep-foundation/core",
@@ -44,6 +46,7 @@ async (options: {
       this.rootLink = options.rootLink;
       this.reservedLinkIds = options.reservedLinkIds;
       this.obj = options.obj;
+      this.resultLink = options.resultLink;
     }
 
     static getLogger(namespace: string) {
@@ -144,10 +147,21 @@ async (options: {
       log({ linkIdsToReserveCount });
       const reservedLinkIds = await deep.reserve(linkIdsToReserveCount);
       log({ reservedLinkIds });
+      const resultLink = options.resultLinkId
+        ? await deep
+            .select(options.resultLinkId)
+            .then((result) => result.data[0])
+        : rootLink;
+      if (options.resultLinkId && !resultLink) {
+        throw new Error(
+          `Result link with id ${options.resultLinkId} not found`,
+        );
+      }
       const converter = new this({
         reservedLinkIds,
         rootLink,
         obj,
+        resultLink,
       });
       log({ converter });
       return converter;
@@ -862,6 +876,7 @@ async (options: {
     const objectToLinksConverter = await ObjectToLinksConverter.init({
       obj,
       rootLinkId,
+      resultLinkId,
     });
     log({ objectToLinksConverter });
 
@@ -913,12 +928,14 @@ async (options: {
     reservedLinkIds: Array<number>;
     obj: Obj;
     customMethods?: CustomMethods;
+    resultLink: Link<number>;
   }
 
   interface ObjectToLinksConverterInitOptions {
     obj: Obj;
     rootLinkId?: number;
     customMethods?: CustomMethods;
+    resultLinkId?: number;
   }
 
   type AllowedPrimitive = string | number | boolean;
