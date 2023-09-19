@@ -24,6 +24,7 @@ import {
 import { pascalCase } from "case-anything";
 import { Link } from "@deep-foundation/deeplinks/imports/minilinks.js";
 import { createSerialOperation } from "@deep-foundation/deeplinks/imports/gql/serial.js";
+import { BoolExpLink } from "@deep-foundation/deeplinks/imports/client_types.js";
 dotenv.config({
   path: "./.env.test.local",
 });
@@ -467,6 +468,26 @@ async function clientHandlerTests(options: {
     data: [resultLinkFromSelect],
   } = await decoratedDeep.select(resultLinkId);
   assert.notStrictEqual(resultLinkFromSelect, undefined);
+
+  const hasResultSelectData: BoolExpLink = {
+    type_id: {
+      _id: ["@freephoenix888/object-to-links-async-converter", "HasResult"],
+    },
+    from_id: rootLinkId,
+    to_id: resultLinkId,
+  };
+  const {
+    data: [hasResultLink],
+  } = await deep.select(hasResultSelectData);
+  if (!hasResultLink) {
+    throw new Error(
+      `Failed to find hasResultLink by using select with query: ${JSON.stringify(
+        hasResultSelectData,
+        null,
+        2,
+      )}`,
+    );
+  }
 
   const { data: containTreeLinksDownToResult } = await decoratedDeep.select({
     up: {
