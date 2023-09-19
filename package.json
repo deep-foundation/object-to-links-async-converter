@@ -30,11 +30,11 @@
     "/dist",
     "./deep.json"
   ],
-  "version": "0.0.1-dev.0",
+  "version": "0.0.1-dev.1",
   "dependencies": {
-    "@deep-foundation/core": "^0.0.2",
+    "@deep-foundation/core": "~0.0.2",
     "@deep-foundation/tsx": "^0.0.5",
-    "@deep-foundation/boolean": "^1.0.0",
+    "@deep-foundation/boolean": "~1.0.0",
     "debug": "^4.3.4",
     "source-map": "^0.7.4"
   },
