@@ -404,6 +404,7 @@ async function clientHandlerTests(options: {
   propertyValue: AllowedValue;
   rootLinkId?: number;
   customMethods?: Record<string, Function>;
+  resultLinkId?: number;
 }) {
   const log = molduleLog.extend("clientHandlerTests");
   const { propertyKey: propertyKey, propertyValue: propertyValue } = options;
@@ -426,6 +427,7 @@ async function clientHandlerTests(options: {
         deep: packageDeep,
         obj: obj,
         rootLinkId: options.rootLinkId,
+        resultLinkId: options.resultLinkId,
         customMethods: options.customMethods,
       },
     ],
@@ -433,9 +435,12 @@ async function clientHandlerTests(options: {
   log({ clientHandlerResult });
   if (clientHandlerResult.error) throw clientHandlerResult.error;
   assert.notStrictEqual(clientHandlerResult.result?.rootLinkId, undefined);
-  const { rootLinkId } = clientHandlerResult.result;
+  const { rootLinkId, resultLinkId } = clientHandlerResult.result;
   if (options.rootLinkId) {
     assert.equal(rootLinkId, options.rootLinkId);
+  }
+  if (options.resultLinkId) {
+    assert.equal(resultLinkId, options.resultLinkId);
   }
   const {
     data: [rootLinkFromSelect],
