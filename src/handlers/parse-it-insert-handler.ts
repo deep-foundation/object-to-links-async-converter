@@ -17,7 +17,7 @@ async (options: {
   try {
     const result = await main();
     return {
-      result,
+      result: util.inspect(result),
     };
   } catch (error) {
     throw {
