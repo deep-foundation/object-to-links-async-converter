@@ -899,7 +899,7 @@ async (options: {
       logs: logs,
     };
   } catch (error) {
-    return {
+    throw {
       error,
       logs: logs,
     };
