@@ -176,6 +176,44 @@ async (options: {
       });
       log({ operations });
 
+      const hasResultTypeLinkId = await deep.id(
+        "@free-phoenix-888/object-to-links-async-converter",
+        "HasResult",
+      );
+      const {
+        data: [hasResultLink],
+      } = await deep.select({
+        type_id: hasResultTypeLinkId,
+        from_id: this.rootLink.id,
+      });
+      if (hasResultLink) {
+        operations.push(
+          createSerialOperation({
+            type: "update",
+            table: "links",
+            exp: {
+              type_id: hasResultTypeLinkId,
+              from_id: this.rootLink.id,
+            },
+            value: {
+              to_id: this.resultLink.id,
+            },
+          }),
+        );
+      } else {
+        operations.push(
+          createSerialOperation({
+            type: "insert",
+            table: "links",
+            objects: {
+              type_id: hasResultTypeLinkId,
+              from_id: this.rootLink.id,
+              to_id: this.resultLink.id,
+            },
+          }),
+        );
+      }
+
       const serialResult = await deep.serial({
         operations,
       });
