@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# ANSI escape sequence for red
+RED='\033[0;31m'
+
+# ANSI escape sequence to reset color
+NC='\033[0m'
+
+printf "${RED}Please use npx cz to commit${NC}\n"
