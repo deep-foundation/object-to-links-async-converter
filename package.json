@@ -4,7 +4,7 @@
     "deep-package"
   ],
   "type": "module",
-  "description": "",
+  "description": "A deep package for converting object to links",
   "repository": {
     "type": "git",
     "url": "https://github.com/FreePhoenix888/object-to-links-async-converter"
