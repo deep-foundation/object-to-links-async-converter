@@ -92,7 +92,8 @@ async function test() {
   // await treeTest();
   // await updateObjectPropertyWithObjectPropertyTest();
   // await customResultLinkTest();
-  await parseItTest();
+  // await parseItTest();
+  await parseItWithDifferentResultLinkResultTest();
 }
 
 async function parseItTest() {
@@ -141,6 +142,88 @@ async function parseItTest() {
     name: propertyKey,
     value: propertyValue,
   });
+
+  const {
+    data: [hasResultLink],
+  } = await deep.select({
+    type_id: {
+      _id: ["@freephoenix888/object-to-links-async-converter", "HasResult"],
+    },
+    from_id: rootLink.id,
+    to_id: rootLink.id,
+  });
+  assert.notEqual(hasResultLink, undefined);
+}
+
+async function parseItWithDifferentResultLinkResultTest() {
+  const propertyKey = "myStringKey";
+  const propertyValue = "myStringValue";
+  const {
+    data: [rootLink],
+  } = await deep.insert(
+    {
+      type_id: await deep.id(
+        "@freephoenix888/object-to-links-async-converter",
+        "Root",
+      ),
+      object: {
+        data: {
+          value: {
+            [propertyKey]: propertyValue,
+          },
+        },
+      },
+    },
+    {
+      returning: deep.linksSelectReturning,
+    },
+  );
+
+  const {
+    data: [resultLink],
+  } = await deep.insert(
+    {
+      type_id: await deep.id("@deep-foundation/core", "Type"),
+    },
+    {
+      returning: deep.linksSelectReturning,
+    },
+  );
+
+  const {
+    data: [parseItLink],
+  } = await deep.insert(
+    {
+      type_id: await deep.id(
+        "@freephoenix888/object-to-links-async-converter",
+        "ParseIt",
+      ),
+      from_id: rootLink.id,
+      to_id: resultLink.id,
+    },
+    {
+      returning: deep.linksSelectReturning,
+    },
+  );
+
+  await deep.await(parseItLink.id);
+
+  await checkProperty({
+    parentLink: resultLink as Link<number>,
+    name: propertyKey,
+    value: propertyValue,
+  });
+
+  const {
+    data: [hasResultLink],
+  } = await deep.select({
+    type_id: {
+      _id: ["@freephoenix888/object-to-links-async-converter", "HasResult"],
+    },
+    from_id: rootLink.id,
+    to_id: resultLink.id,
+  });
+  assert.notEqual(hasResultLink, undefined);
 }
 
 async function customResultLinkTest() {
