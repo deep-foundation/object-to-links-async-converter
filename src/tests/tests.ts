@@ -77,22 +77,22 @@ decoratedDeep.minilinks.apply(requiredPackageLinks);
 await test();
 
 async function test() {
-  // await stringPropertyTest();
-  // await numberPropertyTest();
-  // await booleanPropertyTest();
-  // await arrayPropertyTest();
-  // await objectPropertyWithStringPropertyTest();
-  // await objectPropertyWithArrayOfStringsPropertyTest();
-  // await objectPropertyWithArrayOfArraysOfStringsPropertyTest();
-  // await objectPropertyWithArrayOfObjectsPropertyTest();
-  // await objectPropertyWithObjectPropertyTest();
-  // await objectPropertyWithObjectPropertyWithArrayPropertyTest();
-  // await customRootLinkTest();
-  // await customMethodMakeInsertoperationsForBooleanValue();
-  // await treeTest();
-  // await updateObjectPropertyWithObjectPropertyTest();
-  // await customResultLinkTest();
-  // await parseItTest();
+  await stringPropertyTest();
+  await numberPropertyTest();
+  await booleanPropertyTest();
+  await arrayPropertyTest();
+  await objectPropertyWithStringPropertyTest();
+  await objectPropertyWithArrayOfStringsPropertyTest();
+  await objectPropertyWithArrayOfArraysOfStringsPropertyTest();
+  await objectPropertyWithArrayOfObjectsPropertyTest();
+  await objectPropertyWithObjectPropertyTest();
+  await objectPropertyWithObjectPropertyWithArrayPropertyTest();
+  await customRootLinkTest();
+  await customMethodMakeInsertoperationsForBooleanValue();
+  await treeTest();
+  await updateObjectPropertyWithObjectPropertyTest();
+  await customResultLinkTest();
+  await parseItTest();
   await parseItWithDifferentResultLinkResultTest();
 }
 
