@@ -12,15 +12,16 @@ async (options: {
     deep,
     data: { newLink: parseItLink },
   } = options;
-  const ts = await import("typescript");
+  const { default: ts } = await import("typescript");
+  const { default: util } = await import("util");
   try {
     const result = await main();
     return {
       result,
     };
   } catch (error) {
-    return {
-      error,
+    throw {
+      error: util.inspect(error),
     };
   }
 
@@ -30,6 +31,9 @@ async (options: {
     } = await deep.select({
       id: parseItLink.to_id,
     });
+    if (!rootLink) {
+      throw new Error(`parseIt.to does not exist: ##${parseItLink.to_id}`);
+    }
     const obj = rootLink.value?.value;
     if (!obj) {
       throw new Error(`##${rootLink.id} must have value`);
