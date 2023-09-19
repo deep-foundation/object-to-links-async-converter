@@ -177,7 +177,7 @@ async (options: {
       log({ operations });
 
       const hasResultTypeLinkId = await deep.id(
-        "@free-phoenix-888/object-to-links-async-converter",
+        "@freephoenix-888/object-to-links-async-converter",
         "HasResult",
       );
       const {
