@@ -96,8 +96,6 @@ async function test() {
 }
 
 async function parseItTest() {
-  const reservedLinkIds = await deep.reserve(1);
-  const rootLinkId = reservedLinkIds.pop()!;
   const propertyKey = "myStringKey";
   const propertyValue = "myStringValue";
   const {
