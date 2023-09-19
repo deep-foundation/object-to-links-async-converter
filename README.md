@@ -17,7 +17,8 @@ A deep package for converting object to links
 
 ## Must I use `Root` type
 
-It is not required to use `Root` type but it is recommended to use it because this type is added to the tree. If you want to use your own type you should add it to tree of this package by using `TreeIncludeNode`
+It is not required to use `Root` type but it is recommended to use it because this type is added to the tree  
+If you want to use your own type you should add it to tree of this package by creating `TreeIncludeNode` from tree of this package to your type
 
 ## Must `ParseIt.from` and `ParseIt.to` be equal?
 
@@ -37,14 +38,14 @@ Let us imagine we have this object and it is called `MyLink`:
 }
 ```
 
-These links will be created:
-`Object` around `MyLink` (`from` and `to` are pointing to your link)
-`Contain` with value `myObject` from `MyLink` to `Object`
-`String` with value `myStringValue` from `Object` to `Object`
-`Contain` with value `myStringField` from `Object` to `String`
-`Number` with value `123` from `Object` to `Object`
-`Contain` with value `myNumberField` from `Object` to `Number`
-`Boolean` from `Object` to `true` or `false` (from the `@deep-foundation/boolean` package)
+These links will be created:  
+`Object` around `MyLink` (`from` and `to` are pointing to your link)  
+`Contain` with value `myObject` from `MyLink` to `Object`  
+`String` with value `myStringValue` from `Object` to `Object`  
+`Contain` with value `myStringField` from `Object` to `String`  
+`Number` with value `123` from `Object` to `Object`  
+`Contain` with value `myNumberField` from `Object` to `Number`  
+`Boolean` from `Object` to `true` or `false` (from the `@deep-foundation/boolean` package)  
 `Contain` with value `myBooleanField` from `Object` to `Boolean`
 
 ## How to programmatically wait until converting is done?
