@@ -101,7 +101,7 @@ await deep.serial({
 ## How does it look like after convertion?
 
 ![image](https://user-images.githubusercontent.com/66206278/230576157-5bcfd0fa-4689-42b8-8ef0-badd7f5397ba.png)  
-String/Number/Object values are converted to loop-links which points from and to the same link. Boolean links point from the link to the ["@freephoenix888/boolean", "True"] or ["@freephoenix888/boolean", "False"]
+String/Number/Object values are converted to loop-links which points from and to the same link. Boolean links point from the link to the ["@deep-foundation/boolean", "True"] or ["@deep-foundation/boolean", "False"]
 
 ## Limitations
 

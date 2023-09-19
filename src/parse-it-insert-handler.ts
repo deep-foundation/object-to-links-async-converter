@@ -44,7 +44,7 @@ const result = objectToLinksConverter?.convert({
     typesContainer: Link<number>;
     requiredPackageNames = {
       core: "@deep-foundation/core",
-      boolean: "@freephoenix888/boolean",
+      boolean: "@deep-foundation/boolean",
     };
 
     constructor(options: ObjectToLinksConverterOptions) {

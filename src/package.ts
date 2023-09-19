@@ -18,7 +18,7 @@ const {name: packageName} = package;
 #### Use id method to get the id of the link
 ```ts
 const package = new Package({deep});
-const dependency@freephoenix888/booleanLinkId = await package["dependency@freephoenix888/boolean"].id();
+const dependency@deep-foundation/booleanLinkId = await package["dependency@deep-foundation/boolean"].id();
 const clientHandlerCodeLinkId = await package["clientHandlerCode"].id();
 const clientHandlerLinkId = await package["clientHandler"].id();
 const booleanTypeLinkId = await package["Boolean"].id();
@@ -40,7 +40,7 @@ const handleParseItInsertLinkId = await package["handleParseItInsert"].id();
 ```ts
 const package = new Package({deep});
 await package.applyMinilinks();
-const dependency@freephoenix888/booleanLinkId = package["dependency@freephoenix888/boolean"].idLocal();
+const dependency@deep-foundation/booleanLinkId = package["dependency@deep-foundation/boolean"].idLocal();
 const clientHandlerCodeLinkId = package["clientHandlerCode"].idLocal();
 const clientHandlerLinkId = package["clientHandler"].idLocal();
 const booleanTypeLinkId = package["Boolean"].idLocal();
@@ -60,7 +60,7 @@ const handleParseItInsertLinkId = package["handleParseItInsert"].idLocal();
 #### Use name field to get the name of the link
 ```ts
 const package = new Package({deep});
-const dependency@freephoenix888/boolean = package["dependency@freephoenix888/boolean"].name;
+const dependency@deep-foundation/boolean = package["dependency@deep-foundation/boolean"].name;
 const clientHandlerCode = package["clientHandlerCode"].name;
 const clientHandler = package["clientHandler"].name;
 const boolean = package["Boolean"].name;
@@ -88,24 +88,24 @@ export class Package extends BasePackage {
 
   /**
       @example
-      #### Use id method to get the id of the dependency@freephoenix888/boolean link
+      #### Use id method to get the id of the dependency@deep-foundation/boolean link
       ```ts
       const package = new Package({deep});
-      const dependency@freephoenix888/booleanLinkId = await package["dependency@freephoenix888/boolean"].id();
+      const dependency@deep-foundation/booleanLinkId = await package["dependency@deep-foundation/boolean"].id();
       ```
-      #### Use localId method to get the local id of the dependency@freephoenix888/boolean link
+      #### Use localId method to get the local id of the dependency@deep-foundation/boolean link
       ```ts
       const package = new Package({deep});
-      const dependency@freephoenix888/booleanLinkId = await package["dependency@freephoenix888/boolean"].localId();
+      const dependency@deep-foundation/booleanLinkId = await package["dependency@deep-foundation/boolean"].localId();
       ```
-      #### Use name field to get the name of the dependency@freephoenix888/boolean link
+      #### Use name field to get the name of the dependency@deep-foundation/boolean link
       ```ts
       const package = new Package({deep});
-      const dependency@freephoenix888/boolean = await package["dependency@freephoenix888/boolean"].name;
+      const dependency@deep-foundation/boolean = await package["dependency@deep-foundation/boolean"].name;
       ```
       */
-  public "dependency@freephoenix888/boolean" = this.createEntity(
-    "dependency@freephoenix888/boolean",
+  public "dependency@deep-foundation/boolean" = this.createEntity(
+    "dependency@deep-foundation/boolean",
   );
   /**
       @example

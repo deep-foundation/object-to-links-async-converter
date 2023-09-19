@@ -36,7 +36,7 @@ async (options: {
     deep = deep;
     static requiredPackageNames = {
       core: "@deep-foundation/core",
-      boolean: "@freephoenix888/boolean",
+      boolean: "@deep-foundation/boolean",
     };
     static requiredPackagesInMinilinks = {
       ...this.requiredPackageNames,

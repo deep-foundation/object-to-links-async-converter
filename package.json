@@ -34,7 +34,7 @@
   "dependencies": {
     "@deep-foundation/core": "^0.0.2",
     "@deep-foundation/tsx": "^0.0.5",
-    "@freephoenix888/boolean": "^0.0.1",
+    "@deep-foundation/boolean": "^0.0.1",
     "debug": "^4.3.4",
     "source-map": "^0.7.4"
   },
