@@ -25,7 +25,7 @@ async (options: {
   const { default: debug } = await import("debug");
   const { default: util } = await import("util");
   const logs: Array<any> = [];
-  const packageLog = debug("@freephoenix888/object-to-links-async-converter");
+  const packageLog = debug("@deep-foundation/object-to-links-async-converter");
   packageLog({ options });
 
   class ObjectToLinksConverter {
@@ -40,7 +40,8 @@ async (options: {
     };
     static requiredPackagesInMinilinks = {
       ...this.requiredPackageNames,
-      objectToLinksConverter: "@freephoenix888/object-to-links-async-converter",
+      objectToLinksConverter:
+        "@deep-foundation/object-to-links-async-converter",
     };
 
     constructor(options: ObjectToLinksConverterOptions) {
@@ -178,7 +179,7 @@ async (options: {
       log({ operations });
 
       const hasResultTypeLinkId = await deep.id(
-        "@freephoenix888/object-to-links-async-converter",
+        "@deep-foundation/object-to-links-async-converter",
         "HasResult",
       );
       const {

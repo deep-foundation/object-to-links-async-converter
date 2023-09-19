@@ -1,4 +1,4 @@
-[![npm](https://img.shields.io/npm/v/@freephoenix888/object-to-links-async-converter.svg)](https://www.npmjs.com/package/@freephoenix888/object-to-links-async-converter)
+[![npm](https://img.shields.io/npm/v/@deep-foundation/object-to-links-async-converter.svg)](https://www.npmjs.com/package/@deep-foundation/object-to-links-async-converter)
 [![Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/FreePhoenix888/object-to-links-async-converter)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
@@ -14,7 +14,7 @@ Converts object values to links.
 ```ts
 const joinTypeLinkId = await deep.id("@deep-foundation/core", "Join");
 const packageLinkId = await deep.id(
-  "@freephoenix888/object-to-links-async-converter",
+  "@deep-foundation/object-to-links-async-converter",
 );
 await deep.insert([
   {
@@ -82,7 +82,7 @@ await deep.serial({
         type_id: await deep.id("@deep-foundation/core", "HandleUpdate"),
         from_id: linkWithObjectValueTypeLinkId,
         to_id: await deep.id(
-          "@freephoenix888/object-to-links-async-converter",
+          "@deep-foundation/object-to-links-async-converter",
           "UpdateHandler",
         ),
         in: {

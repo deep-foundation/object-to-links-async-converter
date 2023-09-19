@@ -104,7 +104,7 @@ async function parseItTest() {
   } = await deep.insert(
     {
       type_id: await deep.id(
-        "@freephoenix888/object-to-links-async-converter",
+        "@deep-foundation/object-to-links-async-converter",
         "Root",
       ),
       object: {
@@ -124,7 +124,7 @@ async function parseItTest() {
   } = await deep.insert(
     {
       type_id: await deep.id(
-        "@freephoenix888/object-to-links-async-converter",
+        "@deep-foundation/object-to-links-async-converter",
         "ParseIt",
       ),
       from_id: rootLink.id,
@@ -147,7 +147,7 @@ async function parseItTest() {
     data: [hasResultLink],
   } = await deep.select({
     type_id: {
-      _id: ["@freephoenix888/object-to-links-async-converter", "HasResult"],
+      _id: ["@deep-foundation/object-to-links-async-converter", "HasResult"],
     },
     from_id: rootLink.id,
     to_id: rootLink.id,
@@ -163,7 +163,7 @@ async function parseItWithDifferentResultLinkResultTest() {
   } = await deep.insert(
     {
       type_id: await deep.id(
-        "@freephoenix888/object-to-links-async-converter",
+        "@deep-foundation/object-to-links-async-converter",
         "Root",
       ),
       object: {
@@ -195,7 +195,7 @@ async function parseItWithDifferentResultLinkResultTest() {
   } = await deep.insert(
     {
       type_id: await deep.id(
-        "@freephoenix888/object-to-links-async-converter",
+        "@deep-foundation/object-to-links-async-converter",
         "ParseIt",
       ),
       from_id: rootLink.id,
@@ -218,7 +218,7 @@ async function parseItWithDifferentResultLinkResultTest() {
     data: [hasResultLink],
   } = await deep.select({
     type_id: {
-      _id: ["@freephoenix888/object-to-links-async-converter", "HasResult"],
+      _id: ["@deep-foundation/object-to-links-async-converter", "HasResult"],
     },
     from_id: rootLink.id,
     to_id: resultLink.id,
@@ -603,7 +603,7 @@ async function clientHandlerTests(options: {
 
   const hasResultSelectData: BoolExpLink = {
     type_id: {
-      _id: ["@freephoenix888/object-to-links-async-converter", "HasResult"],
+      _id: ["@deep-foundation/object-to-links-async-converter", "HasResult"],
     },
     from_id: rootLinkId,
     to_id: resultLinkId,
