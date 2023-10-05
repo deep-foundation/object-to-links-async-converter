@@ -34,7 +34,21 @@ async (options: {
     if (!rootLink) {
       throw new Error(`parseIt.to does not exist: ##${parseItLink.from_id}`);
     }
-    const obj = rootLink.value?.value;
+
+    let obj;
+    if (typeof rootLink.value?.value === "object") {
+      obj = rootLink.value?.value;
+    } else if (typeof rootLink.value?.value === "string") {
+      try {
+        obj = JSON.parse(rootLink.value?.value);
+      } catch (error) {
+        throw new Error(
+          `##${rootLink.id} must be valid JSON if it is a string`,
+        );
+      }
+    } else {
+      throw new Error(`##${rootLink.id} must have value`);
+    }
     if (!obj) {
       throw new Error(`##${rootLink.id} must have value`);
     }
