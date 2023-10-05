@@ -41,7 +41,7 @@
   "devDependencies": {
     "bun-types": "^1.0.1",
     "@atao60/fse-cli": "^0.1.7",
-    "@deep-foundation/npm-automation": "^18.1.10",
+    "@deep-foundation/npm-automation": "^18.1.11",
     "@freephoenix888/recursive-object-map": "^1.0.0",
     "@types/debug": "^4.1.8",
     "@types/fs-extra": "^11.0.1",
