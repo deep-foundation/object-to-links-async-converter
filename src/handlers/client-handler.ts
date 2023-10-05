@@ -178,10 +178,7 @@ async (options: {
       });
       log({ operations });
 
-      const hasResultTypeLinkId = await deep.id(
-        "@deep-foundation/object-to-links-async-converter",
-        "HasResult",
-      );
+      const hasResultTypeLinkId = await deep.id(deep.linkId!, "HasResult");
       const {
         data: [hasResultLink],
       } = await deep.select({
