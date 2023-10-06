@@ -48,6 +48,23 @@ These links will be created:
 `Boolean` from `Object` to `true` or `false` (from the `@deep-foundation/boolean` package)  
 `Contain` with value `myBooleanField` from `Object` to `Boolean`
 
+### Example
+Object:
+```typescript
+{
+  stringField: "MyString",
+  numberField: 2,
+  booleanField: true, 
+  objectField: {
+    nestedStringField: "MyNestedString"
+  }
+}
+```
+Result:
+![image](https://github.com/deep-foundation/object-to-links-async-converter/assets/66206278/c749287f-7171-4d79-9518-0ff5c61c88f1)
+
+
+
 ## How to programmatically wait until converting is done?
 
 Use `DeepClient.await` method:
