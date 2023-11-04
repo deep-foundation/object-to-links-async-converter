@@ -280,7 +280,7 @@ async (options: {
           value: {
             to_id: await deep.id(
               ObjectToLinksConverter.requiredPackageNames.boolean,
-              pascalCase(value.toString()),
+              value.toString(),
             ),
           },
         }),
@@ -301,9 +301,7 @@ async (options: {
       operations.push(
         createSerialOperation({
           type: "update",
-          table: `${typeof value
-            .toString()
-            .toLocaleLowerCase()}s` as Table<"update">,
+          table: `strings` as Table<"update">,
           exp: {
             link_id: link.id,
           },
@@ -328,9 +326,7 @@ async (options: {
       operations.push(
         createSerialOperation({
           type: "update",
-          table: `${typeof value
-            .toString()
-            .toLocaleLowerCase()}s` as Table<"update">,
+          table: `numbers` as Table<"update">,
           exp: {
             link_id: link.id,
           },
@@ -537,7 +533,7 @@ async (options: {
           from_id: parentLinkId,
           to_id: await deep.id(
             ObjectToLinksConverter.requiredPackageNames.boolean,
-            pascalCase(value.toString()),
+            value.toString(),
           ),
         },
       });
