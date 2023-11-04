@@ -172,10 +172,16 @@ async (options: {
     async convert() {
       const log = ObjectToLinksConverter.getLogger("convert");
 
+      console.time(
+        `${ObjectToLinksConverter.name} makeUpdateOperationsForObjectValue before`,
+      );
       const operations = await this.makeUpdateOperationsForObjectValue({
         link: this.resultLink,
         value: this.obj,
       });
+      console.time(
+        `${ObjectToLinksConverter.name} makeUpdateOperationsForObjectValue before`,
+      );
       log({ operations });
 
       const hasResultTypeLinkId = await deep.id(deep.linkId!, "HasResult");
@@ -213,9 +219,11 @@ async (options: {
         );
       }
 
+      console.time(`${ObjectToLinksConverter.name} serial before`);
       const serialResult = await deep.serial({
         operations,
       });
+      console.time(`${ObjectToLinksConverter.name} serial after`);
       log({ serialResult });
 
       return {
@@ -895,7 +903,10 @@ async (options: {
     };
   } catch (error) {
     throw {
-      error: util.inspect(error),
+      error: util.inspect(error, {
+        maxArrayLength: null,
+        depth: null,
+      }),
       logs: logs,
     };
   }
