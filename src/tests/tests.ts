@@ -371,10 +371,7 @@ async function customMethodMakeInsertoperationsForBooleanValue() {
         id: linkId,
         type_id: await deep.id(this.deep.linkId!, pascalCase(typeof value)),
         from_id: parentLinkId,
-        to_id: await deep.id(
-          "@deep-foundation/boolean",
-          pascalCase(value.toString()),
-        ),
+        to_id: await deep.id("@deep-foundation/boolean", value.toString()),
       },
     });
     operations.push(linkInsertSerialOperation);
@@ -674,7 +671,7 @@ async function checkBooleanProperty(options: CheckBooleanPropertyOptions) {
 
   assert.equal(
     link.to_id,
-    await deep.id("@deep-foundation/boolean", pascalCase(value.toString())),
+    await deep.id("@deep-foundation/boolean", value.toString()),
   );
 }
 
