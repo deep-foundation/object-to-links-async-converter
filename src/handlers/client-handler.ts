@@ -262,7 +262,7 @@ async (options: {
     }
 
     async makeUpdateOperationsForBooleanValue(
-      options: MakeUpdateOperationsForAnyValueOptions<boolean>,
+      options: MakeUpdateOperationsForBooleanValueOptions,
     ) {
       const log = ObjectToLinksConverter.getLogger(
         this.makeUpdateOperationsForBooleanValue.name,
