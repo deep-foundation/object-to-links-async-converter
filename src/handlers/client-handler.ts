@@ -899,15 +899,31 @@ async (options: {
     const result = await main();
     return {
       result,
-      logs: logs,
+      logs: util.inspect(logs, {
+        maxArrayLength: null,
+        depth: null,
+      }),
     };
   } catch (error) {
+    console.dir("FreePhoenix888 result", {
+      error: util.inspect(error, {
+        maxArrayLength: null,
+        depth: null,
+      }),
+      logs: util.inspect(logs, {
+        maxArrayLength: null,
+        depth: null,
+      }),
+    });
     throw {
       error: util.inspect(error, {
         maxArrayLength: null,
         depth: null,
       }),
-      logs: logs,
+      logs: util.inspect(logs, {
+        maxArrayLength: null,
+        depth: null,
+      }),
     };
   }
 

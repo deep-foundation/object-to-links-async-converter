@@ -17,11 +17,24 @@ async (options: {
   try {
     const result = await main();
     return {
-      result: util.inspect(result),
+      result: util.inspect(result, {
+        maxArrayLength: null,
+        depth: null,
+      }),
     };
   } catch (error) {
+    console.log("FreePhoenix error");
+    console.dir({
+      error: util.inspect(error, {
+        maxArrayLength: null,
+        depth: null,
+      }),
+    });
     throw {
-      error: util.inspect(error),
+      error: util.inspect(error, {
+        maxArrayLength: null,
+        depth: null,
+      }),
     };
   }
 
